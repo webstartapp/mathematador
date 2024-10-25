@@ -7,9 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addXP, levelUp } from '../redux/slices/userSlice';
 import { generateQuestion, checkAnswer, nextChallenge } from '../redux/slices/gameSlice';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
 import { useNavigation, RouteProp } from '@react-navigation/native';
 import { RootState } from '../redux/store'; // Assuming this is where your root state is defined
+import { RootStackParamList } from '../types/Navigation';
 
 type ChallengeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
 type ChallengeScreenRouteProp = RouteProp<RootStackParamList, 'Challenge'>;
@@ -47,7 +47,6 @@ const ChallengeScreen: React.FC<Props> = ({ route }) => {
 
   return (
     <Layout>
-      <Header title="Challenge" />
       <View style={styles.content}>
         {currentChallenge ? (
           <MathChallenge question={currentChallenge.question} onSubmit={handleSubmit} />

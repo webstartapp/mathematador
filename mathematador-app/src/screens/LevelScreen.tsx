@@ -4,8 +4,8 @@ import Header from '../components/common/Header';
 import Button from '../components/common/Button';
 import Layout from '../components/common/Layout';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
 import { useNavigation, RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../types/Navigation';
 
 type LevelScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Level'>;
 type LevelScreenRouteProp = RouteProp<RootStackParamList, 'Level'>;
@@ -24,7 +24,6 @@ const LevelScreen: React.FC<Props> = ({ route }) => {
 
   return (
     <Layout>
-      <Header title={`Level ${levelId}`} />
       <View style={styles.content}>
         <Text style={styles.description}>Welcome to Level {levelId}! Get ready to tackle some math challenges.</Text>
         <Button title="Start Challenge" onPress={handleStartChallenge} />

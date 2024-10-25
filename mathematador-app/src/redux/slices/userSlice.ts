@@ -4,13 +4,20 @@ interface UserState {
   name: string;
   level: number;
   xp: number;
-  // Add other user-related state
+  xpToNextLevel: number;
 }
+
+const calculateXPToNextLevel = (level: number): number => {
+  const baseXP = 10;
+  const incrementFactor = 1.5;
+  return Math.floor((baseXP * Math.pow(level, incrementFactor))/10) * 10;
+};
 
 const initialState: UserState = {
   name: 'Corina',
   level: 1,
   xp: 0,
+  xpToNextLevel: calculateXPToNextLevel(1),
 };
 
 const userSlice = createSlice({
@@ -22,7 +29,7 @@ const userSlice = createSlice({
     },
     levelUp(state) {
       state.level += 1;
-      state.xp = 0;
+      state.xpToNextLevel = calculateXPToNextLevel(state.level); // Recalculate XP requirement
     },
     addXP(state, action: PayloadAction<number>) {
       state.xp += action.payload;
