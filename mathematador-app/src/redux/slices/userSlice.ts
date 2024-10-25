@@ -1,10 +1,28 @@
+import { Exercise } from '@/src/types/Chalenge';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+type ChalengeStats = {
+  challengeId: number;
+  operationId: string;
+  exercises: Exercise[];
+  correctAnswers: number;
+  time: number;
+};
+
+type OperationProgress = {
+  operationId: string;
+  level: number;
+  xp: number;
+  xpToNextLevel: number;
+  currentChallengeId: number;
+}
 interface UserState {
   name: string;
   level: number;
   xp: number;
   xpToNextLevel: number;
+  operationProgress: OperationProgress[];
+  completedChalenges: ChalengeStats[];
 }
 
 const calculateXPToNextLevel = (level: number): number => {
@@ -18,6 +36,8 @@ const initialState: UserState = {
   level: 1,
   xp: 0,
   xpToNextLevel: calculateXPToNextLevel(1),
+  operationProgress: [],
+  completedChalenges: [],
 };
 
 const userSlice = createSlice({

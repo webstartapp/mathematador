@@ -1,6 +1,6 @@
 import { Challenge, Exercise } from "../types/Chalenge";
 
-const generateChalenge = (challengeId: number): Challenge => {
+const generateChalenge = (challengeId: number): Partial<Challenge> => {
     const numberOfExercises = Math.min(3 + (challengeId / 3), 10);
     const exercises: Exercise[] = [];
 
@@ -33,8 +33,8 @@ const generateChalenge = (challengeId: number): Challenge => {
     return { challengeId, exercises };
   }
 
-export const generateChallenges = (numberOfChallenges: number): Challenge[] => {
-    const challenges: Challenge[] = [];
+export const generateChallenges = (numberOfChallenges: number): Partial<Challenge>[] => {
+    const challenges: Partial<Challenge>[] = [];
   
     for (let i = 0; i < numberOfChallenges; i++) {
         challenges.push(generateChalenge(i));
@@ -43,7 +43,39 @@ export const generateChallenges = (numberOfChallenges: number): Challenge[] => {
     return challenges;
   }
 
-  export const challenges: Challenge[] = [
+
+const enhanceChallenges = (challenges: Partial<Challenge>[]): Challenge[] => {
+    return challenges.map((challenge) => {
+      const exercises = challenge.exercises as Exercise[];
+      const numberOfExercises = exercises?.length;
+  
+      // Calculate average number of digits per exercise in this challenge
+      const averageDigits = exercises.reduce((acc, exercise) => {
+        const totalDigits = exercise.reduce((sum, num) => sum + num.toString().length, 0);
+        return acc + totalDigits / exercise.length;
+      }, 0) / numberOfExercises;
+  
+      // Set maximum time based on the complexity: longer time for higher average digits and more exercises
+      const maxTime = Math.floor((numberOfExercises * 20) + (averageDigits * 10));
+  
+      // Set experience points, with more awarded for higher average digits and more exercises
+      const experiencePoints = Math.floor((numberOfExercises * 5) + (averageDigits * 15));
+  
+      // Set coins for success and failure, scaling with difficulty
+      const coinsOnSuccess = Math.floor(experiencePoints * 1.2);
+      const coinsOnFailure = Math.floor(coinsOnSuccess * 0.5); // Half of success coins for a failed attempt
+  
+      return {
+        ...challenge,
+        maxTime,
+        experiencePoints,
+        coinsOnSuccess,
+        coinsOnFailure,
+      } as Challenge;
+    });
+  }
+
+  export const challengesConfig = [
     {
         "challengeId": 0,
         "exercises": [
@@ -12635,3 +12667,5 @@ export const generateChallenges = (numberOfChallenges: number): Challenge[] => {
         ]
     }
 ]
+
+export const challenges = enhanceChallenges(challengesConfig);

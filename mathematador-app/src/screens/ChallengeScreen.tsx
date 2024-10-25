@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import Header from '../components/common/Header';
 import Layout from '../components/common/Layout';
 import MathChallenge from '../components/game/MathChallenge';
 import { useDispatch, useSelector } from 'react-redux';
-import { addXP, levelUp } from '../redux/slices/userSlice';
-import { generateQuestion, checkAnswer, nextChallenge } from '../redux/slices/gameSlice';
+import { addXP } from '../redux/slices/userSlice';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation, RouteProp } from '@react-navigation/native';
 import { RootState } from '../redux/store'; // Assuming this is where your root state is defined

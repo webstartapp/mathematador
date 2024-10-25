@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
-// import { startChallenge } from '../redux/slices/gameSlice';
 import { useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/Navigation';
@@ -22,19 +21,23 @@ const SelectLevel: React.FC<Props> = ({ route }) => {
   
 
   // Retrieve challenges for the selected operation from Redux
-  const challenges = useSelector((state: RootState) => 
-    state.game.challenges.filter(challenge => challenge.operationId === operationId)
+  const operationStatistics = useSelector((state: RootState) => 
+    state.user.operationProgress.find(operation => operation.operationId === operationId)
   );
-  const currentChallenge = challenges.find(challenge => !challenge.completed);
-  const completedChallenges = challenges
-    .filter(challenge => challenge.completed)
-    .sort((a, b) => b.dateCompleted - a.dateCompleted); // Sort by latest
+  const currentChallenge = operationStatistics?.currentChallengeId || 1;
+  const completedChallenges = useSelector((state: RootState) => {
+    return state.game.challenges.map(challenge => ({
+      ...challenge,
+      completed: state.user?.completedChalenges?.find(challengeCompleted => challenge.challengeId === challengeCompleted?.challengeId),
+    }))
+    .filter((challenge: any) => challenge.completed).map(challenge=> challenge.completed) as typeof state.user.completedChalenges;
+  });
 
   // Start button handler
   const handleStartChallenge = () => {
     if (currentChallenge) {
       // dispatch(startChallenge({ challengeId: currentChallenge.id }));
-      navigation.navigate('Challenge', { challengeId: currentChallenge.id });
+      navigation.navigate('Challenge', { challengeId: currentChallenge, operationId: operationId });
     }
   };
 
@@ -44,7 +47,7 @@ const SelectLevel: React.FC<Props> = ({ route }) => {
 
       {currentChallenge && (
         <View style={styles.currentChallengeContainer}>
-          <Text style={styles.challengeText}>Challenge {currentChallenge.level}</Text>
+          <Text style={styles.challengeText}>Challenge {currentChallenge}.</Text>
           <Button title="Start" onPress={handleStartChallenge} />
         </View>
       )}
@@ -52,11 +55,11 @@ const SelectLevel: React.FC<Props> = ({ route }) => {
       <Text style={styles.subTitle}>Completed Challenges</Text>
       <FlatList
         data={completedChallenges}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.challengeId + item.operationId}
         numColumns={2}
         renderItem={({ item }) => (
           <View style={styles.challengeBox}>
-            <Text style={styles.challengeText}>Challenge {item.level}</Text>
+            <Text style={styles.challengeText}>Challenge {item.challengeId}</Text>
           </View>
         )}
       />
