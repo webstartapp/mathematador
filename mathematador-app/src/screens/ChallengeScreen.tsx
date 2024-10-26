@@ -1,56 +1,46 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import Header from '../components/common/Header';
 import Layout from '../components/common/Layout';
-import MathChallenge from '../components/game/MathChallenge';
-import { useDispatch, useSelector } from 'react-redux';
-import { addXP } from '../redux/slices/userSlice';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation, RouteProp } from '@react-navigation/native';
-import { RootState } from '../redux/store'; // Assuming this is where your root state is defined
-import { RootStackParamList } from '../types/Navigation';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
-type ChallengeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
+// Import minigame components
+import SingleLineMinigame from '../components/minigames/SingleLineMinigame';
+import { RootStackParamList } from '../types/Navigation';
+// import VerticalAdditionMinigame from '../components/minigames/VerticalAdditionMinigame';
+// import PuzzleMinigame from '../components/minigames/PuzzleMinigame';
+// import MultipleChoiceMinigame from '../components/minigames/MultipleChoiceMinigame';
+
+// Define a type for the route
 type ChallengeScreenRouteProp = RouteProp<RootStackParamList, 'Challenge'>;
 
-interface Props {
-  route: ChallengeScreenRouteProp;
+const minigames = [
+  SingleLineMinigame,
+  SingleLineMinigame,
+  SingleLineMinigame,
+  // VerticalAdditionMinigame,
+  // PuzzleMinigame,
+  // MultipleChoiceMinigame,
+];
+
+// Function to select a minigame based on challengeId
+function getMinigameIndex(challengeId: number): number {
+  return challengeId % minigames.length;
 }
 
-const ChallengeScreen: React.FC<Props> = ({ route }) => {
-  const dispatch = useDispatch();
-  const navigation = useNavigation<ChallengeScreenNavigationProp>();
-  const { challengeId } = route.params;
+const ChallengeScreen: React.FC = () => {
+  const route = useRoute<ChallengeScreenRouteProp>();
+  const { challengeId, operationId } = route.params;
 
-  // Select the current challenge from the Redux store
-  const currentChallenge = useSelector((state: RootState) => state.game.currentChallenge);
-
-  // Generate the challenge when the screen is loaded
-  useEffect(() => {
-    dispatch(generateQuestion(challengeId)); // Dispatch generateQuestion to create a new challenge
-  }, [dispatch, challengeId]);
-
-  const handleSubmit = (answer: string) => {
-    dispatch(checkAnswer({ challengeId, answer })); // Dispatch checkAnswer with the answer
-    const isCorrect = currentChallenge && currentChallenge.answer === answer; // Check if the answer is correct
-
-    if (isCorrect) {
-      dispatch(addXP(20));
-      Alert.alert('Correct!', 'You earned 20 XP.', [
-        { text: 'Next Challenge', onPress: () => dispatch(nextChallenge()) },
-      ]);
-    } else {
-      Alert.alert('Incorrect', 'Try again!', [{ text: 'OK' }]);
-    }
-  };
+  // Get the appropriate minigame based on challengeId
+  const MinigameComponent = minigames[getMinigameIndex(challengeId)];
 
   return (
     <Layout>
+      <Header />
       <View style={styles.content}>
-        {currentChallenge ? (
-          <MathChallenge question={currentChallenge.question} onSubmit={handleSubmit} />
-        ) : (
-          <Text>Loading...</Text>
-        )}
+        {/* Render the selected minigame */}
+        <MinigameComponent challengeId={challengeId} operationId={operationId} />
       </View>
     </Layout>
   );
