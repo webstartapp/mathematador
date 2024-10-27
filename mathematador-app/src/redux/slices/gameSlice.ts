@@ -1,4 +1,5 @@
 import { challenges } from '@/src/configs/challengeExercises';
+import { Operation, operations } from '@/src/configs/operations';
 import { Challenge, ExerciseInputPosition, InputPosition } from '@/src/types/Chalenge';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -7,6 +8,7 @@ interface GameState {
   level: number;
   currentOperation: string | null;
   challenges: Challenge[];
+  operations: Operation[];
   inputPositions: ExerciseInputPosition[];
 }
 
@@ -15,6 +17,7 @@ const initialState: GameState = {
   level: 1,
   currentOperation: null,
   challenges: challenges,
+  operations,
   inputPositions: [],
 };
 

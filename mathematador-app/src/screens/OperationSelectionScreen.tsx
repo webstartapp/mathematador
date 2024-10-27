@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/Navigation';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
 
@@ -12,15 +14,9 @@ interface Operation {
   label: string;
 }
 
-const operations: Operation[] = [
-  { id: 'addition', label: 'Addition' },
-  { id: 'subtraction', label: 'Subtraction' },
-  { id: 'multiplication', label: 'Multiplication' },
-  { id: 'division', label: 'Division' },
-];
-
 const OperationSelectionScreen: React.FC = () => {
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
+  const operations = useSelector((state: RootState)=>state.game.operations);
 
   const handleOperationPress = (operationId: string) => {
     navigation.navigate('SelectLevel', { operationId });
@@ -32,11 +28,11 @@ const OperationSelectionScreen: React.FC = () => {
       <View style={styles.grid}>
         {operations.map((operation) => (
           <TouchableOpacity
-            key={operation.id}
+            key={operation.operationId}
             style={styles.operationButton}
-            onPress={() => handleOperationPress(operation.id)}
+            onPress={() => handleOperationPress(operation.operationId)}
           >
-            <Text style={styles.operationLabel}>{operation.label}</Text>
+            <Text style={styles.operationLabel}>{operation.description}</Text>
           </TouchableOpacity>
         ))}
       </View>

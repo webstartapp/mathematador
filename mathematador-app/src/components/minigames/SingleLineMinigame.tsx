@@ -3,8 +3,19 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent,
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { operations } from '../../configs/operations';
-import { ExerciseInputPosition } from '@/src/types/Chalenge';
+import { ChalengeResult, Challenge, ExerciseInputPosition, ExerciseResult } from '@/src/types/Chalenge';
 import { useNavigation } from 'expo-router';
+import MinigameKeyboard from './components/MinigameKeyboard';
+import { computePositionKey } from './helpers/computePositionKey';
+import ExerciseValueDropDigits from './components/ExerciseValueDropDigits';
+import ExerciseValuePreview from './components/ExerciseValuePreview';
+import { challengeByOperationAndMinigame, ChallengeCoeficients } from '@/src/configs/challengeExercises';
+import { useDispatch } from 'react-redux';
+import { completeChalange } from '@/src/redux/slices/userSlice';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@/src/types/Navigation';
+
+type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
 
 interface ExerciseProps {
   exercise: number[];
@@ -18,183 +29,6 @@ interface ExerciseProps {
   result: number;
   updateExercisePositions: (exercisePositions: ExerciseInputPosition[], exerciseId: number) => void;
 }
-
-type DigitProps = {
-  value?: string;
-  updateExercisePositions?: (exercisePositions: ExerciseInputPosition[], exerciseId: number) => void;
-  exercisePositions?: ExerciseInputPosition[];
-  forwardRef?: (ref: View | null) => void;
-  exerciseId: number;
-};
-
-interface DraggableProps {
-  renderText: string;
-  onDrag: (event: GestureResponderEvent, gestureState: PanResponderGestureState) => void;
-  onDragRelease: (event: GestureResponderEvent, gestureState: PanResponderGestureState) => void;
-}
-
-const Draggable: React.FC<DraggableProps> = ({ renderText, onDrag, onDragRelease }) => {
-  const position = useRef(new Animated.ValueXY()).current;
-  const [initialPosition, setInitialPosition] = useState<{ x: number; y: number } | null>(null);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        // Apply initial offset for better visibility under the finger
-        position.setOffset({
-          x: position.x._value,
-          y: position.y._value - 50,
-        });
-        position.setValue({ x: 0, y: 0 }); // reset so drag starts from (0,0)
-      },
-      onPanResponderMove: (event, gestureState) => {
-        Animated.event([null, { dx: position.x, dy: position.y }], {
-          useNativeDriver: false,
-        })(event, gestureState);
-        onDrag(event, gestureState);
-      },
-      onPanResponderRelease: (event, gestureState) => {
-        onDragRelease(event, gestureState);
-        position.flattenOffset();
-        // Animate back to the original position
-        Animated.spring(position, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-      onPanResponderTerminate: () => {
-        // Fallback for any unintentional release to return to the initial position
-        Animated.spring(position, {
-          toValue: { x: initialPosition?.x || 0, y: initialPosition?.y || 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-    })
-  ).current;
-
-  return (
-    <Animated.View
-      style={[styles.draggable, { transform: position.getTranslateTransform() }]}
-      {...panResponder.panHandlers}
-    >
-      <Text style={styles.draggableText}>{renderText}</Text>
-    </Animated.View>
-  );
-};
-
-const Digit: FC<DigitProps> = ({value, forwardRef})=> (
-  <View style={styles.digitContainer} ref={(refI)=>{
-    if(forwardRef) forwardRef(refI);
-    }}>
-    <Text style={styles.digit}>{value || '?'}</Text>
-  </View>
-);
-
-
-const computePositionIndex = (pos: ExerciseInputPosition[]) => pos.sort((a,b)=>a.inputIndex - b.inputIndex).map((item)=>`${item.x}-${item.y}`).join('__');
-
-
-const ValueToDigits:FC<DigitProps> = ({value, updateExercisePositions, exercisePositions = [], exerciseId})=>{
-    
-  const refferenceDigits = useRef<(View | null)[]>([]);
-  const [layoutsReady, setLayoutsReady] = useState<number[]>();
-
-  console.log(103, value, exercisePositions);
-  useEffect(() => {
-    setLayoutsReady([]);
-  }, [value]);
-
-  useEffect(()=>{
-    const measurePositions = async ()=>{
-    const localPositions: ExerciseInputPosition[] = []; 
-    console.log(108, refferenceDigits.current, exerciseId);
-    for(let index = 0; index < refferenceDigits.current.length; index++){
-      const ref = refferenceDigits.current[index];
-      if(ref){
-        const position = await new Promise<ExerciseInputPosition>((resolve) => {
-          ref.measure((x, y, width, height, pageX, pageY) => {
-            resolve({ x: pageX, y: pageY, width, exerciseIndex: 0, inputIndex: index });
-          });
-        });
-        if(position) localPositions.push(position);
-      }
-    }
-    console.log(120, localPositions, exercisePositions, value);
-    if(updateExercisePositions && localPositions.length >= String(value).length){
-      console.log(118, localPositions, exercisePositions);
-      if(computePositionIndex(localPositions) !== computePositionIndex(exercisePositions)){
-        updateExercisePositions(localPositions, 0);
-      }
-    }
-  }
-  if(layoutsReady?.length === String(value).length){
-    measurePositions();
-  }
-  }, [refferenceDigits.current, updateExercisePositions, value, JSON.stringify(exercisePositions), layoutsReady]);
-
-  return <>{String(value).split('').map((v,index)=>(
-    <View key={`${index}_${computePositionIndex(exercisePositions)}_${value}`}  onLayout={()=>setLayoutsReady(prev=>prev?.includes(index)? prev : [...(prev || []), index])}>
-      <Digit value={v} forwardRef={(ref)=>{
-        refferenceDigits.current[index] = ref;
-      }}
-      exerciseId={exerciseId}
-    />
-    </View>
-  ))}</>;
-};
-
-type ExerciseValuesProps = {
-  values: (number| string)[];
-  operationSymbol: string;
-  exerciseId: number;
-};
-
-const ExerciseValues: FC<ExerciseValuesProps> = ({ values, operationSymbol, exerciseId }) => {
-  return (
-    <View style={styles.exerciseValues}>
-      {values.map((value, index) => (
-        <View key={index} style={styles.exerciseValue} >
-          <ValueToDigits value={String(value)}
-            exerciseId={exerciseId}
-          />
-          {index < values.length - 1 && <ValueToDigits value={operationSymbol} exerciseId={exerciseId}/>}
-        </View>
-      ))}
-    </View>
-  );
-} 
-
-type ResultValueProps = {
-  value: number | string;
-  updateExercisePositions: (exercisePositions: ExerciseInputPosition[], exerciseId: number) => void;
-  result?: Record<string, number>;
-  exerciseId: number;
-  exercisePositions: ExerciseInputPosition[];
-};
-
-const ResultValue: FC<ResultValueProps> = ({ value, updateExercisePositions, result, exerciseId, exercisePositions }) => {
-  const exerciseIdRef = useRef(exerciseId);
-  useEffect(() => {
-    exerciseIdRef.current = exerciseId;
-  }, [exerciseId]);
-
-  const partialResult = useMemo(() => {
-    return String(value).split('').map((v, i) => result && result[i] ? result[i] : '?').join('');
-  }, [value, Object.values(result || {}).join('')]);
-  console.log(172, partialResult, result, exercisePositions, exerciseId);
-  return (
-    <View style={styles.resultValue}>
-      <ValueToDigits
-        value={partialResult}
-        updateExercisePositions={updateExercisePositions}
-        exercisePositions={exercisePositions}
-        exerciseId={exerciseId}
-      />
-    </View>
-  );
-};
 
 const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst, result, onAnswer, complexity, updateExercisePositions, exerciseResult, exerciseId, exercisePositions }) => {
   const exerciseIdRef = useRef(exerciseId);
@@ -222,13 +56,20 @@ const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst,
     }
   }, [exerciseResult, resultItem, onAnswer]);
 
-  console.log(222, resultItem, exerciseResult, exerciseIdRef.current, exercisePositions);
-
   return (
     <View style={styles.exerciseContainer}>
-      <ExerciseValues values={exerciseItems} operationSymbol={operationSymbol} exerciseId={exerciseId}/>
-      <ExerciseValues values={['=']} operationSymbol={''} exerciseId={exerciseId} />
-      <ResultValue
+      {exerciseItems?.map((item, index) => (
+        <View style={styles.exerciseValues}>
+          <View key={index} style={styles.exerciseValue} >
+            <ExerciseValuePreview value={String(item)}
+              exerciseId={exerciseId}
+            />
+            {index < exerciseItems.length - 1 && <ExerciseValuePreview value={operationSymbol} exerciseId={exerciseId}/>}
+          </View>
+        </View>
+      ))}
+      <ExerciseValuePreview value={'='} exerciseId={exerciseId} /> 
+      <ExerciseValueDropDigits
         value={resultItem}
         updateExercisePositions={(exercisePositions) => updateExercisePositions(exercisePositions.map(item=>({...item, exerciseIndex: exerciseIdRef.current})), exerciseIdRef.current)}
         result={exerciseResult}
@@ -239,62 +80,52 @@ const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst,
   );
 };
 
-
-const getClosestCell = (x: number, y: number, exercisePositions: ExerciseInputPosition[]) => {
-  const closest = exercisePositions.reduce((closest, current) => {
-    const distance = Math.sqrt((x - current.x) ** 2 + (y - current.y) ** 2);
-    if (distance < closest.distance) {
-      return { distance, cell: current };
-    }
-    return closest;
-  }, { distance: Infinity, cell: null } as { distance: number, cell: ExerciseInputPosition | null });
-  if(closest.cell && closest.distance < closest.cell.width) {
-    return closest.cell;
-  }
-  return null;
-};
-
-type KeyboardComponentProps = {
-  handleDrop: (exercise: ExerciseInputPosition, value: number) => void;
-  exercisePositions: ExerciseInputPosition[];
-};
-
-const KeyboardComponent: FC<KeyboardComponentProps> = ({ handleDrop, exercisePositions }) => {
-  const digits = useMemo(() => Array.from({ length: 10 }, (_, index) => index === 9 ? 0 : index + 1), []);
-  const handleDragEnd: (value: number, gestureState: PanResponderGestureState) => void = useCallback((value, gestureState) => {
-    console.log(243, {...gestureState});
-    const exerise = getClosestCell(gestureState.moveX, gestureState.moveY - 50, exercisePositions);
-    if (exerise) {
-      handleDrop(exerise, value);
-    }
-  }, [exercisePositions, handleDrop]);
-
-  const handleDrag: (event: GestureResponderEvent, gestureState: PanResponderGestureState) => void = useCallback((event, gestureState) => {
-    // console.log('drag', gestureState.moveX, gestureState.moveY);
-  }, []);
-  return (
-    <View style={styles.keyboardContainer}>
-      {digits.map((digit, index) => (
-          <Draggable
-            key={`${digit}_${computePositionIndex(exercisePositions)}`}
-            renderText={String(digit)}
-            onDragRelease={(_event, gestureState)=> handleDragEnd(digit, gestureState)}
-            onDrag={handleDrag}
-          />
-      ))}
-    </View>
-  );
-}
 interface SingleLineProps {
   challengeId: number;
   operationId: string;
 }
 
+const getChalengeResult = (operationId: string, chalenge: Challenge, results: Record<string, Record<string, number>>, expectedResult: string | number[]): ChalengeResult => {
+  const exerciseResult = chalenge.exercises.map((exercise, index): ExerciseResult => {
+    const userResult = Object.values(results[index] || {}).join('');
+    return {
+      challengeId: chalenge.challengeId,
+      operationId,
+      expectedResult: expectedResult[index],
+      userResult,
+      exercise,
+    };
+  });
+  const correctAnswers = exerciseResult.filter((exercise) => String(exercise.expectedResult) === String(exercise.userResult)).length;
+  return {
+    challengeId: chalenge.challengeId,
+    operationId,
+    results: exerciseResult,
+    time: 0,
+    correctAnswers,
+    successful: correctAnswers + 1 >= chalenge.exercises.length,
+    coins: Math.ceil(correctAnswers === chalenge.exercises.length ? chalenge.coinsOnSuccess : chalenge.coinsOnFailure),
+    xp: Math.ceil(chalenge.experiencePoints),
+  };
+};
+
 const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => {
-  const navigator = useNavigation();
-  const challenge = useSelector((state: RootState) => 
-    state.game.challenges.find((ch) => ch.challengeId === challengeId)
-  );
+  const navigator = useNavigation<OperationSelectionScreenNavigationProp>();
+  const dispatch = useDispatch();
+
+  const operationConfig = useSelector((state: RootState) => state.game.operations.find((op) => op.operationId === operationId));
+  const submitChalangeResults = (results: ChalengeResult)=>{
+    dispatch(completeChalange(results))
+  }
+
+  const chalengeCoeficients: ChallengeCoeficients = {
+    timeCoeficient: (operationConfig?.timeCoeficient || 1) * 0.2,
+    coinCoeficient: (operationConfig?.xpCoeficient || 1) * 0.2,
+    xpCoeficient: (operationConfig?.xpCoeficient || 1) * 0.2,
+
+  }
+  
+  const challenge = challengeByOperationAndMinigame(challengeId, chalengeCoeficients)
 
   const [exercisePositions, setExercisePositions] = useState<ExerciseInputPosition[]>([]);
   const [exerciseResults, setExerciseResults] = useState<Record<string, Record<string, number>>>({});
@@ -308,8 +139,6 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
     });
   }
 
-  const operationConfig = operations.find(op => op.operationId === operationId);
-
   if (!challenge || !operationConfig) {
     return <Text>Challenge or Operation not found.</Text>;
   }
@@ -321,14 +150,21 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
 
   const handleAnswer = (answer: number) => {
     if(currentExerciseIndex === exercises.length - 1){
-      navigator.navigate('ChallengeResult', { challengeId });
+      const expectedResults = exercises.map((exercise) => getResult(exercise.slice(0, 2)));
+      const results = getChalengeResult(operationId, challenge, exerciseResults, expectedResults);
+      
+      if(results.correctAnswers +1 >= challenge.exercises.length) {
+        submitChalangeResults(results);
+      }
+      console.log(results);
+        navigator.navigate('ChallengeResult', results);
     } else {
       setExercisePositions([]);
       setCurrentExerciseIndex(currentExerciseIndex + 1); 
     }
   };
 
-  console.log(319, exerciseResults);
+  console.log(319, exerciseResults, exercises, currentExerciseIndex);
 
   return (
     <View style={styles.container}>
@@ -352,8 +188,8 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
           }); 
         }}
       />
-      <KeyboardComponent
-        key={computePositionIndex(exercisePositions)}
+      <MinigameKeyboard
+        key={computePositionKey(exercisePositions)}
         handleDrop={(exercisePosition, value) => console.log(333, exercisePosition, exercisePositions, addResponse(exercisePosition.exerciseIndex, exercisePosition.inputIndex, value))}
         exercisePositions={exercisePositions}
       />
@@ -390,40 +226,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     userSelect: 'none',
-  },
-  resultValue: {
-    marginLeft: 10,
-  },
-  digitContainer: {
-    borderWidth: 1,
-    borderColor: '#333',
-    borderRadius: 4,
-    padding: 5,
-    margin: 2,
-    width: 30,
-    height: 30,
-  },
-  digit: {
-    fontSize: 18,
-  },
-  keyboardContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  draggable: {
-    width: 50,
-    height: 50,
-    backgroundColor: '#f0a',
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 10,
-  },
-  draggableText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });
 

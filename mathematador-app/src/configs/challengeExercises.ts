@@ -1,7 +1,7 @@
 import { Challenge, Exercise } from "../types/Chalenge";
 
 const generateChalenge = (challengeId: number): Partial<Challenge> => {
-    const numberOfExercises = Math.min(3 + (challengeId / 3), 10);
+    const numberOfExercises = 10;
     const exercises: Exercise[] = [];
 
     const challenge = challengeId % 20;
@@ -12669,3 +12669,25 @@ const enhanceChallenges = (challenges: Partial<Challenge>[]): Challenge[] => {
 ]
 
 export const challenges = enhanceChallenges(challengesConfig);
+
+export type ChallengeCoeficients = {
+    timeCoeficient: number,
+    xpCoeficient: number,
+    coinCoeficient: number
+};
+
+export const challengeByOperationAndMinigame = (chalengeId: number, {
+    timeCoeficient = 1, xpCoeficient = 1, coinCoeficient = 1
+}: ChallengeCoeficients) => {
+    const challengeItem = challenges.find(challenge => challenge.challengeId === chalengeId);
+    if (!challengeItem) {
+        return null;
+    }
+    return {
+        ...challengeItem,
+        maxTime: challengeItem.maxTime * timeCoeficient,
+        experiencePoints: challengeItem.experiencePoints * xpCoeficient,
+        coins: challengeItem.coinsOnSuccess * coinCoeficient,
+        coinsOnFailure: challengeItem.coinsOnFailure * coinCoeficient,
+    };
+};

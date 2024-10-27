@@ -14,6 +14,7 @@ type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 type HeaderProps = {
   backTo?: keyof RootStackParamList;
+  showOperation?: boolean;
 };
 
 const GameHeader: React.FC<HeaderProps> = ({

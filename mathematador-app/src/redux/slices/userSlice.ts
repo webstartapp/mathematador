@@ -1,13 +1,5 @@
-import { Exercise } from '@/src/types/Chalenge';
+import { ChalengeResult, Exercise } from '@/src/types/Chalenge';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-type ChalengeStats = {
-  challengeId: number;
-  operationId: string;
-  exercises: Exercise[];
-  correctAnswers: number;
-  time: number;
-};
 
 type OperationProgress = {
   operationId: string;
@@ -20,9 +12,10 @@ interface UserState {
   name: string;
   level: number;
   xp: number;
+  coins: number;
   xpToNextLevel: number;
   operationProgress: OperationProgress[];
-  completedChalenges: ChalengeStats[];
+  completedChalenges: ChalengeResult[];
 }
 
 const calculateXPToNextLevel = (level: number): number => {
@@ -35,6 +28,7 @@ const initialState: UserState = {
   name: 'Corina',
   level: 1,
   xp: 0,
+  coins: 0,
   xpToNextLevel: calculateXPToNextLevel(1),
   operationProgress: [],
   completedChalenges: [],
@@ -51,13 +45,26 @@ const userSlice = createSlice({
       state.level += 1;
       state.xpToNextLevel = calculateXPToNextLevel(state.level); // Recalculate XP requirement
     },
-    addXP(state, action: PayloadAction<number>) {
-      state.xp += action.payload;
-      // Add logic for leveling up if xp exceeds threshold
-    },
+    completeChalange(state, action: PayloadAction<ChalengeResult>) {
+      state.xp += action.payload.xp;
+      state.coins += action.payload.coins;
+      const operationProgress = state.operationProgress.find(op => op.operationId === action.payload.operationId);
+      if (operationProgress) {
+        operationProgress.xp += action.payload.xp;
+      } else {
+        state.operationProgress.push({
+          operationId: action.payload.operationId,
+          level: 1,
+          xp: action.payload.xp,
+          xpToNextLevel: calculateXPToNextLevel(1),
+          currentChallengeId: action.payload.challengeId + 1,
+        });
+      }
+      state.completedChalenges.push(action.payload);
+    }
     // Add other reducers as needed
   },
 });
 
-export const { setName, levelUp, addXP } = userSlice.actions;
+export const { setName, levelUp, completeChalange } = userSlice.actions;
 export default userSlice.reducer;

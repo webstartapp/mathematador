@@ -1,4 +1,14 @@
-export const operations = [
+export type Operation = {
+    operationId: string;
+    symbol: string;
+    description: string;
+    getResult: (numbers: number[]) => number;
+    timeCoeficient: number;
+    xpCoeficient: number;
+    resultIsFirst: boolean;
+}
+
+export const operations: Operation[] = [
     {
         "operationId": "addition",
         "symbol": "+",

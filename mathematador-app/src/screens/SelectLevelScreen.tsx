@@ -18,7 +18,6 @@ const SelectLevel: React.FC<Props> = ({ route }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation<SelectLevelScreenNavigationProp>();
 
-  
 
   // Retrieve challenges for the selected operation from Redux
   const operationStatistics = useSelector((state: RootState) => 
@@ -32,6 +31,10 @@ const SelectLevel: React.FC<Props> = ({ route }) => {
     }))
     .filter((challenge: any) => challenge.completed).map(challenge=> challenge.completed) as typeof state.user.completedChalenges;
   });
+
+  const wholestate = useSelector((state: RootState) => state);
+
+  console.log(operationStatistics, wholestate);
 
   // Start button handler
   const handleStartChallenge = () => {

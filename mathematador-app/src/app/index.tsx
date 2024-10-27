@@ -7,6 +7,7 @@ import GameHeader from "../components/common/Header";
 import { RootStackParamList } from "../types/Navigation";
 import OperationSelectionScreen from "../screens/OperationSelectionScreen";
 import SelectLevelScreen from "../screens/SelectLevelScreen";
+import ChallengeResultScreen from "../screens/ChallengeResultScreen";
 // Import other screens as needed
 
 
@@ -31,11 +32,21 @@ export default () => (
       <Stack.Screen name="SelectLevel" component={SelectLevelScreen}
         options={{
             headerShown: true,
-            header: ()=><GameHeader backTo="Home"/>
+            header: ()=><GameHeader backTo="Home" showOperation/>
         }}
-    />
-      <Stack.Screen name="Level" component={LevelScreen} />
-      <Stack.Screen name="Challenge" component={ChallengeScreen} />
+      />
+      <Stack.Screen name="ChallengeResult" component={ChallengeResultScreen}
+        options={{
+            headerShown: true,
+            header: ()=><GameHeader backTo="Home" showOperation/>
+        }}
+      />
+      <Stack.Screen name="Challenge" component={ChallengeScreen}
+        options={{
+            headerShown: true,
+            header: ()=><GameHeader backTo="Home" showOperation/>
+        }}
+      />
       {/* Add other screens here */}
     </Stack.Navigator>
 );
