@@ -1,4 +1,5 @@
 export type Exercise = number[];
+
 export type Challenge = {
   challengeId: number;
   exercises: Exercise[];
@@ -7,3 +8,14 @@ export type Challenge = {
   coinsOnSuccess: number;
   coinsOnFailure: number;
 };
+
+export type InputPosition = {
+    x: number;
+    y: number;
+    width: number;
+}
+
+export type ExerciseInputPosition = InputPosition & {
+    exerciseIndex: number;
+    inputIndex: number;
+  };
