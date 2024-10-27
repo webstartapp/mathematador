@@ -3,9 +3,10 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import { RouteProp } from '@react-navigation/native';
 import React, { FC } from 'react';
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { RootStackParamList } from '../types/Navigation';
 import { ChalengeResult } from '../types/Chalenge';
+import ParallaxScrollView from '../components/ParallaxScrollView';
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChallengeResult'>;
 
@@ -21,45 +22,43 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
 
   const handleReturn = () => {
-    navigation.navigate('SelectLevel', { operationId });
+    navigation.navigate('ChalengeSelect', { operationId });
   };
 
   return (
-    <View style={styles.container}>
-      {/* Challenge Summary */}
-      <View style={styles.summaryContainer}>
-        <Text style={styles.summaryTitle}>Challenge Results</Text>
-        <Text style={styles.summaryText}>Challenge ID: {challengeId}</Text>
-        <Text style={styles.summaryText}>Operation: {operationId}</Text>
-        <Text style={styles.summaryText}>Time Taken: {time} seconds</Text>
-        <Text style={styles.summaryText}>Correct Answers: {correctAnswers}/{results.length}</Text>
-        <Text style={styles.summaryText}>Coins Earned: {coins}</Text>
-        <Text style={styles.summaryText}>XP Earned: {xp}</Text>
-        <Text style={styles.statusText}>{successful ? "Success!" : "Try Again!"}</Text>
-      </View>
+    <ScrollView style={styles.container}>
+        {/* Challenge Summary */}
+        <View style={styles.summaryContainer}>
+          <Text style={styles.summaryTitle}>Challenge Results</Text>
+          <Text style={styles.summaryText}>Challenge ID: {challengeId}</Text>
+          <Text style={styles.summaryText}>Operation: {operationId}</Text>
+          <Text style={styles.summaryText}>Time Taken: {time} seconds</Text>
+          <Text style={styles.summaryText}>Correct Answers: {correctAnswers}/{results.length}</Text>
+          <Text style={styles.summaryText}>Coins Earned: {coins}</Text>
+          <Text style={styles.summaryText}>XP Earned: {xp}</Text>
+          <Text style={styles.statusText}>{successful ? "Success!" : "Try Again!"}</Text>
+        </View>
+        <FlatList
+          data={results}
+          keyExtractor={(item, index) => `${item.challengeId}-${index}`}
+          renderItem={({ item }) => (
+            <View style={styles.exerciseContainer}>
+              <Text style={styles.exerciseTitle}>Exercise</Text>
+              <Text style={styles.exerciseText}>Expected Result: {item.expectedResult}</Text>
+              <Text style={styles.exerciseText}>Your Result: {item.userResult}</Text>
+              <Text style={styles.exerciseText}>Exercise Numbers: {item.exercise.join(", ")}</Text>
+              <Text style={[styles.resultStatus, item.expectedResult == item.userResult ? styles.correct : styles.incorrect]}>
+                {item.expectedResult == item.userResult ? "Correct" : "Incorrect"}
+              </Text>
+            </View>
+          )}
+        />
 
-      {/* Detailed Exercise Results */}
-      <FlatList
-        data={results}
-        keyExtractor={(item, index) => `${item.challengeId}-${index}`}
-        renderItem={({ item }) => (
-          <View style={styles.exerciseContainer}>
-            <Text style={styles.exerciseTitle}>Exercise</Text>
-            <Text style={styles.exerciseText}>Expected Result: {item.expectedResult}</Text>
-            <Text style={styles.exerciseText}>Your Result: {item.userResult}</Text>
-            <Text style={styles.exerciseText}>Exercise Numbers: {item.exercise.join(", ")}</Text>
-            <Text style={[styles.resultStatus, item.expectedResult == item.userResult ? styles.correct : styles.incorrect]}>
-              {item.expectedResult == item.userResult ? "Correct" : "Incorrect"}
-            </Text>
-          </View>
-        )}
-      />
-
-      {/* Return Button */}
-      <View style={styles.buttonContainer}>
-        <Button title="Back to Operations" onPress={handleReturn} />
-      </View>
-    </View>
+        {/* Return Button */}
+        <View style={styles.buttonContainer}>
+          <Button title="Back to Operations" onPress={handleReturn} />
+        </View>
+      </ScrollView>
   );
 };
 

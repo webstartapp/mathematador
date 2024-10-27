@@ -8,5 +8,5 @@ export type RootStackParamList = {
     SelectOperation?: {};
     Statistics?: {};
     Profile?: {};
-    SelectLevel: { operationId: string };
+    ChalengeSelect: { operationId: string };
   };

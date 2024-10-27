@@ -6,6 +6,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/Navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import { operations } from '../configs/operations';
+import CenteredDesk from '../components/layouts/CenteredDesk';
+import Layout from '../components/common/Layout';
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
 
@@ -16,34 +19,52 @@ interface Operation {
 
 const OperationSelectionScreen: React.FC = () => {
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
-  const operations = useSelector((state: RootState)=>state.game.operations);
+  const operationProgress = useSelector((state: RootState) => state.user.operationProgress);
+
+  const mixedOperations = operations.map((operation) => {
+    const progress = operationProgress.find((progress) => progress.operationId === operation.operationId);
+    return {
+      ...operation,
+      progress,
+    };
+  });
 
   const handleOperationPress = (operationId: string) => {
-    navigation.navigate('SelectLevel', { operationId });
+    navigation.navigate('ChalengeSelect', { operationId });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Select an Operation</Text>
-      <View style={styles.grid}>
-        {operations.map((operation) => (
-          <TouchableOpacity
-            key={operation.operationId}
-            style={styles.operationButton}
-            onPress={() => handleOperationPress(operation.operationId)}
-          >
-            <Text style={styles.operationLabel}>{operation.description}</Text>
-          </TouchableOpacity>
-        ))}
+    <Layout>
+      <View style={styles.container}>
+        <Text style={styles.header}>Select an Operation</Text>
+        <View style={styles.grid}>
+          {mixedOperations.map((operation) => (
+            <TouchableOpacity
+              key={operation.operationId}
+              style={styles.operationButton}
+              onPress={() => handleOperationPress(operation.operationId)}
+            >
+              <CenteredDesk
+                title={operation.symbol}
+                subtitles={[
+                  operation.label,
+                  `Challenge: ${operation?.progress?.currentChallengeId || '1'}`,
+                ]}
+                descriptions={[
+                  `Level: ${operation?.progress?.level || 1}`,
+                ]}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-    </View>
+    </Layout>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
     padding: 16,
   },
   header: {
@@ -56,11 +77,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    flexBasis: '50%',
   },
   operationButton: {
     width: '48%',
     aspectRatio: 2 / 1,
-    backgroundColor: '#ffddc1', // Soft background color for visual appeal
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -69,6 +90,15 @@ const styles = StyleSheet.create({
   operationLabel: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#333',
+  },
+  operationSymbol: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  operationDescription: {
+    fontSize: 14,
     color: '#333',
   },
 });

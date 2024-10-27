@@ -1,19 +1,33 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  return <View style={styles.container}>{children}</View>;
+  return (
+    <Animated.ScrollView
+      style={styles.scroller}
+      contentContainerStyle={styles.container}
+    >
+      <View style={styles.container}>{children}</View>
+      </Animated.ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
+  scroller: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#F5F5F5',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
 });
 

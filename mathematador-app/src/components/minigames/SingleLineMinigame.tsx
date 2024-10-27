@@ -2,7 +2,7 @@ import React, { FC, LegacyRef, useCallback, useEffect, useMemo, useRef, useState
 import { View, Text, StyleSheet, TouchableOpacity, Alert, GestureResponderEvent, PanResponderGestureState, LayoutChangeEvent, PanResponder, Animated } from 'react-native';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { operations } from '../../configs/operations';
+import { Operation, operations } from '../../configs/operations';
 import { ChalengeResult, Challenge, ExerciseInputPosition, ExerciseResult } from '@/src/types/Chalenge';
 import { useNavigation } from 'expo-router';
 import MinigameKeyboard from './components/MinigameKeyboard';
@@ -23,18 +23,23 @@ interface ExerciseProps {
   exerciseResult: Record<string, number>;
   exercisePositions: ExerciseInputPosition[];
   complexity: number;
-  operationSymbol: string;
+  operation: Operation;
   resultIsFirst: boolean;
   onAnswer: (answer: number) => void;
-  result: number;
   updateExercisePositions: (exercisePositions: ExerciseInputPosition[], exerciseId: number) => void;
 }
 
-const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst, result, onAnswer, complexity, updateExercisePositions, exerciseResult, exerciseId, exercisePositions }) => {
+const Exercise: FC<ExerciseProps> = ({ exercise, operation, resultIsFirst, onAnswer, complexity, updateExercisePositions, exerciseResult, exerciseId, exercisePositions }) => {
   const exerciseIdRef = useRef(exerciseId);
   useEffect(() => {
     exerciseIdRef.current = exerciseId;
   }, [exerciseId]);
+
+  const exercisesCuts = useMemo(() => {
+    return exercise.slice(0, complexity); 
+  }, [exercise, complexity]);
+
+  const result = useMemo(() => operation.getResult(exercisesCuts), [exercisesCuts, operation]);
 
   const exerciseItems = useMemo(() => {
     const exerciseCut = exercise.slice(0, complexity);
@@ -43,7 +48,7 @@ const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst,
       ...(!resultIsFirst ? exerciseCut : [result]),
     ];
     return exerciseList.slice(0, exerciseList.length - 2);
-  }, [exercise, complexity, result, resultIsFirst]);
+  }, [exercise, complexity, resultIsFirst, result]);
 
   const resultItem = useMemo(() => {
     return resultIsFirst ? exerciseItems[exerciseItems.length - 1] : result;
@@ -55,6 +60,8 @@ const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst,
       onAnswer(Number(answer.join('')));
     }
   }, [exerciseResult, resultItem, onAnswer]);
+  
+  console.log(96, exerciseItems, resultItem, exercise, complexity);
 
   return (
     <View style={styles.exerciseContainer}>
@@ -64,7 +71,7 @@ const Exercise: FC<ExerciseProps> = ({ exercise, operationSymbol, resultIsFirst,
             <ExerciseValuePreview value={String(item)}
               exerciseId={exerciseId}
             />
-            {index < exerciseItems.length - 1 && <ExerciseValuePreview value={operationSymbol} exerciseId={exerciseId}/>}
+            {index < exerciseItems.length - 1 && <ExerciseValuePreview value={operation.symbol} exerciseId={exerciseId}/>}
           </View>
         </View>
       ))}
@@ -113,7 +120,7 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
   const navigator = useNavigation<OperationSelectionScreenNavigationProp>();
   const dispatch = useDispatch();
 
-  const operationConfig = useSelector((state: RootState) => state.game.operations.find((op) => op.operationId === operationId));
+  const operationConfig = operations.find((op) => op.operationId === operationId);
   const submitChalangeResults = (results: ChalengeResult)=>{
     dispatch(completeChalange(results))
   }
@@ -164,7 +171,7 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
     }
   };
 
-  console.log(319, exerciseResults, exercises, currentExerciseIndex);
+  console.log(319, exerciseResults, exercises, currentExerciseIndex, operationConfig);
 
   return (
     <View style={styles.container}>
@@ -176,10 +183,9 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
         exerciseId={currentExerciseIndex}
         exerciseResult={exerciseResults[currentExerciseIndex]}
         onAnswer={handleAnswer}
-        operationSymbol={symbol}
+        operation={operationConfig}
         exercisePositions={exercisePositions}
         resultIsFirst={resultIsFirst}
-        result={getResult(exercises[currentExerciseIndex].slice(0, 2))}
         updateExercisePositions={(exPositions: ExerciseInputPosition[], exerciseIndex: number) => {
           console.log(341, exPositions);
           setExercisePositions(prev=>{
