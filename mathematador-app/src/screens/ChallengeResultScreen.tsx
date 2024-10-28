@@ -3,10 +3,14 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from 'expo-router';
 import { RouteProp } from '@react-navigation/native';
 import React, { FC } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { RootStackParamList } from '../types/Navigation';
 import { ChalengeResult } from '../types/Chalenge';
 import ParallaxScrollView from '../components/ParallaxScrollView';
+import Layout from '../components/common/Layout';
+import CenteredDesk from '../components/layouts/CenteredDesk';
+import Button from '../components/common/Button';
+import { operations } from '../configs/operations';
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChallengeResult'>;
 
@@ -21,44 +25,63 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
   const { challengeId, operationId, successful, results, time, correctAnswers, coins, xp } = route.params;
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
 
+  const operation = operations.find(operationItem => operationItem.operationId === operationId);
+
   const handleReturn = () => {
     navigation.navigate('ChalengeSelect', { operationId });
   };
 
   return (
-    <ScrollView style={styles.container}>
-        {/* Challenge Summary */}
-        <View style={styles.summaryContainer}>
-          <Text style={styles.summaryTitle}>Challenge Results</Text>
-          <Text style={styles.summaryText}>Challenge ID: {challengeId}</Text>
-          <Text style={styles.summaryText}>Operation: {operationId}</Text>
-          <Text style={styles.summaryText}>Time Taken: {time} seconds</Text>
-          <Text style={styles.summaryText}>Correct Answers: {correctAnswers}/{results.length}</Text>
-          <Text style={styles.summaryText}>Coins Earned: {coins}</Text>
-          <Text style={styles.summaryText}>XP Earned: {xp}</Text>
-          <Text style={styles.statusText}>{successful ? "Success!" : "Try Again!"}</Text>
-        </View>
-        <FlatList
-          data={results}
-          keyExtractor={(item, index) => `${item.challengeId}-${index}`}
-          renderItem={({ item }) => (
-            <View style={styles.exerciseContainer}>
-              <Text style={styles.exerciseTitle}>Exercise</Text>
-              <Text style={styles.exerciseText}>Expected Result: {item.expectedResult}</Text>
-              <Text style={styles.exerciseText}>Your Result: {item.userResult}</Text>
-              <Text style={styles.exerciseText}>Exercise Numbers: {item.exercise.join(", ")}</Text>
-              <Text style={[styles.resultStatus, item.expectedResult == item.userResult ? styles.correct : styles.incorrect]}>
-                {item.expectedResult == item.userResult ? "Correct" : "Incorrect"}
-              </Text>
-            </View>
-          )}
+    <Layout>
+      <View style={styles.container}>
+        <CenteredDesk
+          styles={{
+            wrapper: {
+              marginBottom: 40,
+            }
+          }}
+          title={'Challenge Results'}
+          subtitles={[
+            `Challenge ID: ${challengeId}`,
+            successful ? "Success!" : "Try Again!"
+          ]}
+          descriptions={[
+            `Operation: ${operationId}`,
+            `Time Taken: ${time} seconds`,
+            `Correct Answers: ${correctAnswers}/${results.length}`,
+            `Coins Earned: ${coins}`,
+            `XP Earned: ${xp}`,
+          ]}
+        >
+          <Button title="Continue" onPress={handleReturn} />
+        </CenteredDesk>
+        <CenteredDesk
+          styles={{
+            wrapper: {
+              marginBottom: 20,
+            }
+          }}
+          title={'Exercise results'} 
         />
-
-        {/* Return Button */}
-        <View style={styles.buttonContainer}>
-          <Button title="Back to Operations" onPress={handleReturn} />
+        {results.map((result, index) => (
+          <CenteredDesk
+              styles={{
+                wrapper: {
+                  marginBottom: 20,
+                }
+              }}
+              title={`Exercise ${index + 1}`}
+              subtitles={[
+                `Expected Result: ${result.expectedResult}`,
+                `Your Result: ${result.userResult}`,
+                `${result.exercise.join(' ' + operation?.symbol + ' ')}=${String(result.expectedResult).split('').map(i=>'?').join('')}`,
+                `Status: ${result.expectedResult == result.userResult ? "Correct" : "Incorrect"}`,
+              ]}
+              key={`Exercise_index_${index}_${result.expectedResult}`}
+          />   
+        ))}
         </View>
-      </ScrollView>
+        </Layout>
   );
 };
 
@@ -67,8 +90,7 @@ export default ChallengeResultScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F5F5F5',
+    padding: 16,
   },
   summaryContainer: {
     padding: 20,

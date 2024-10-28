@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { completeChalange } from '@/src/redux/slices/userSlice';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/src/types/Navigation';
+import HalvingLayout from './components/HalvingLayout';
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
 
@@ -60,8 +61,6 @@ const Exercise: FC<ExerciseProps> = ({ exercise, operation, resultIsFirst, onAns
       onAnswer(Number(answer.join('')));
     }
   }, [exerciseResult, resultItem, onAnswer]);
-  
-  console.log(96, exerciseItems, resultItem, exercise, complexity);
 
   return (
     <View style={styles.exerciseContainer}>
@@ -163,7 +162,6 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
       if(results.correctAnswers +1 >= challenge.exercises.length) {
         submitChalangeResults(results);
       }
-      console.log(results);
         navigator.navigate('ChallengeResult', results);
     } else {
       setExercisePositions([]);
@@ -171,35 +169,35 @@ const SingleLine: React.FC<SingleLineProps> = ({ challengeId, operationId }) => 
     }
   };
 
-  console.log(319, exerciseResults, exercises, currentExerciseIndex, operationConfig);
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>SingleLine Math Challenge</Text>
-      
-      <Exercise
-        complexity={2}
-        exercise={exercises[currentExerciseIndex]}
-        exerciseId={currentExerciseIndex}
-        exerciseResult={exerciseResults[currentExerciseIndex]}
-        onAnswer={handleAnswer}
-        operation={operationConfig}
-        exercisePositions={exercisePositions}
-        resultIsFirst={resultIsFirst}
-        updateExercisePositions={(exPositions: ExerciseInputPosition[], exerciseIndex: number) => {
-          console.log(341, exPositions);
-          setExercisePositions(prev=>{
-            const newPositions = prev.filter(pos=>pos.exerciseIndex !== exerciseIndex);
-            return [...newPositions, ...exPositions];
-          }); 
-        }}
-      />
-      <MinigameKeyboard
-        key={computePositionKey(exercisePositions)}
-        handleDrop={(exercisePosition, value) => console.log(333, exercisePosition, exercisePositions, addResponse(exercisePosition.exerciseIndex, exercisePosition.inputIndex, value))}
-        exercisePositions={exercisePositions}
-      />
-    </View>
+    <HalvingLayout
+    upperPercentage={75}
+      UpperComponent={(
+        <Exercise
+          complexity={2}
+          exercise={exercises[currentExerciseIndex]}
+          exerciseId={currentExerciseIndex}
+          exerciseResult={exerciseResults[currentExerciseIndex]}
+          onAnswer={handleAnswer}
+          operation={operationConfig}
+          exercisePositions={exercisePositions}
+          resultIsFirst={resultIsFirst}
+          updateExercisePositions={(exPositions: ExerciseInputPosition[], exerciseIndex: number) => {
+            setExercisePositions(prev=>{
+              const newPositions = prev.filter(pos=>pos.exerciseIndex !== exerciseIndex);
+              return [...newPositions, ...exPositions];
+            }); 
+          }}
+        />
+      )}
+      LowerComponent={(
+        <MinigameKeyboard
+          key={computePositionKey(exercisePositions)}
+          handleDrop={(exercisePosition, value) => addResponse(exercisePosition.exerciseIndex, exercisePosition.inputIndex, value)}
+          exercisePositions={exercisePositions}
+        />
+      )}
+    />
   );
 };
 

@@ -4,6 +4,7 @@ import { GestureResponderEvent, PanResponderGestureState, StyleSheet, View } fro
 import { computePositionKey } from "../helpers/computePositionKey";
 import { getClosestCell } from "../helpers/getClosestCell";
 import DraggableKeyboard from "./DraggableKeyboard";
+import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 
 type MinigameKeyboardProps = {
     handleDrop: (exercise: ExerciseInputPosition, value: number) => void;
@@ -11,7 +12,6 @@ type MinigameKeyboardProps = {
   };
   
   const MinigameKeyboard: FC<MinigameKeyboardProps> = ({ handleDrop, exercisePositions }) => {
-    const digits = useMemo(() => Array.from({ length: 10 }, (_, index) => index === 9 ? 0 : index + 1), []);
     const handleDragEnd: (value: number, gestureState: PanResponderGestureState) => void = useCallback((value, gestureState) => {
       const exerise = getClosestCell(gestureState.moveX, gestureState.moveY - 50, exercisePositions);
       if (exerise) {
@@ -23,27 +23,13 @@ type MinigameKeyboardProps = {
       // console.log('drag', gestureState.moveX, gestureState.moveY);
     }, []);
     return (
-      <View style={styles.keyboardContainer}>
-        {digits.map((digit, index) => (
-            <DraggableKeyboard
-              key={`${digit}_${computePositionKey(exercisePositions)}`}
-              renderText={String(digit)}
-              onDragRelease={(_event, gestureState)=> handleDragEnd(digit, gestureState)}
-              onDrag={handleDrag}
-            />
-        ))}
-      </View>
+      <DraggableKeyboard
+        exercisePositions={exercisePositions}
+        handleDrag={handleDrag}
+        handleDragEnd={handleDragEnd}
+      />
     );
   }
-  
-
-const styles = StyleSheet.create({
-    keyboardContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-    },
-  });
   
   export default MinigameKeyboard;
   

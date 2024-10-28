@@ -68,9 +68,14 @@ const ChalengeSelect: React.FC<Props> = ({ route }) => {
         </View>
         <View style={styles.challengeBoxContainer}>
           {completedChallenges?.map((challenge) => (
-            <View style={styles.challengeBox} key={challenge.challengeId}>
+            <View style={styles.challengeBox} key={challenge.challengeId} id="challengeBox">
               <CenteredDesk
                 title={`Challenge ${challenge.challengeId}`}
+                styles={{
+                  container: {
+                    marginBottom: 10,
+                  }
+                }}
                 subtitles={[
                   `Answers: ${challenge.correctAnswers}/${challenge.results.length}`,
                   `Time: ${challenge.time} seconds`,
@@ -109,7 +114,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   challengeBoxContainer: {
-    margin: 0,
+    margin: 10,
     flexDirection: 'row',
   },
   challengeText: {

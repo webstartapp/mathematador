@@ -37,8 +37,7 @@ const ChallengeScreen: React.FC = () => {
 
   return (
     <Layout>
-      <Header />
-      <View style={styles.content}>
+      <View style={styles.content} id="im content">
         {/* Render the selected minigame */}
         <MinigameComponent challengeId={challengeId} operationId={operationId} />
       </View>
@@ -51,6 +50,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    
   },
 });
 

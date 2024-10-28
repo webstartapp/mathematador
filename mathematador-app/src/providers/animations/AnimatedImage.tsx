@@ -116,7 +116,7 @@ const AnimatedBackgroundProvider: FC<AnimatedBackgroundProviderProps> = ({
     <View style={styles.container}>
       <AnimatedImageContext.Provider value={{ bgImage, setBgImage }}>
         <AnimatedImage image={bgImage} />
-        <View style={styles.childrenWrapper}>
+        <View style={styles.childrenWrapper} id="AnimatedImageBackground">
           {children}
         </View>
       </AnimatedImageContext.Provider>

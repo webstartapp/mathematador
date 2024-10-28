@@ -7,12 +7,14 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
+    <View style={styles.fixed}>
     <Animated.ScrollView
       style={styles.scroller}
       contentContainerStyle={styles.container}
     >
       <View style={styles.container}>{children}</View>
       </Animated.ScrollView>
+      </View>
   );
 };
 
@@ -29,6 +31,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  fixed: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  }
 });
 
 export default Layout;

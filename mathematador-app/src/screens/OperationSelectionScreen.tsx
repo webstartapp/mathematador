@@ -36,8 +36,16 @@ const OperationSelectionScreen: React.FC = () => {
   return (
     <Layout>
       <View style={styles.container}>
-        <Text style={styles.header}>Select an Operation</Text>
-        <View style={styles.grid}>
+        
+        <CenteredDesk
+          title="Select Chalenge"
+          styles={{
+            wrapper: {
+              padding: 20,
+            },
+          }}
+        />
+        <View style={styles.grid} id="im-grid">
           {mixedOperations.map((operation) => (
             <TouchableOpacity
               key={operation.operationId}
@@ -53,6 +61,15 @@ const OperationSelectionScreen: React.FC = () => {
                 descriptions={[
                   `Level: ${operation?.progress?.level || 1}`,
                 ]}
+                styles={{
+                  wrapper: {
+                    width: '100%',
+                    minWidth: 200,
+                    padding: 10,
+                  },
+                  container: {
+                  },
+                }}
               />
             </TouchableOpacity>
           ))}
@@ -65,7 +82,7 @@ const OperationSelectionScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    width: '100%',
   },
   header: {
     fontSize: 20,
@@ -74,18 +91,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   grid: {
-    flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    flexBasis: '50%',
+    justifyContent: 'center',
+    alignContent: 'flex-start',
+    flexDirection: 'row',
   },
   operationButton: {
-    width: '48%',
-    aspectRatio: 2 / 1,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    width: '100%',
+    maxWidth: 400,
+    minWidth: 200,
   },
   operationLabel: {
     fontSize: 18,
