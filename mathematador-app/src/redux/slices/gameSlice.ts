@@ -1,5 +1,4 @@
 import { challenges } from '@/src/configs/challengeExercises';
-import { Operation, operations } from '@/src/configs/operations';
 import { Challenge, ExerciseInputPosition } from '@/src/types/Chalenge';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 

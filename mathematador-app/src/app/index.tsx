@@ -28,7 +28,7 @@ const IndexPage = () => (
           component={HomeScreen}
           options={{
             headerShown: true,
-            header: () => <GameHeader />,
+            header: (props) => <GameHeader props={props} />,
           }}
         />
         <Stack.Screen
@@ -36,7 +36,7 @@ const IndexPage = () => (
           component={OperationSelectionScreen}
           options={{
             headerShown: true,
-            header: () => <GameHeader backTo="Home" />,
+            header: (props) => <GameHeader backTo="Home" props={props} />,
           }}
         />
         <Stack.Screen
@@ -44,7 +44,7 @@ const IndexPage = () => (
           component={ChalengeSelectScreen}
           options={{
             headerShown: true,
-            header: () => <GameHeader backTo="Home" showOperation />,
+            header: (props) => <GameHeader backTo="Home" showOperation props={props} />,
           }}
         />
         <Stack.Screen
@@ -52,7 +52,7 @@ const IndexPage = () => (
           component={ChallengeResultScreen}
           options={{
             headerShown: true,
-            header: () => <GameHeader backTo="Home" showOperation />,
+            header: (props) => <GameHeader backTo="Home" showOperation props={props} />,
           }}
         />
         <Stack.Screen
@@ -60,7 +60,7 @@ const IndexPage = () => (
           component={ChallengeScreen}
           options={{
             headerShown: true,
-            header: () => <GameHeader backTo="Home" showOperation />,
+            header: (props) => <GameHeader backTo="Home" showOperation props={props} />,
           }}
         />
         {/* Add other screens here */}

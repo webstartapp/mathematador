@@ -1,4 +1,7 @@
-import { ChalengeResult, Exercise } from '@/src/types/Chalenge';
+import { operations } from '@/src/configs/operations';
+import { calculateXPToNextLevel } from '@/src/helpers/calculateXPToNextLevel';
+import { getChallengeByLevel } from '@/src/helpers/getChalengeByLevel';
+import { ChalengeResult, Challenge, Exercise } from '@/src/types/Chalenge';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type OperationProgress = {
@@ -7,6 +10,8 @@ type OperationProgress = {
   xp: number;
   xpToNextLevel: number;
   currentChallengeId: number;
+  currentChallenge: Challenge;
+  completedChallenges: ChalengeResult[];
 }
 interface UserState {
   name: string;
@@ -15,23 +20,23 @@ interface UserState {
   coins: number;
   xpToNextLevel: number;
   operationProgress: OperationProgress[];
-  completedChalenges: ChalengeResult[];
 }
-
-const calculateXPToNextLevel = (level: number): number => {
-  const baseXP = 10;
-  const incrementFactor = 1.5;
-  return Math.floor((baseXP * Math.pow(level, incrementFactor))/10) * 10;
-};
 
 const initialState: UserState = {
   name: 'Corina',
   level: 1,
   xp: 0,
   coins: 0,
-  xpToNextLevel: calculateXPToNextLevel(1),
-  operationProgress: [],
-  completedChalenges: [],
+  xpToNextLevel: calculateXPToNextLevel(1 * 2),
+  operationProgress: operations.map(operation => ({
+    completedChallenges: [],
+    currentChallengeId: 1,
+    level: 1,
+    operationId: operation.operationId,
+    xp: 0,
+    xpToNextLevel: calculateXPToNextLevel(1),
+    currentChallenge: getChallengeByLevel(1, operation.operationId, 1),
+  })),
 };
 
 const userSlice = createSlice({
@@ -41,30 +46,36 @@ const userSlice = createSlice({
     setName(state, action: PayloadAction<string>) {
       state.name = action.payload;
     },
-    levelUp(state) {
+    levelUserUp(state) {
       state.level += 1;
+      state.xp = state.xp - state.xpToNextLevel; // Reset XP
       state.xpToNextLevel = calculateXPToNextLevel(state.level); // Recalculate XP requirement
     },
+    levelOperationUp(state, action: PayloadAction<string>) {
+      const operationProgress = state.operationProgress.find(op => op.operationId === action.payload);
+      if (operationProgress) {
+        operationProgress.level += 1;
+        operationProgress.xp = operationProgress.xp - operationProgress.xpToNextLevel;
+        operationProgress.xpToNextLevel = calculateXPToNextLevel(operationProgress.level);
+        operationProgress.currentChallenge = getChallengeByLevel(operationProgress.level, operationProgress.operationId, operationProgress.currentChallengeId);
+      }
+    },
     completeChalange(state, action: PayloadAction<ChalengeResult>) {
+      console.log(50, action.payload);
       state.xp += action.payload.xp;
       state.coins += action.payload.coins;
       const operationProgress = state.operationProgress.find(op => op.operationId === action.payload.operationId);
-      if (operationProgress) {
+      if (operationProgress && operationProgress.currentChallengeId === action.payload.challengeOrderId) {
+        const nextChallengeId = operationProgress.currentChallengeId + 1;
         operationProgress.xp += action.payload.xp;
-      } else {
-        state.operationProgress.push({
-          operationId: action.payload.operationId,
-          level: 1,
-          xp: action.payload.xp,
-          xpToNextLevel: calculateXPToNextLevel(1),
-          currentChallengeId: action.payload.challengeId + 1,
-        });
+        operationProgress.currentChallengeId = nextChallengeId;
+        operationProgress.currentChallenge = getChallengeByLevel(operationProgress.level, operationProgress.operationId, nextChallengeId);
+        operationProgress.completedChallenges.push(action.payload);
       }
-      state.completedChalenges.push(action.payload);
     }
     // Add other reducers as needed
   },
 });
 
-export const { setName, levelUp, completeChalange } = userSlice.actions;
+export const { setName, levelOperationUp, levelUserUp, completeChalange } = userSlice.actions;
 export default userSlice.reducer;

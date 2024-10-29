@@ -1,25 +1,24 @@
 export type Exercise = number[];
 
 export type Challenge = {
-  challengeId: number;
+  challengeOrderId: number;
   exercises: Exercise[];
   maxTime: number;
   experiencePoints: number;
   coinsOnSuccess: number;
   coinsOnFailure: number;
+  operationId: string;
+  level: number;
+  minigame: string;
 };
 
 export type ExerciseResult = {
-  challengeId: number;
   exercise: Exercise;
-  operationId: string;
   expectedResult: string | number;
   userResult: string | number;
 };
 
-export type ChalengeResult = {
-  challengeId: number;
-  operationId: string;
+export type ChalengeResult = Challenge & {
   successful: boolean;
   results: ExerciseResult[];
   time: number;

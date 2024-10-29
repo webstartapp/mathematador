@@ -44,6 +44,7 @@ const ExerciseValuePreview:FC<ExerciseDigitProps> = ({value, updateExercisePosit
         <ExeriseDigit value={v} forwardRef={(ref)=>{
           refferenceDigits.current[index] = ref;
         }}
+        isUnknown={v === '?'}
         exerciseId={exerciseId}
       />
       </View>

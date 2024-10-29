@@ -1,9 +1,9 @@
-import { ChalengeResult } from "./Chalenge";
+import { ChalengeResult, Challenge } from "./Chalenge";
 
 export type RootStackParamList = {
     Home?: {};
     Level: { levelId: number };
-    Challenge: { challengeId: number, operationId: string};
+    Challenge: Challenge;
     ChallengeResult: ChalengeResult;
     SelectOperation?: {};
     Statistics?: {};

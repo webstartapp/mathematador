@@ -1,33 +1,61 @@
 // screens/OperationSelectionScreen.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types/Navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { operations } from '../configs/operations';
+import { Operation, operations } from '../configs/operations';
 import CenteredDesk from '../components/layouts/CenteredDesk';
 import Layout from '../components/common/Layout';
+import { useDispatch } from 'react-redux';
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Challenge'>;
 
-interface Operation {
-  id: string;
-  label: string;
-}
+const OperationprogressItem = ({
+  operation,
+  handleOperationPress,
+}: {
+  operation: Operation;
+  handleOperationPress: (operationId: string) => void;
+}) => {
+  const operationProgress = useSelector(
+    (state: RootState) => state.user.operationProgress.find((progress) => progress.operationId === operation.operationId));
+  
+  return (
+    <TouchableOpacity
+      key={operation.operationId}
+      style={styles.operationButton}
+      onPress={() => handleOperationPress(operation.operationId)}
+    >
+      <CenteredDesk
+        title={operation.symbol}
+        subtitles={[
+          operation.label,
+          `Challenge: ${operationProgress?.currentChallengeId || '1'}`,
+        ]}
+        descriptions={[
+          `Level: ${operationProgress?.level || 1}`,
+        ]}
+        styles={{
+          wrapper: {
+            width: '100%',
+            minWidth: 200,
+            padding: 10,
+          },
+          container: {
+          },
+        }}
+      />
+    </TouchableOpacity>
+  );
+};
 
 const OperationSelectionScreen: React.FC = () => {
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
-  const operationProgress = useSelector((state: RootState) => state.user.operationProgress);
-
-  const mixedOperations = operations.map((operation) => {
-    const progress = operationProgress.find((progress) => progress.operationId === operation.operationId);
-    return {
-      ...operation,
-      progress,
-    };
-  });
+  const dispatch = useDispatch();
+  console.log(31);
 
   const handleOperationPress = (operationId: string) => {
     navigation.navigate('ChalengeSelect', { operationId });
@@ -46,32 +74,12 @@ const OperationSelectionScreen: React.FC = () => {
           }}
         />
         <View style={styles.grid} id="im-grid">
-          {mixedOperations.map((operation) => (
-            <TouchableOpacity
+          {operations.map((operation) => (
+            <OperationprogressItem
               key={operation.operationId}
-              style={styles.operationButton}
-              onPress={() => handleOperationPress(operation.operationId)}
-            >
-              <CenteredDesk
-                title={operation.symbol}
-                subtitles={[
-                  operation.label,
-                  `Challenge: ${operation?.progress?.currentChallengeId || '1'}`,
-                ]}
-                descriptions={[
-                  `Level: ${operation?.progress?.level || 1}`,
-                ]}
-                styles={{
-                  wrapper: {
-                    width: '100%',
-                    minWidth: 200,
-                    padding: 10,
-                  },
-                  container: {
-                  },
-                }}
-              />
-            </TouchableOpacity>
+              operation={operation}
+              handleOperationPress={handleOperationPress}
+            />
           ))}
         </View>
       </View>

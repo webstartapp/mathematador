@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types/Navigation';
 import { useAnimatedBackground } from '../providers/animations/AnimatedImage';
 import CenteredDesk from '../components/layouts/CenteredDesk';
-import ThemedText from '../components/texts/ThemedText';
+import { getChallengeByLevel } from '../helpers/getChalengeByLevel';
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 

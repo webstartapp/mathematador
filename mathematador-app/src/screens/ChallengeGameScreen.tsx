@@ -1,45 +1,38 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Header from '../components/common/Header';
 import Layout from '../components/common/Layout';
 import { RouteProp, useRoute } from '@react-navigation/native';
 
-// Import minigame components
-import SingleLineMinigame from '../components/minigames/SingleLineMinigame';
 import { RootStackParamList } from '../types/Navigation';
-// import VerticalAdditionMinigame from '../components/minigames/VerticalAdditionMinigame';
-// import PuzzleMinigame from '../components/minigames/PuzzleMinigame';
-// import MultipleChoiceMinigame from '../components/minigames/MultipleChoiceMinigame';
+import { ChalengeResult, Challenge } from '../types/Chalenge';
+import { completeChalange } from '../redux/slices/userSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigation } from 'expo-router';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { minigames } from '../configs/minigames';
 
-// Define a type for the route
+
 type ChallengeScreenRouteProp = RouteProp<RootStackParamList, 'Challenge'>;
-
-const minigames = [
-  SingleLineMinigame,
-  SingleLineMinigame,
-  SingleLineMinigame,
-  // VerticalAdditionMinigame,
-  // PuzzleMinigame,
-  // MultipleChoiceMinigame,
-];
-
-// Function to select a minigame based on challengeId
-function getMinigameIndex(challengeId: number): number {
-  return challengeId % minigames.length;
-}
+type ChallengeScreenNavigationProps = StackNavigationProp<RootStackParamList, 'Challenge'>;
 
 const ChallengeScreen: React.FC = () => {
   const route = useRoute<ChallengeScreenRouteProp>();
-  const { challengeId, operationId } = route.params;
+  const navigator = useNavigation<ChallengeScreenNavigationProps>();
+  const challenge = route.params;
+  const dispatch = useDispatch();
 
   // Get the appropriate minigame based on challengeId
-  const MinigameComponent = minigames[getMinigameIndex(challengeId)];
+  const minigame = minigames.find((minigame) => minigame.id === challenge.minigame);
+  const MinigameComponent = minigame?.component;
 
   return (
     <Layout>
       <View style={styles.content} id="im content">
-        {/* Render the selected minigame */}
-        <MinigameComponent challengeId={challengeId} operationId={operationId} />
+        {MinigameComponent ? <MinigameComponent challenge={challenge} submitResults={(result)=>{
+          console.log(37, result);
+          dispatch(completeChalange(result));
+          navigator.navigate('ChallengeResult', result);
+        }} /> : null}
       </View>
     </Layout>
   );

@@ -22,7 +22,7 @@ type ChallengeResultScreenProps = {
 }
 
 const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
-  const { challengeId, operationId, successful, results, time, correctAnswers, coins, xp } = route.params;
+  const { challengeOrderId, operationId, successful, results, time, correctAnswers, coins, xp } = route.params;
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
 
   const operation = operations.find(operationItem => operationItem.operationId === operationId);
@@ -42,7 +42,7 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
           }}
           title={'Challenge Results'}
           subtitles={[
-            `Challenge ID: ${challengeId}`,
+            `Challenge ID: ${challengeOrderId}`,
             successful ? "Success!" : "Try Again!"
           ]}
           descriptions={[

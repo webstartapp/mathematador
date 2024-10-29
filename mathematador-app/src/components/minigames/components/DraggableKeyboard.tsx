@@ -77,9 +77,9 @@ const DraggableKeyboardDigit: React.FC<DraggableKeyboardDigitProps> = ({ renderT
   };
   const styles = StyleSheet.create({
     draggableWrapper: {
-      backgroundColor: '#f0a',
+      backgroundColor: '#d49b57',
       borderWidth: 5,
-      borderColor: '#fff',
+      borderColor: '#744b17',
       justifyContent: 'center',
       alignItems: 'center',
       userSelect: 'none',
@@ -93,7 +93,7 @@ const DraggableKeyboardDigit: React.FC<DraggableKeyboardDigitProps> = ({ renderT
       height: '100%',
     },
     draggableItem: {
-      backgroundColor: '#f0a',
+      backgroundColor: '#d49b57',
       borderRadius: 50,
       justifyContent: 'center',
       alignItems: 'center',
@@ -101,7 +101,7 @@ const DraggableKeyboardDigit: React.FC<DraggableKeyboardDigitProps> = ({ renderT
     },
     draggableText: {
       color: '#fff',
-      fontSize: 18,
+      fontSize: 24,
       fontWeight: 'bold',
     },
     keyboardContainer: {
