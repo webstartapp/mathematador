@@ -14,14 +14,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install dependencies
-        run: |
-          cd ./mathematador-app
-          npm install
+        working-directory: ./mathematador-app
+        run: npm install
 
       - name: Build the app
-        run: |
-            cd ./mathematador-app
-            npm run build
+        working-directory: ./mathematador-app
+        run: npm run build
 
       - name: Install sshpass
         run: |
@@ -31,8 +29,8 @@ jobs:
       - name: Copy dist folder to server
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        working-directory: ./mathematador-app
         run: |
-          cd ./mathematador-app
           sshpass -e rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" ./dist/ \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH }}
 
