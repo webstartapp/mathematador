@@ -1,6 +1,6 @@
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
 import { FC, useEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { computePositionKey } from "../helpers/computePositionKey";
 import ExeriseDigit, { ExerciseDigitProps } from "./ExerciseDigit";
 
@@ -38,7 +38,7 @@ const ExerciseValuePreview:FC<ExerciseDigitProps> = ({value, updateExercisePosit
     }
     }, [refferenceDigits.current, updateExercisePositions, value, JSON.stringify(exercisePositions), layoutsReady]);
   
-    return <View>
+    return <View style={styles.numberContainer}>
     {String(value).split('').map((v,index)=>(
       <View key={`${index}_${computePositionKey(exercisePositions)}_${value}`}  onLayout={()=>setLayoutsReady(prev=>prev?.includes(index)? prev : [...(prev || []), index])}>
         <ExeriseDigit value={v} forwardRef={(ref)=>{
@@ -53,4 +53,9 @@ const ExerciseValuePreview:FC<ExerciseDigitProps> = ({value, updateExercisePosit
   };
 
 export default ExerciseValuePreview;
-  
+
+const styles = StyleSheet.create({
+  numberContainer: {
+    flexDirection: 'row',
+  },
+});

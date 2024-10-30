@@ -51,16 +51,18 @@ const Exercise: FC<ExerciseProps> = ({ challenge, onAnswer, updateExercisePositi
 
   return (
     <View style={styles.exerciseContainer}>
-      {exerciseItems?.map((item, index) => (
-        <View style={styles.exerciseValues} key={`${item}_${index}`}>
-          <View key={index} style={styles.exerciseValue} >
-            <ExerciseValuePreview value={String(item)}
-              exerciseId={exerciseId}
-            />
-            {index < exerciseItems.length - 1 && <ExerciseValuePreview value={operation?.symbol} exerciseId={exerciseId}/>}
+      <View style={styles.exercisePreviewContainer}>
+        {exerciseItems?.map((item, index) => (
+          <View style={styles.exerciseValues} key={`${item}_${index}`}>
+            <View key={index} style={styles.exerciseValue} >
+              {index !==0 && <ExerciseValuePreview value={operation?.symbol} exerciseId={exerciseId}/>}
+              <ExerciseValuePreview value={String(item)}
+                exerciseId={exerciseId}
+              />
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
       <ExerciseValuePreview value={'='} exerciseId={exerciseId} /> 
       <ExerciseValueDropDigits
         value={resultItem || 0}
@@ -173,12 +175,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  exerciseContainer: {
+  exerciseWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  exercisePreviewContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
     userSelect: 'none',
+    flexWrap: 'wrap',
   },
   exerciseValues: {
     flexDirection: 'row',
