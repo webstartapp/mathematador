@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from 'react-native';
+import ThemedText from '../texts/ThemedText';
 
 interface ButtonProps {
   title: string;
@@ -11,14 +12,14 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ title, onPress, style, textStyle }) => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <Text style={[styles.text, textStyle]}>{title}</Text>
+      <ThemedText variant="title" style={[styles.text, textStyle]}>{title}</ThemedText>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#FF5722',
+    backgroundColor: '#704c21',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
@@ -26,8 +27,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   text: {
-    color: '#fff',
-    fontSize: 16,
   },
 });
 
