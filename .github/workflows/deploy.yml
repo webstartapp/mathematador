@@ -31,7 +31,7 @@ jobs:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         working-directory: mathematador-app
         run: |
-          sshpass -e scp -o StrictHostKeyChecking=no -r ./* \
+          sshpass -e scp -o StrictHostKeyChecking=no -r ./dist/* \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH }}
 
       - name: Restart PM2 process
