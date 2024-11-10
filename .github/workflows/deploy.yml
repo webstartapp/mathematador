@@ -20,6 +20,14 @@ jobs:
       - name: Build the app
         working-directory: mathematador-app
         run: npm run build
+      
+      - name: Install server dependencies
+        working-directory: server
+        run: npm install
+      
+      - name: Build the server
+        working-directory: server
+        run: npm run build
 
       - name: Install sshpass
         run: |
@@ -33,11 +41,53 @@ jobs:
         run: |
           sshpass -e scp -o StrictHostKeyChecking=no -r ./dist/* \
             ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH }}
+      
+      - name: Copy server build to server
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        working-directory: server
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no -r ./build/* \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH_SERVER }}
+      
+      - name: copy server package-lock.json to server
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        working-directory: server
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no -r ./package-lock.json \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH_SERVER }}
 
-      - name: Restart PM2 process
+      - name: copy server package.json to server
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        working-directory: server
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no -r ./package.json \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH_SERVER }}
+            
+      - name: Install server dependencies on server
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            pm2 restart ${{ secrets.PM2_APP_NAME }} || pm2 start ${{ secrets.DEPLOY_PATH }}/index.js --name ${{ secrets.PM2_APP_NAME }}
+            cd ${{ secrets.DEPLOY_PATH_SERVER }}
+            npm ci
           "
+
+      - name: Restart PM2 client process
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            pm2 restart ${{ secrets.PM2_APP_NAME }}
+          "
+      
+      - name: Restart PM2 server process
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            pm2 restart ${{ secrets.PM2_SERVER_NAME }}
+          "
+
