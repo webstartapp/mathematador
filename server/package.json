@@ -1,0 +1,64 @@
+{
+  "name": "resq-context",
+  "version": "0.0.0",
+  "author": "karel Bohac",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node -P tsconfig.json ./src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "migrate:create": "knex migrate:make",
+    "migrate": "knex migrate:latest",
+    "migrate:status": "knex migrate:status",
+    "migrate:rollback": "knex migrate:rollback",
+    "seed": "knex seed:run",
+    "test": "jest",
+    "pretty": "prettier --write \"**/*.{ts,tsx}\"",
+    "lint": "eslint --ext .ts,.tsx .",
+    "build": "tsc && tsc-alias"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
+  },
+  "_moduleAliases": {
+    "@/knex": "./src/knex",
+    "@/_generated": "./src/_generated",
+    "@/": "./src/"
+  },
+  "packageManager": "yarn@3.4.1",
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.12.7",
+    "@types/pg": "^8.11.5",
+    "module-alias": "^2.2.3",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.21",
+    "@types/express-jwt": "^7.4.2",
+    "@types/jsonwebtoken": "^9.0.6",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.11",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.0.0",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "nodemon": "^3.1.0",
+    "pg": "^8.11.5",
+    "tsconfig-paths": "^4.2.0",
+    "yup": "^1.4.0"
+  }
+}

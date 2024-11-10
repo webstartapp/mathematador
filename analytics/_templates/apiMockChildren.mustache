@@ -1,0 +1,51 @@
+{{#enum.0}}
+faker.helpers.arrayElement([
+    {{#enum}}`{{{.}}}`,{{/enum}}
+])
+{{/enum.0}}
+{{^enum.0}}{{#oneOf.0}}
+{{{.}}}
+        {{/oneOf.0}}
+        {{^oneOf.0}}
+        {{#type=string}}
+{{#format=time}}
+    fdayjs(faker.date.recent()).format('HH:mm:ss')
+{{/format=time}}{{#format=date-time}}
+faker.date.recent().toISOString()
+{{/format=date-time}}{{#format=binary}}
+    mockImageData
+{{/format=binary}}{{#format=uri}}
+    faker.internet.url()
+{{/format=uri}}{{#format=date}}
+    dayjs(faker.date.recent()).format('YYYY-MM-DD')
+{{/format=date}}{{#format=email}}
+    faker.internet.email()
+{{/format=email}}
+{{^format}}
+    faker.lorem.words(1)
+{{/format}}
+{{#format!=binary}}{{#format!=email}}{{#format!=date}}{{#format!=date-time}}{{#format!=time}}{{#format!=uri}}
+    faker.lorem.words(1)
+{{/format!=uri}}{{/format!=time}}{{/format!=date-time}}{{/format!=date}}{{/format!=email}}{{/format!=binary}}
+{{/type=string}}{{#type=number}}
+{{#format=int32}}
+    faker.number.int({min: 1, max: 100})
+{{/format=int32}}
+{{#format!=int32}}
+    faker.number.float({min: 0, max: 100, precision: 0.001})
+{{/format!=int32}}
+{{^format}}
+    faker.number.float({min: 0, max: 100, precision: 0.001})
+{{/format}}
+{{/type=number}}{{#type=integer}}
+faker.number.int({min: 1, max: 100})
+{{/type=integer}}{{#type=boolean}}
+faker.datatype.boolean()
+{{/type=boolean}}
+    {{#type=object}}
+        {{#reference}}
+            {{reference}}Mock()
+        {{/reference}}
+    {{/type=object}}
+        {{/oneOf.0}}
+{{/enum.0}}

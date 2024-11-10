@@ -1,0 +1,6 @@
+{{#type=object}}{{#$ref}}I{{key:pascalCase}}{{/$ref}}{{^$ref}}{
+    {{#properties:map}} {{_key}}: {{#type=array}}Array<{{#items}}{{>apiSchemaChildren}}{{/items}}>
+{{/type=array}}{{#type!=array}}{{#_data._value}}{{>apiSchemaChildrenNested}}{{/_data._value}}
+
+{{/type!=array}}{{/properties:map}}
+}{{/$ref}}{{#nullable}} | null{{/nullable}}{{/type=object}}{{#type!=object}}{{#enum.0}}I{{{key}}}{{/enum.0}}{{^enum.0}}{{#type=integer}}number{{/type=integer}}{{#type!=integer}}{{#format=binary}} string | Buffer | File {{/format=binary}}{{#format!=binary}}{{type}}{{/format!=binary}}{{^format}}{{type}}{{/format}}{{/type!=integer}}{{/enum.0}}{{#nullable}} | null{{/nullable}}{{/type!=object}}

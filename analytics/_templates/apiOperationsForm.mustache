@@ -1,0 +1,56 @@
+{{#_listed}}{{#type=object}}{{#reference}}{{reference}}Form(),
+{{/reference}}{{^reference}}{{#oneOf.0}}{
+    {{#oneOf}}...{{>apiOperationsForm}}{{/oneOf}}
+},{{/oneOf.0}}{{^oneOf.0}}{{#_listed.0.properties}}{  
+    {{#properties:map}} 
+        {{_key}}: {{>apiOperationsForm}}
+    {{/properties:map}}
+},{{/_listed.0.properties}}{{^_listed.0.properties}}{ id: `{{_key}}` },
+{{/_listed.0.properties}}{{/oneOf.0}}{{/reference}}{{/type=object}}{{#type!=object}}{
+            id: '{{_key}}',
+            label: `{{xProps.label}}`,{{#xProps.xs}}
+            xs: {{xProps.xs}},{{/xProps.xs}}{{#xProps.md}}
+            md: {{xProps.md}},{{/xProps.md}}{{#xProps.lg}}
+            lg: {{xProps.lg}},{{/xProps.lg}}
+            formId: '{{key}}Form',
+            maxLength: parseInt(`{{{maximum}}}`) || undefined,{{#type=boolean}}
+            input: COREFormInputTypeEnum.Checkboxes,
+            options: [
+                {
+                    label: 'TRUE',
+                    value: true,
+                    negative: false,
+                }
+            ],
+            {{/type=boolean}}{{#type=array}}
+
+            multi: true,
+            item: {{{_value.items}}},
+            {{/type=array}}{{#type=integer}}
+            type: COREInputTypeEnum.number,
+            {{/type=integer}}{{#format=binary}}
+            type: COREInputTypeEnum.binary,
+            {{/format=binary}}{{#format=password}}
+            type: COREInputTypeEnum.password,
+            {{/format=password}}{{#format=time}}
+            type: COREInputTypeEnum.time,
+            {{/format=time}}{{#format=date-time}}
+            type: COREInputTypeEnum.dateTime,
+            {{/format=date-time}}{{#format=date}}
+            type: COREInputTypeEnum.date,
+            {{/format=date}}{{#format=email}}
+            type: COREInputTypeEnum.email,
+            {{/format=email}}{{#enum.0}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#enum}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/enum}}
+            ],
+            {{/enum.0}} 
+
+        }, 
+        {{/type!=object}}
+{{/_listed}}

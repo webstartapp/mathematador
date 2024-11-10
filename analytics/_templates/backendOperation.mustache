@@ -1,0 +1,348 @@
+/*
+    Automaticky generovany soubor!
+*/
+/* tslint:disable */
+/* eslint-disable */
+import yup from '@/utils/ValidationService';
+import { RESTRequestType } from '@/types/RestAPIGenerator/RESTRequestType';
+import { COREFormFieldType } from '@/types/RestAPIGenerator/COREFormFieldType';
+import { COREFormInputTypeEnum, COREInputTypeEnum } from '@/types/enums';
+import { AnyTypeValidation, IAnyType } from '@/types/IAnyType';
+import dayjs from 'dayjs';
+import { ExpressRouteType } from '@/resolvers/expressResolver';
+import { LocalResolverType } from '@/resolvers/expressTypeResolver';
+
+let faker;
+
+if (process.env.NODE_ENV === 'development') {
+  // Import faker only in development
+  faker = require('@faker-js/faker').faker;
+} else {
+  // Do something else or nothing in production
+  faker = {
+    // Provide dummy or no-op functions for production
+    fakeData: () => {},
+    // ...
+  };
+}
+
+const globalPath = '';
+export interface GlobalStorageDataType {
+    {{#schemas}}
+        {{key}}?: I{{key:PascalCase}}
+    {{/schemas}}
+};
+{{#schemas}}
+{{>apiOperationsInner}}{{/schemas}} 
+export type GlobalLabelType<T extends object = any> = COREFormFieldType<T>
+let GlobalInnerLabels: Record<string, Record<string, GlobalLabelType>> = {};
+/**
+ *
+ * @export
+ * @class RequiredError
+ * @extends {Error}
+ */
+export class RequiredError extends Error {
+    name: "RequiredError" = "RequiredError";
+    constructor(public field: string, msg?: string) {
+        super(msg);
+    }
+}
+
+const getPath = (functionName: string, localPath: string, query: any, headers: Array<string>, replacements: Record<string,string>)=>{
+    let M = [...localPath.matchAll(/\{(.*?)\}/gmi)];
+    let out: any = {
+        url: localPath,
+        error: undefined,
+        params: {},
+        headers: {}
+    };
+    Object.keys(query||{}).map(key=>{
+        out.params[replacements[key] || key] = query[key];
+    }); 
+    for(let i=0; i<M.length; i++){
+            if(!query[M[i][1]]) 
+                throw new RequiredError(M[i][1], `Required parameter ${M[i][1]} was null or undefined when calling ${functionName}.`);;
+            delete out.params[M[i][1]];
+            out.url = out.url.replace(M[i][0], query[M[i][1]]);
+    }
+    headers.map(header=>{
+        if(query[header]){
+            delete out.params[replacements[header] || header];
+            out.headers[replacements[header] || header] = query[header];
+        }
+    });
+    return out;
+};
+
+{{#requestBodies}}
+    type I{{key:PascalCase}} = {{#schema}}I{{key}}{{/schema}}{{^schema}}any{{/schema}}
+{{/requestBodies}}
+
+{{#paths}}
+const {{{operationId}}}CallQueryValidation = () => ({
+{{#parameters}}     {{{x-alias|name}}}: yup
+{{#schema}}{{>apiValidationChildren}}{{/schema}},
+    {{/parameters}}
+})
+
+const {{{operationId}}}CallQuery = {
+{{#parameters}}    {{{x-alias|name}}}: {
+            id: '{{{x-alias|name}}}',
+            label: `{{xParamslabel}}`,{{#xParamsxs}}
+            xs: {{xParamsxs}},{{/xParamsxs}}{{#xParamsmd}}
+            md: {{xParamsmd}},{{/xParamsmd}}{{#xParamslg}}
+            lg: {{xParamslg}},{{/xParamslg}}
+            formId: '{{operationIdOriginal}}CallQuery',
+            {{#schema}}{{#type=boolean}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {
+                    value: true,
+                },
+                {
+                    value: false,
+                }
+            ],
+            {{/type=boolean}}{{#format=date-time}}
+            type: COREInputTypeEnum.date,
+            {{/format=date-time}}{{#format=email}}
+            type: COREInputTypeEnum.date,
+            {{/format=email}}{{#enum.0}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#enum}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/enum}}
+            ],
+            {{/enum.0}}{{/schema}}{{^isEnum}}{{#isDateTime}}
+            type: COREInputTypeEnum.date
+            {{/isDateTime}}{{/isEnum}}{{#isEnum}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#_enum}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/_enum}}
+            ],
+            {{/isEnum}}{{^isEnum}}{{#allowableValues.values.0}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#allowableValues.values}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/allowableValues.values}}
+            ]
+            {{/allowableValues.values.0}}{{/isEnum}}
+        },
+    {{/parameters}}
+}
+
+export interface I{{{operationId}}}CallQuery {
+{{#parameters}}    {{{x-alias|name}}}{{#in!=path}}?{{/in!=path}}:{{#schema}}{{#type!=array}}{{>apiSchemaChildrenNested}}{{/type!=array}}{{#type=array}}({{#items}}{{>apiSchemaChildrenNested}}{{/items}})[]{{/type=array}}{{/schema}}; {{#x-alias}} // alias to '{{{name}}}'{{/x-alias}}
+    {{/parameters}}
+}
+type {{{operationId}}}CallResponse = {{#responses}}{{#status=204}}''{{/status=204}}{{#status=202}}string{{/status=202}}{{#status=200}}{{^schema}}''{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=string}}string{{/type=string}}{{/schema}}{{/status=200}}{{/responses}}{{#responses}}{{#status=200}}{{#schema}}{{#type=object}}{{^additionalProperties}}I{{key:pascalCase}}
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=object}}{{#additionalProperties}}Record<string, any>
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=array}}{{#items.$ref}}Array<I{{#items}}{{key:pascalCase}}{{/items}}>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=array}}{{^items.$ref}}Array<any>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=200}}{{#status=201}}{{^schema}}''{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=string}}string{{/type=string}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=object}}{{^additionalProperties}}I{{key:pascalCase}}
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=object}}{{#additionalProperties}}Record<string, any>
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=array}}{{#items.$ref}}Array<I{{#items}}{{key:pascalCase}}{{/items}}>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=array}}{{^items.$ref}}Array<any>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=201}}{{/responses}};
+
+type {{{operationId}}}InnerResponse = {{{operationId}}}CallResponse|'' {{#responses}}{{#status=200}}{{#contentType=application/octet-stream}}='arraybuffer' as any{{/contentType=application/octet-stream}}{{/status=200}}{{/responses}}
+
+/**
+ * 
+ * @summary {{{summary}}}
+ * @param {I{{{operationId}}}CallQuery} [queryParams] qury parameters required for successfull call
+ * @param {*} [options] Override http request option.
+ * @throws {RequiredError}
+ */
+export type I{{{operationId}}}CallResolver = LocalResolverType<I{{{operationId}}}CallQuery, {{^requestBody}}undefined{{/requestBody}}{{#requestBody}}I{{key:PascalCase}}{{/requestBody}}, {{{operationId}}}InnerResponse>
+const {{{operationId}}}Call = (
+        queryParams{{^parameters}}?{{/parameters}}: I{{{operationId}}}CallQuery,
+        body?: {{^requestBody}}undefined{{/requestBody}}{{#requestBody}}I{{key:PascalCase}}{{/requestBody}},
+        options: Partial<RESTRequestType> = {}): RESTRequestType<{{{operationId}}}CallResponse> => {
+    
+    const localVarPath = getPath(`{{{operationId}}}`, `${globalPath}{{{path}}}`, queryParams{{^parameters.0}} || {} {{/parameters.0}}, [{{#headerParameters}}'{{x-alias|name}}'{{/headerParameters}}], { {{#parameters}}{{#x-alias}} '{{x-alias}}' : '{{name}}', {{/x-alias}}{{/parameters}} });
+
+    const localVarRequestOptions = { method: '{{{method}}}', ...options};
+
+    const requestContentType = {{^requestBody.contentType}}undefined{{/requestBody.contentType}}{{#requestBody}}'{{{contentType}}}'{{/requestBody}}
+
+    let innerResponse: {{{operationId}}}CallResponse|undefined {{#responses}}{{#status=200}}{{#contentType=application/octet-stream}}='arraybuffer' as any{{/contentType=application/octet-stream}}{{/status=200}}{{/responses}}
+    
+    return {
+        name: `{{{operationId}}}`,
+        responseType: innerResponse,
+        ...localVarRequestOptions,
+        ...localVarPath,
+        headers: {
+            ...(localVarRequestOptions.headers || {}),
+            ...(localVarPath.headers || {}),
+        },
+        data: body,
+        requestContentType,
+        {{#security.0}}security: [{{#security:map}}'{{_value.key}}',{{/security:map}}],{{/security.0}}
+    };
+}
+{{/paths}}
+
+
+export const restValidations = {
+    any: (yup.mixed().nullable()),
+{{#schemas}}    {{{key}}}: {{{key}}}Validation(),
+{{/schemas}}
+{{#paths}}    {{{operationId}}}CallQuery: {{{operationId}}}CallQueryValidation(),
+{{/paths}}
+}
+export const restOperations = {
+{{#paths}}    '{{{operationId}}}': {{{operationId}}}Call,
+{{/paths}}
+};
+
+export interface GlobalFormTypes { {{#schemas}}{{#type=object}}
+    {{key}}Form: I{{key:pasalCase}},
+{{/type=object}}{{/schemas}}{{#paths}}
+   {{operationId}}CallQuery: I{{operationId}}CallQuery,
+{{/paths}}
+};
+
+export interface GlobalFormValuesTypes { {{#schemas}}{{#type=object}}
+    {{key}}Form: Record<keyof I{{key:pasalCase}}, GlobalLabelType<I{{key:pascalCase}}>>,
+{{/type=object}}{{/schemas}}{{#paths}}
+   {{operationId}}CallQuery: Record<keyof I{{operationId}}CallQuery, GlobalLabelType<I{{operationId}}CallQuery>>,
+{{/paths}}
+};
+export const GlobalLabels = { {{#schemas}}{{#type=object}}
+    {{key}}Form: {{key}}Form(),{{/type=object}}{{/schemas}}{{#paths}}
+    {{operationId}}CallQuery,{{/paths}}
+};
+
+let _404 = async (props: any, body: any, context: any) => {
+    context?.res?.status?.(404);
+    return {
+        message: "Not Found"
+    } as any;
+};
+
+try {
+    const _404Resolver = require('../resolvers/apiPaths/_404');
+    if(_404Resolver) {
+        _404 = _404Resolver.default || _404Resolver;
+    }
+} catch(e) {
+    console.error('Mapping _404 failed with error', e);
+};
+
+let _401 = async (props: {message?: string}, body: Record<string, string>, context: any) => {
+    context.setResponseStatus(403);
+    return {
+        message: props?.message || "Forbidden"
+    };
+};
+
+try {
+    const _401Resolver = require('../resolvers/apiPaths/_401');
+    if(_401Resolver) {
+        _401 = _401Resolver.default || _401Resolver;
+    }
+} catch(e) {
+    console.log('Mapping _401 failed with error', e);
+};
+
+let _403 = async (props: {message?: string}, body: Record<string, string>, context: any) => {
+    context.setResponseStatus(403);
+    return {
+        message: props?.message || "Forbidden"
+    };
+};
+
+try {
+    const _403Resolver = require('../resolvers/apiPaths/_403');
+    if(_403Resolver) {
+        _403 = _403Resolver.default || _403Resolver;
+    }
+} catch(e) {
+    console.log('Mapping _403 failed with error', e);
+};
+
+let _500 = async (props: {message?: string}, body: Record<string, string>, context: any) => {
+    context.setResponseStatus(500);
+    return {
+        message: props?.message || "Internal Server Error"
+    };
+};
+
+try {
+    const _500Resolver = require('../resolvers/apiPaths/_500');
+    if(_500Resolver) {
+        _500 = _500Resolver.default || _500Resolver;
+    }
+} catch(e) {
+    console.log('Mapping _500 failed with error', e);
+};
+
+
+{{#paths}}
+let pre_mapped_{{{operationId}}}Reslover = _404 as I{{{operationId}}}CallResolver;
+try {
+    const _pre_mapped_{{{operationId}}}Reslover = require('../resolvers/apiPaths/{{{operationId}}}');
+    if(_pre_mapped_{{{operationId}}}Reslover) {
+        pre_mapped_{{{operationId}}}Reslover = _pre_mapped_{{{operationId}}}Reslover?.default || _pre_mapped_{{{operationId}}}Reslover;
+    }
+} catch(e) {
+    console.error('Mapping at src/resolvers/apiPaths/{{{operationId}}}.ts not created');
+}
+{{/paths}}
+
+export const apiResolvers = {
+    _404: _404,
+    _401: _401,
+    _403: _403,
+    _500: _500,
+{{#paths}}
+    '{{{operationId}}}': pre_mapped_{{{operationId}}}Reslover,
+{{/paths}}
+} as const;
+
+export type APIResolversType = typeof apiResolvers
+
+
+export const generatedRoutes: ExpressRouteType[] = [
+{{#paths}}
+  {
+    path: "{{{reactPath}}}",
+    method: "{{{method}}}",
+    resolver: pre_mapped_{{{operationId}}}Reslover,
+    {{#security.0}}security: [{{#security:map}}'{{_value.key}}',{{/security:map}}],{{/security.0}}
+  },
+{{/paths}}
+    {
+        path: "*" as `/${string}`,
+        method: "get",
+        resolver: _404
+    },
+    {
+        path: "*" as `/${string}`,
+        method: "post",
+        resolver: _404
+    },
+    {
+        path: "*" as `/${string}`,
+        method: "put",
+        resolver: _404
+    },
+    {
+        path: "*" as `/${string}`,
+        method: "delete",
+        resolver: _404
+    }
+];

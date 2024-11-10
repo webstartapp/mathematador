@@ -1,0 +1,17 @@
+/*
+    Automaticky generovany soubor!
+*/
+/* tslint:disable */
+/* eslint-disable */
+import * as ApiSpec from '@/_generated/apiOperations';
+export type GenericStorageDataType = {
+    {{#paths}}
+{{#responses}}{{#status=202}}{{{operationId}}}?: ''
+{{/status=202}}{{#status=204}}{{{operationId}}}?: ''
+{{/status=204}}{{#status=200}}{{#schema}}{{#type=string}}{{{operationId}}}?: string
+{{/type=string}}{{/schema}}{{/status=200}}{{/responses}}{{#responses}}{{#status=200}}{{#schema}}{{#type=object}}{{^additionalProperties}}{{{operationId}}}?: ApiSpec.I{{key:pascalCase}}
+{{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=200}}{{/responses}}{{#responses}}{{#status=200}}{{#schema}}{{#type=object}}{{#additionalProperties}}{{{operationId}}}?: Record<string, any>
+{{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=200}}{{/responses}}{{#responses}}{{#status=200}}{{#schema}}{{#type=array}}{{#items.$ref}}{{{operationId}}}?: Array<ApiSpec.I{{#items}}{{key:pascalCase}}{{/items}}>
+{{/items.$ref}}{{/type=array}}{{/schema}}{{/status=200}}{{/responses}}{{#responses}}{{#status=200}}{{#schema}}{{#type=array}}{{^items.$ref}}{{{operationId}}}?: Array<any>
+{{/items.$ref}}{{/type=array}}{{/schema}}{{/status=200}}{{/responses}}
+{{/paths}}};
