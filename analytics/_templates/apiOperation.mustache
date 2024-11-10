@@ -1,0 +1,211 @@
+/*
+    Automaticky generovany soubor!
+*/
+/* tslint:disable */
+/* eslint-disable */
+import yup from '@/utils/ValidationService';
+import { RESTRequestType } from '@/types/RestAPIGenerator/RESTRequestType';
+import { COREFormFieldType } from '@/types/RestAPIGenerator/COREFormFieldType';
+import { COREFormInputTypeEnum, COREInputTypeEnum } from '@/types/enums';
+import { AnyTypeValidation, IAnyType } from '@/types/IAnyType';
+import dayjs from 'dayjs';
+import { wrapRestCalls } from '@/utils/wrapRestCalls';
+
+const globalPath = '';
+export interface GlobalStorageDataType {
+    {{#schemas}}
+        {{key}}?: I{{key:PascalCase}}
+    {{/schemas}}
+};
+{{#schemas}}
+{{>apiOperationsInner}}{{/schemas}} 
+export type GlobalLabelType<T extends object = any> = COREFormFieldType<T>
+let GlobalInnerLabels: Record<string, Record<string, GlobalLabelType>> = {};
+/**
+ *
+ * @export
+ * @class RequiredError
+ * @extends {Error}
+ */
+export class RequiredError extends Error {
+    name: "RequiredError" = "RequiredError";
+    constructor(public field: string, msg?: string) {
+        super(msg);
+    }
+}
+
+const getPath = (functionName: string, localPath: string, query: any, headers: Array<string>, replacements: Record<string,string>)=>{
+    let M = [...localPath.matchAll(/\{(.*?)\}/gmi)];
+    let out: any = {
+        url: localPath,
+        error: undefined,
+        params: {},
+        headers: {}
+    };
+    Object.keys(query||{}).map(key=>{
+        out.params[replacements[key] || key] = query[key];
+    }); 
+    for(let i=0; i<M.length; i++){
+            if(!query[M[i][1]]) 
+                throw new RequiredError(M[i][1], `Required parameter ${M[i][1]} was null or undefined when calling ${functionName}.`);;
+            delete out.params[M[i][1]];
+            out.url = out.url.replace(M[i][0], query[M[i][1]]);
+    }
+    headers.map(header=>{
+        if(query[header]){
+            delete out.params[replacements[header] || header];
+            out.headers[replacements[header] || header] = query[header];
+        }
+    });
+    return out;
+};
+
+{{#requestBodies}}
+    type I{{key:PascalCase}} = {{#schema}}I{{key}}{{/schema}}{{^schema}}any{{/schema}}
+{{/requestBodies}}
+
+{{#paths}}
+const {{{operationId}}}CallQueryValidation = () => ({
+{{#parameters}}     {{{x-alias|name}}}: yup
+{{#schema}}{{>apiValidationChildren}}{{/schema}},
+    {{/parameters}}
+})
+
+const {{{operationId}}}CallQuery = {
+{{#parameters}}    {{{x-alias|name}}}: {
+            id: '{{{x-alias|name}}}',
+            label: `{{xParamslabel}}`,{{#xParamsxs}}
+            xs: {{xParamsxs}},{{/xParamsxs}}{{#xParamsmd}}
+            md: {{xParamsmd}},{{/xParamsmd}}{{#xParamslg}}
+            lg: {{xParamslg}},{{/xParamslg}}
+            formId: '{{operationIdOriginal}}CallQuery',
+            {{#schema}}{{#type=boolean}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {
+                    value: true,
+                },
+                {
+                    value: false,
+                }
+            ],
+            {{/type=boolean}}{{#format=date-time}}
+            type: COREInputTypeEnum.date,
+            {{/format=date-time}}{{#format=email}}
+            type: COREInputTypeEnum.date,
+            {{/format=email}}{{#enum.0}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#enum}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/enum}}
+            ],
+            {{/enum.0}}{{/schema}}{{^isEnum}}{{#isDateTime}}
+            type: COREInputTypeEnum.date
+            {{/isDateTime}}{{/isEnum}}{{#isEnum}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#_enum}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/_enum}}
+            ],
+            {{/isEnum}}{{^isEnum}}{{#allowableValues.values.0}}
+            input: COREFormInputTypeEnum.Select,
+            options: [
+                {{#allowableValues.values}}{
+                    label: `{{{.}}}`,
+                    value: '{{{.}}}'
+                    
+                },{{/allowableValues.values}}
+            ]
+            {{/allowableValues.values.0}}{{/isEnum}}
+        },
+    {{/parameters}}
+}
+
+export interface I{{{operationId}}}CallQuery {
+{{#parameters}}    {{{x-alias|name}}}{{#in!=path}}?{{/in!=path}}:{{#schema}}{{#type!=array}}{{>apiSchemaChildrenNested}}{{/type!=array}}{{#type=array}}({{#items}}{{>apiSchemaChildrenNested}}{{/items}})[]{{/type=array}}{{/schema}}; {{#x-alias}} // alias to '{{{name}}}'{{/x-alias}}
+    {{/parameters}}
+}
+type {{{operationId}}}CallResponse = {{#responses}}{{#status=204}}''{{/status=204}}{{#status=202}}string{{/status=202}}{{#status=200}}{{^schema}}''{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=string}}string{{/type=string}}{{/schema}}{{/status=200}}{{/responses}}{{#responses}}{{#status=200}}{{#schema}}{{#type=object}}{{^additionalProperties}}I{{key:pascalCase}}
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=object}}{{#additionalProperties}}Record<string, any>
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=array}}{{#items.$ref}}Array<I{{#items}}{{key:pascalCase}}{{/items}}>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=200}}{{#status=200}}{{#schema}}{{#type=array}}{{^items.$ref}}Array<any>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=200}}{{#status=201}}{{^schema}}''{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=string}}string{{/type=string}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=object}}{{^additionalProperties}}I{{key:pascalCase}}
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=object}}{{#additionalProperties}}Record<string, any>
+    {{/additionalProperties}}{{/type=object}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=array}}{{#items.$ref}}Array<I{{#items}}{{key:pascalCase}}{{/items}}>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=201}}{{#status=201}}{{#schema}}{{#type=array}}{{^items.$ref}}Array<any>
+    {{/items.$ref}}{{/type=array}}{{/schema}}{{/status=201}}{{/responses}};
+
+/**
+ * 
+ * @summary {{{summary}}}
+ * @param {I{{{operationId}}}CallQuery} [queryParams] qury parameters required for successfull call
+ * @param {*} [options] Override http request option.
+ * @throws {RequiredError}
+ */
+const {{{operationId}}}Call = (
+        queryParams{{^parameters}}?{{/parameters}}: I{{{operationId}}}CallQuery,
+        body?: {{^requestBody}}undefined{{/requestBody}}{{#requestBody}}I{{key:PascalCase}}{{/requestBody}},
+        options: Partial<RESTRequestType> = {}): RESTRequestType<{{{operationId}}}CallResponse> => {
+    
+    const localVarPath = getPath(`{{{operationId}}}`, `${globalPath}{{{path}}}`, queryParams{{^parameters.0}} || {} {{/parameters.0}}, [{{#headerParameters}}'{{x-alias|name}}'{{/headerParameters}}], { {{#parameters}}{{#x-alias}} '{{x-alias}}' : '{{name}}', {{/x-alias}}{{/parameters}} });
+
+    const localVarRequestOptions = { method: '{{{method}}}', ...options};
+
+    const requestContentType = {{^requestBody.contentType}}undefined{{/requestBody.contentType}}{{#requestBody}}'{{{contentType}}}'{{/requestBody}}
+
+    let innerResponse: {{{operationId}}}CallResponse|undefined {{#responses}}{{#status=200}}{{#contentType=application/octet-stream}}='arraybuffer' as any{{/contentType=application/octet-stream}}{{/status=200}}{{/responses}}
+    
+    return {
+        name: `{{{operationId}}}`,
+        responseType: innerResponse,
+        ...localVarRequestOptions,
+        ...localVarPath,
+        headers: {
+            ...(localVarRequestOptions.headers || {}),
+            ...(localVarPath.headers || {}),
+        },
+        data: body,
+        requestContentType,
+        {{#security.0}}security: [{{#security:map}}'{{_value.key}}',{{/security:map}}],{{/security.0}}
+    };
+}
+{{/paths}}
+
+
+export const restValidations = {
+    any: (yup.mixed().nullable()),
+{{#schemas}}    {{{key}}}: {{{key}}}Validation(),
+{{/schemas}}
+{{#paths}}    {{{operationId}}}CallQuery: {{{operationId}}}CallQueryValidation(),
+{{/paths}}
+}
+export const restOperations = {
+{{#paths}}    '{{{operationId}}}': {{{operationId}}}Call,
+{{/paths}}
+};
+
+export interface GlobalFormTypes { {{#schemas}}{{#type=object}}
+    {{key}}Form: I{{key:pasalCase}},
+{{/type=object}}{{/schemas}}{{#paths}}
+   {{operationId}}CallQuery: I{{operationId}}CallQuery,
+{{/paths}}
+};
+
+export interface GlobalFormValuesTypes { {{#schemas}}{{#type=object}}
+    {{key}}Form: Record<keyof I{{key:pasalCase}}, GlobalLabelType<I{{key:pascalCase}}>>,
+{{/type=object}}{{/schemas}}{{#paths}}
+   {{operationId}}CallQuery: Record<keyof I{{operationId}}CallQuery, GlobalLabelType<I{{operationId}}CallQuery>>,
+{{/paths}}
+};
+export const GlobalLabels = { {{#schemas}}{{#type=object}}
+    {{key}}Form: {{key}}Form(),{{/type=object}}{{/schemas}}{{#paths}}
+    {{operationId}}CallQuery,{{/paths}}
+};
+
+export const restCalls = wrapRestCalls(restOperations);

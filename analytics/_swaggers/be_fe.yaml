@@ -1,0 +1,382 @@
+openapi: 3.0.0
+servers: []
+info:
+  version: 0.0.1
+  title: Cyberspace-api
+  description: Hibrid game api to access databases
+  contact: 
+    email: limbaceha@gmail.com
+    name: Karel Bohac
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths: 
+  /user/forgotten:
+    post:
+      operationId: user_forgotten
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/CredentialsEmail'
+      responses:
+        '201':
+          description: User found
+  /user/login:
+    post: 
+      operationId: user_login
+      summary: check the credentials and login
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+    put: 
+      operationId: user_login_password
+      summary: submit new password after forgotten
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/CredentialsPassword'
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+  /user/register:
+    post:
+      operationId: user_register
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+      responses:
+        '200':
+          $ref: '#/components/schemas/UserProfile'
+  /user/forgotten-password:
+    post:
+      operationId: user_forgotten_password
+      summary: Send forgotten password email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialsEmail'
+      responses:
+        '201':
+          description: Email sent
+  /Challenges/{operationId}:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/OperationId'
+      operationId: Challenge_start_new
+      summary: Create a new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+          description: Game Objet
+    get:
+      operationId: Challenge_get_all
+      summary: Get all user Challenges
+      responses:
+        '200':
+          description: List of Challenges
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+  /chaleges/{operationId}/{id}:
+    get:
+      operationId: Challenge_get
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary: Get Challenge by id
+      responses:
+        '200':
+          description: Detail of Challenge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Challenge'
+    put:
+      operationId: Challenge_update_result
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      summary: Update Challenge items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeResultRequest'
+      responses:
+        '200':
+          description: Challenge updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProgress'
+  /subscribtions:
+    post:
+      operationId: subscribtion_update
+      summary: Add new subscribtion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreate'
+      responses:
+        '200':
+          description: subscribtion added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+    delete:
+      operationId: subscribtion_cancel_imediatelly
+      summary: Remove subscribtion
+      responses:
+        '200':
+          description: subscribtion removed
+  /game/progress:
+    get:
+      operationId: game_progress
+      summary: Get game status 
+      responses:
+        '200':
+          description: Game status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProgress'
+components:
+  parameters:
+    OperationId:
+      name: operationId
+      in: path
+      required: true
+      description: Tags to filter by
+      schema:
+        type: string
+        enum:
+          - addition
+          - subtraction
+          - multiplication
+          - division+
+    Id:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier of a user registration
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    Id:
+      type: string
+      format: uuid
+    OperationId:
+      type: string
+      enum:
+        - addition
+        - subtraction
+        - multiplication
+        - division
+    ChallengeRequest:
+      type: object
+      properties:
+        operationId:
+          $ref: '#/components/schemas/OperationId'
+        minigame:
+          $ref: '#/components/schemas/Minigame'
+        userId:
+          $ref: '#/components/schemas/Id'
+        ChallengeId:
+          $ref: '#/components/schemas/Id'
+    ExquationType:
+      type: string
+      enum:
+        - entry
+        - result
+        - operator
+    Exercise:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: number
+        result:
+          type: number
+        separator:
+          type: string
+        userInput:
+          type: string
+    ChallengeResultRequest:
+      type: object
+      properties:
+        time: 
+          type: number
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exercise'
+        correctAnswers:
+          type: number
+        coins:
+          type: number
+        xp: 
+          type: number
+    Challenge:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ChallengeRequest'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/ChallengeResultRequest'
+            id:
+              $ref: '#/components/schemas/Id'
+            exerises:
+              type: array
+              items:
+                $ref: '#/components/schemas/Exercise'
+            maxTime:
+              type: number
+            xpOnSuccess:
+              type: number
+            xpOnFailure:
+              type: number
+            coinsOnSuccess:
+              type: number
+            coinsOnFailure:
+              type: number
+            coins:
+              type: number
+            allowedMistakes:
+              type: number
+    GameProgress:
+      type: object
+      properties:
+        level:
+          type: number
+        xp:
+          type: number
+        coins:
+          type: number
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameOperationProgress'
+    GameOperationProgress: 
+      type: object
+      properties:
+        level:
+          type: number
+        xp:
+          type: number
+        Challenges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Challenge'
+    Minigame:
+      type: string
+      enum:
+        - singleLine
+        - dragAndDrop
+        - crossNumbers
+        - memory
+    CredentialsEmail:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+    CredentialsPassword:
+      type: object
+      properties:
+        password:
+          type: string
+    ForgottenToken:
+      type: object
+      properties:
+        tokenForgotten:
+          type: string
+    Credentials:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CredentialsEmail'
+        - $ref: '#/components/schemas/CredentialsPassword'
+      required:
+        - email
+        - password
+    ForgottenCredentials:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CredentialsPassword'
+        - $ref: '#/components/schemas/ForgottenToken'
+      required:
+        - password
+        - tokenForgotten
+    SubscriptionType:
+      type: string
+      enum:
+        - addsFree
+        - full
+    SubscriptionCreate:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/SubscriptionType'
+        autoRenew:
+          type: boolean
+    Subscription:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/SubscriptionCreate'
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/Id'
+            type:
+              $ref: '#/components/schemas/SubscriptionType'
+            autoRenew:
+              type: boolean
+    UserProfile:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        subtraction:
+          $ref: '#/components/schemas/Subscription'
+        
+        

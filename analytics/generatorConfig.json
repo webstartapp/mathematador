@@ -1,0 +1,33 @@
+{
+    "templatesDirectory": "./_templates",
+    "swaggerDirectory": "./_swaggers",
+    "outputDirectory": "../_generated",
+    "tempDirectory": "../_temp",
+    "languagesDirectory": "../mathematador-app/src/localization/dictionary",
+    "generators":[
+        {
+            "template": "backendOperation.mustache",
+            "destination": "../server/src/_generated/sessionOperations.ts",
+            "singleFile": true,
+            "swaggerGroups": [
+                "be_fe.yaml"
+            ],
+            "replaces": [],
+            "pathReplaces": [],
+            "name": "webpackRun",
+            "override": true
+        },
+        {
+            "template": "apiOperation.mustache",
+            "destination": "../mathematador-app/src/_generated/sessionOperations.ts",
+            "singleFile": true,
+            "swaggerGroups": [
+                "be_fe.yaml"
+            ],
+            "replaces": [],
+            "pathReplaces": [],
+            "name": "webpackRun",
+            "override": true
+        }
+    ]
+}

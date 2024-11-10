@@ -1,0 +1,88 @@
+{{#enum.0}}
+const {{key}}Validation = ()=>(
+    yup
+    {{#required=true}}.required((message)=>`${message.path} is required`){{/required=true}}
+    .mixed()
+    .oneOf([
+        {{#enum}}   
+            {{#type!=number}}'{{/type!=number}}{{{.}}}{{#type!=number}}'{{/type!=number}},
+        {{/enum}}
+    ])
+);
+
+/**
+ * {{{description}}}
+ * @export
+ * @enum I{{key:PascalCase}}
+ */
+export enum I{{key:PascalCase}} {
+{{#enum:MAP}}   
+    {{#type=number}}_{{/type=number}}{{{_value:PascalCase}}} = {{#type!=number}}'{{/type!=number}}{{{_value}}}{{#type!=number}}'{{/type!=number}},
+{{/enum:MAP}}
+}
+{{/enum.0}}{{^enum.0}}{{#type!=object}}
+const {{key}}Validation = ()=>(
+    yup{{#type=array}}    .array().of(yup
+{{#items}}{{>apiValidationChildren}}{{/items}}
+)
+    {{#required=true}}.required((message)=>`${message.path} is required`)
+{{/required=true}}
+{{/type=array}}{{#type!=array}}
+{{>apiValidationChildren}}
+{{/type!=array}}
+);
+
+/**
+ * {{{description}}}
+ * @export
+ * @type I{{key:PascalCase}}
+ */
+export type I{{key:PascalCase}} = {{#type=array}}Array<{{#items}}
+{{#type=integer}}number{{/type=integer}}{{#type!=integer}}{{#type!=object}}{{type}}{{/type!=object}}{{/type!=integer}}
+{{#type=object}}I{{{key:PascalCase}}}{{/type=object}}
+{{/items}}>{{/type=array}}{{#type!=array}}{{#type=integer}}number{{/type=integer}}{{#type!=integer}}{{type}}{{/type!=integer}}{{/type!=array}}
+{{/type!=object}}{{#type=object}}
+
+const {{key}}Validation = ()=>({
+{{#properties:map}}   {{_key}}: yup
+{{#type=array}}    .array()
+        .of(yup{{#items}}
+{{>apiValidationChildren}}
+    ),
+{{/items}}{{/type=array}}{{#type!=array}}{{#_listed.0}}{{>apiValidationChildren}}{{/_listed.0}},
+
+{{/type!=array}}{{/properties:map}}
+});
+export interface I{{key:PascalCase}} {
+{{#properties:map}}{{_key}}{{^_required=true}}?{{/_required=true}}: {{#_value.type=array}}Array<{{#items}}{{#oneOf.0}}{{#oneOf}}{{#type=array}}Array<{{#items}}{{>apiSchemaChildren}}{{/items}}>
+{{/type=array}}{{#type!=array}}{{>apiSchemaChildren}}
+
+{{/type!=array}} | {{/oneOf}} {{#type=array}}Array<{{#items}}{{>apiSchemaChildren}}{{/items}}>
+{{/type=array}}{{#type!=array}}{{>apiSchemaChildren}}
+
+{{/type!=array}}
+{{/oneOf.0}}{{^oneOf.0}}{{>apiSchemaChildren}}{{/oneOf.0}}{{/items}}>
+{{/_value.type=array}}{{#_value.type!=array}}{{>apiSchemaChildren}}
+
+{{/_value.type!=array}}{{^reference}}{{#_value.oneOf.0}}{{#_value.oneOf}}{{#type=array}}Array<{{#items}}{{>apiSchemaChildren}}{{/items}}>
+{{/type=array}}{{#type!=array}}{{>apiSchemaChildren}}
+
+{{/type!=array}} | {{/_value.oneOf}} {{#type=array}}Array<{{#items}}{{>apiSchemaChildren}}{{/items}}>
+{{/type=array}}{{#type!=array}}{{>apiSchemaChildren}}
+
+{{/type!=array}}
+{{/_value.oneOf.0}}{{/reference}}{{/properties:map}}
+}
+{{/type=object}}{{/enum.0}}
+
+{{#oneOf.0}}{{#oneOf}}
+export interface I{{key:PascalCase}} {{>apiSchemaChildren}};
+{{/oneOf}}{{/oneOf.0}}
+
+{{#type=object}}
+const {{key}}Form = ()=>({
+    {{#properties:map}} 
+        {{_key}}: {{>apiOperationsForm}}
+        {{/properties:map}}
+});{{/type=object}}
+

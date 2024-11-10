@@ -1,0 +1,21 @@
+{{#enum.0}}
+        .mixed()
+        .oneOf([
+            {{#enum}}   
+                {{#type!=number}}'{{/type!=number}}{{{.}}}{{#type!=number}}'{{/type!=number}},
+            {{/enum}}
+        ])
+        {{#required}}.required((message)=>`${message.path} is required`)
+        {{/required}}{{/enum.0}}{{^enum.0}}{{#type=object}}{{#additionalProperties}}.mixed().nullable(){{/additionalProperties}}{{^additionalProperties}}.object({{key:PascalCase}}Validation()){{/additionalProperties}}{{/type=object}}{{#type!=object}}{{#type=integer}}
+        .number()
+        .integer((message)=>`${message.path} should be integer`){{/type=integer}}{{#type=boolean}}
+        .boolean(){{/type=boolean}}{{#type=number}}
+        .number(){{/type=number}}{{#type=string}}{{#format=date-time}}
+        .date()
+        .nullable(){{/format=date-time}}{{^format=date-time}}
+        .string()
+        .nullable()
+        .trim(){{/format=date-time}}{{/type=string}}{{/type!=object}}
+        {{#pattern}}.matches(/{{{pattern}}}/ , `{{{x-invalid}}}` ||'Is not in correct format')
+        {{/pattern}}{{#required}}.required((message)=>`${message.path} is required`)
+{{/required}}{{/enum.0}}
