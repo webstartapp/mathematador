@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/explicit-function-return-type, no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/explicit-function-return-type, no-console, no-restricted-imports */
 import * as dotenv from "dotenv";
 import { knex as knexHandler, Knex } from "knex";
 
-import { IDBType } from "@/types/KnexDBType";
+import { IDBType } from "./types/KnexDBType";
 
 dotenv.config({ path: ".env" });
 
