@@ -53,29 +53,42 @@ To keep development clean and prevent code bloat or scope creep, agents must ali
 *   Clearly understand the requirements and boundaries. Build **only** what the issue describes.
 
 ### Step 2: Set Up Local Branch
-*   Check out the `develop` branch and pull the latest changes.
-*   Create a feature branch:
-    `git checkout -b issue-<number>-<description>`
-    *(Helper script: `node agents/issue-helper.js checkout <number>`)*
+*   Run the raw Git commands:
+    ```bash
+    git checkout develop
+    git pull origin develop
+    git checkout -b issue-<number>-<short-description>
+    ```
+*   *(Optional: If the environment has full script execution allowed, you may use `node agents/issue-helper.js checkout <number> [description]` as a shortcut).*
 
 ### Step 3: Implement & Develop
 *   Write clean, modular code adhering to the repository style and roles.
 *   Do not leave placeholder code or comments.
 
 ### Step 4: Verify Locally
-*   Run the project verifications:
-    `node agents/verify.js`
-    This will:
-    1. Check and install package dependencies in both `mathematador-app` and `server` folders using npm.
-    2. Run `npm run lint` on both directories.
-    3. Run `npm run test` (in non-watch mode) on both directories.
+*   Run the verification commands individually in their respective directories:
+    *   **In `mathematador-app/`**:
+        ```bash
+        npm install
+        npm run lint
+        npm test -- --watchAll=false
+        ```
+    *   **In `server/`**:
+        ```bash
+        npm install
+        npm run lint
+        npm test
+        ```
 *   Ensure all tests and lint checks are **100% green** before moving to the next step.
-*   *Note for Sandboxed/Interactive Agents*: If environment restrictions prevent running custom node scripts directly, execute individual CLI commands directly (`npm install`, `npm run lint`, `npm test`, etc.) so they can be explicitly reviewed and approved by the user.
+*   *(Optional: If the environment has full script execution allowed, you may run `node agents/verify.js` to run all verification steps automatically).*
 
 ### Step 5: Submit PR
-*   Commit and push changes to the remote origin.
-*   Create a Pull Request on GitHub targeting `develop`.
-*   Link the PR to the issue by including `Closes #<number>` in the description.
-    *(Helper script: `node agents/submit-pr.js`)*
-*   *Note for Sandboxed/Interactive Agents*: If automatic PR script execution is restricted, perform git commits and push directly using git commands, and create the Pull Request using GitHub MCP tools or the GitHub Web UI.
+*   Commit and push changes to the remote origin:
+    ```bash
+    git add .
+    git commit -m "Resolve Issue #<number>: <description>"
+    git push -u origin issue-<number>-<short-description>
+    ```
+*   Create a Pull Request on GitHub targeting the `develop` branch (include `Closes #<number>` in the description) using the GitHub Web UI or MCP server tools.
+*   *(Optional: If the environment has full script execution allowed and a GITHUB_TOKEN is available, you may run `node agents/submit-pr.js` to automate pushing and PR creation).*
 
