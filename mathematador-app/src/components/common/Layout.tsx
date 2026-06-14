@@ -1,11 +1,11 @@
-import React from "react";
+import { FC, JSX, ReactNode } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: FC<LayoutProps> = ({ children }): JSX.Element => {
   return (
     <View style={styles.fixed}>
       <Animated.ScrollView

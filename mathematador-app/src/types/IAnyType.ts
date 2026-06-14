@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ObjectShape } from "yup";
 
 export type IAnyType = any;

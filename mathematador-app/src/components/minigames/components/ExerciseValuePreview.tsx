@@ -1,8 +1,12 @@
-import { ExerciseInputPosition } from "@/src/types/Chalenge";
+/* eslint-disable max-params */
 import { FC, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { computePositionKey } from "../helpers/computePositionKey";
-import ExeriseDigit, { ExerciseDigitProps } from "./ExerciseDigit";
+
+import ExeriseDigit, {
+  ExerciseDigitProps,
+} from "@/components/minigames/components/ExerciseDigit";
+import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
+import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
 const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
   value,
@@ -18,22 +22,24 @@ const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
   }, [value]);
 
   useEffect(() => {
-    const measurePositions = async () => {
+    const measurePositions = async (): Promise<void> => {
       const localPositions: ExerciseInputPosition[] = [];
       for (let index = 0; index < refferenceDigits.current.length; index++) {
-        const ref = refferenceDigits.current[index];
-        if (ref) {
+        const refItem = refferenceDigits.current[index];
+        if (refItem) {
           const position = await new Promise<ExerciseInputPosition>(
             (resolve) => {
-              ref.measure((x, y, width, height, pageX, pageY) => {
-                resolve({
-                  x: pageX + width / 2,
-                  y: pageY + height / 2,
-                  width,
-                  exerciseIndex: 0,
-                  inputIndex: index,
-                });
-              });
+              refItem.measure(
+                (_unusedX, _unusedY, width, height, pageX, pageY) => {
+                  resolve({
+                    x: pageX + width / 2,
+                    y: pageY + height / 2,
+                    width,
+                    exerciseIndex: 0,
+                    inputIndex: index,
+                  });
+                },
+              );
             },
           );
           if (position) localPositions.push(position);
@@ -52,21 +58,15 @@ const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
       }
     };
     if (layoutsReady?.length === String(value).length) {
-      measurePositions();
+      void measurePositions();
     }
-  }, [
-    refferenceDigits.current,
-    updateExercisePositions,
-    value,
-    JSON.stringify(exercisePositions),
-    layoutsReady,
-  ]);
+  }, [updateExercisePositions, value, exercisePositions, layoutsReady]);
 
   return (
     <View style={styles.numberContainer}>
       {String(value)
         .split("")
-        .map((v, index) => (
+        .map((valueChar, index) => (
           <View
             key={`${index}_${computePositionKey(exercisePositions)}_${value}`}
             onLayout={() =>
@@ -76,11 +76,11 @@ const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
             }
           >
             <ExeriseDigit
-              value={v}
-              forwardRef={(ref) => {
-                refferenceDigits.current[index] = ref;
+              value={valueChar}
+              forwardRef={(digitRef) => {
+                refferenceDigits.current[index] = digitRef;
               }}
-              isUnknown={v === "?"}
+              isUnknown={valueChar === "?"}
               exerciseId={exerciseId}
             />
           </View>

@@ -1,23 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
 import {
   DefaultTheme,
   Theme,
   ThemeProvider,
 } from "expo-router/react-navigation";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { JSX, useEffect } from "react";
 import "react-native-reanimated";
 import { Provider } from "react-redux";
-import { store, persistor } from "../redux/store";
-
 import { PersistGate } from "redux-persist/integration/react";
+
+import { store, persistor } from "@/redux/store";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+const RootLayout = (): JSX.Element | null => {
   const [loaded] = useFonts({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
@@ -61,4 +63,6 @@ export default function RootLayout() {
       </Provider>
     </ThemeProvider>
   );
-}
+};
+
+export default RootLayout;

@@ -1,6 +1,7 @@
-import { minigames } from "../configs/minigames";
-import { operations } from "../configs/operations";
-import { Challenge, Exercise } from "../types/Chalenge";
+/* eslint-disable complexity */
+import { minigames } from "@/configs/minigames";
+import { operations } from "@/configs/operations";
+import { Challenge, Exercise } from "@/types/Chalenge";
 
 export const getChallengeByLevel = (
   level: number,
@@ -9,7 +10,9 @@ export const getChallengeByLevel = (
 ): Challenge => {
   const minigameIndex = challengeOrderId % minigames.length;
   const minigame = minigames[minigameIndex];
-  const operation = operations.find((op) => op.operationId === operationId);
+  const operation = operations.find(
+    (opItem) => opItem.operationId === operationId,
+  );
   const exerciseCount = 10; // Fixed count of 10 exercises
 
   if (!operation) {
@@ -40,7 +43,7 @@ export const getChallengeByLevel = (
 
     // Check for uniqueness before adding
     const isUnique = !exercises.some(
-      (ex) => ex.join("_") === exercise.join("_"),
+      (exerciseItem) => exerciseItem.join("_") === exercise.join("_"),
     );
 
     if (isUnique || exercises.length < tryedLike / 10) {
@@ -48,10 +51,13 @@ export const getChallengeByLevel = (
     }
   }
 
-  const averageDigits =
-    exercises.reduce((acc, curr) => {
-      const nestedAvverage = curr.reduce((acc, curr) => acc + curr, 0);
-      return acc + nestedAvverage;
+  const _averageDigits =
+    exercises.reduce((accumulator, curr) => {
+      const nestedAvverage = curr.reduce(
+        (innerAccumulator, innerCurr) => innerAccumulator + innerCurr,
+        0,
+      );
+      return accumulator + nestedAvverage;
     }, 0) / exercises.length;
 
   // Challenge attributes that scale with level
@@ -72,6 +78,7 @@ export const getChallengeByLevel = (
   const coinsOnFailure = Math.floor(coinsOnSuccess * 0.4);
 
   return {
+    challengeId: challengeOrderId,
     challengeOrderId,
     minigame: minigame.id,
     level,

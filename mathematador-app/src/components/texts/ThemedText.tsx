@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type, unused-imports/no-unused-vars */
 import { ReactNode } from "react";
 import { StyleSheet, Text, TextProps } from "react-native";
 

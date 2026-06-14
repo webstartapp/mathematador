@@ -1,8 +1,10 @@
-import { ExerciseInputPosition } from "@/src/types/Chalenge";
+/* eslint-disable unused-imports/no-unused-vars */
 import { FC, useCallback } from "react";
 import { GestureResponderEvent, PanResponderGestureState } from "react-native";
-import { getClosestCell } from "../helpers/getClosestCell";
-import DraggableKeyboard from "./DraggableKeyboard";
+
+import DraggableKeyboard from "@/components/minigames/components/DraggableKeyboard";
+import { getClosestCell } from "@/components/minigames/helpers/getClosestCell";
+import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
 type MinigameKeyboardProps = {
   handleDrop: (exercise: ExerciseInputPosition, value: number) => void;

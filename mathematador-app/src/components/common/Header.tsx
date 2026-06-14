@@ -1,5 +1,12 @@
+/* eslint-disable max-lines, @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
 // components/common/GameHeader.tsx
-import React, { useEffect, useMemo, useRef } from "react";
+import Icon from "@expo/vector-icons/FontAwesome";
+import {
+  StackHeaderProps,
+  StackNavigationProp,
+} from "expo-router/build/react-navigation/stack";
+import { useNavigation } from "expo-router/react-navigation";
+import { useEffect, useMemo, useRef, FC, JSX } from "react";
 import {
   View,
   Text,
@@ -9,17 +16,14 @@ import {
   NativeEventEmitter,
   findNodeHandle,
 } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 import { ProgressBar } from "react-native-paper"; // Example of a simple progress bar component
-import { useNavigation } from "expo-router/react-navigation";
-import Icon from "@expo/vector-icons/FontAwesome";
-import { RootStackParamList } from "../../types/Navigation";
-import { StackHeaderProps, StackNavigationProp } from "expo-router/js-stack";
-import { setHeaderRef } from "@/src/hooks/RefManager";
+import { useSelector, useDispatch } from "react-redux";
+
+import { RootState } from "@/redux/store";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
-import { useDispatch } from "react-redux";
+import { setHeaderRef } from "@/src/hooks/RefManager";
 import { levelOperationUp, levelUserUp } from "@/src/redux/slices/userSlice";
+import { RootStackParamList } from "@/types/Navigation";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -47,21 +51,21 @@ export const HeaderEvents = {
   },
 };
 
-const GameHeader: React.FC<HeaderProps> = ({
+const GameHeader: FC<HeaderProps> = ({
   backTo,
-  showOperation,
+  showOperation: _showOperation,
   props,
-}) => {
+}): JSX.Element => {
   const headerRef = useRef<View>(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setHeaderRef(headerRef.current); // Set the header reference
-    const handleMeasurement = () => {
+    const handleMeasurement = (): void => {
       const node = findNodeHandle(headerRef.current);
       if (node) {
         // Measure the header
-        headerRef.current?.measure((x, y, width, height) => {
+        headerRef.current?.measure((offsetX, offsetY, _width, height) => {
           HeaderEvents.emitHeaderHeightChange(height);
         });
       }
@@ -78,29 +82,26 @@ const GameHeader: React.FC<HeaderProps> = ({
     (state: RootState) => state.user,
   );
 
+  const operationIdParam = (props.route.params as any)?.operationId;
+
   const userStats = useMemo(() => {
-    if ((props.route.params as any)?.operationId) {
-      const operationItem = operationProgress.find(
-        (operation) =>
-          operation.operationId === (props.route.params as any)?.operationId,
-      );
-      return {
-        level: operationItem?.level,
-        xp: operationItem?.xp || 0,
-        xpToNextLevel: operationItem?.xpToNextLevel || 1,
-        xpProgress:
-          (operationItem?.xp || 0) /
-          (operationItem?.xpToNextLevel || calculateXPToNextLevel(1)),
-      };
+    if (!operationIdParam) {
+      return { level, xp, xpToNextLevel };
     }
-    return { level, xp, xpToNextLevel };
-  }, [
-    level,
-    xp,
-    xpToNextLevel,
-    operationProgress,
-    (props.route.params as any)?.operationId,
-  ]);
+    const operationItem = operationProgress.find(
+      (opItem) => opItem.operationId === operationIdParam,
+    );
+    const itemXp = operationItem?.xp ?? 0;
+    const itemXpToNext = operationItem?.xpToNextLevel ?? 1;
+    const fallbackXpToNext =
+      operationItem?.xpToNextLevel ?? calculateXPToNextLevel(1);
+    return {
+      level: operationItem?.level,
+      xp: itemXp,
+      xpToNextLevel: itemXpToNext,
+      xpProgress: itemXp / fallbackXpToNext,
+    };
+  }, [level, xp, xpToNextLevel, operationProgress, operationIdParam]);
 
   // Calculate XP progress percentage
   const xpProgress = xp / xpToNextLevel;
@@ -149,15 +150,6 @@ const GameHeader: React.FC<HeaderProps> = ({
           {userStats.xp}/{userStats.xpToNextLevel} XP
         </Text>
       </View>
-
-      {/* <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('Statistics')}>
-          <Icon name="bar-chart" size={24} color="#333" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Icon name="user" size={24} color="#333" />
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 };

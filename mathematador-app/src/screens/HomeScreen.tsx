@@ -1,14 +1,16 @@
+/* eslint-disable no-restricted-syntax, @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-argument */
+import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { useNavigation } from "expo-router/react-navigation";
 import React from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import Button from "../components/common/Button";
-import Layout from "../components/common/Layout";
-import { StackNavigationProp } from "expo-router/js-stack";
-import imageBG from "../../assets/images/intro-screen.png";
-import { useNavigation } from "expo-router/react-navigation";
-import { RootStackParamList } from "../types/Navigation";
-import { useAnimatedBackground } from "../providers/animations/AnimatedImage";
-import CenteredDesk from "../components/layouts/CenteredDesk";
+
+import imageBG from "@/assets/images/intro-screen.png";
+import Button from "@/components/common/Button";
+import Layout from "@/components/common/Layout";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
+import { RootState } from "@/redux/store";
+import { RootStackParamList } from "@/types/Navigation";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 

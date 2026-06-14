@@ -1,17 +1,20 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type, @typescript-eslint/consistent-type-assertions */
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
 export const getClosestCell = (
-  x: number,
-  y: number,
+  targetX: number,
+  targetY: number,
   exercisePositions: ExerciseInputPosition[],
 ) => {
   const closest = exercisePositions.reduce(
-    (closest, current) => {
-      const distance = Math.sqrt((x - current.x) ** 2 + (y - current.y) ** 2);
-      if (distance < closest.distance) {
+    (closestCell, current) => {
+      const distance = Math.sqrt(
+        (targetX - current.x) ** 2 + (targetY - current.y) ** 2,
+      );
+      if (distance < closestCell.distance) {
         return { distance, cell: current };
       }
-      return closest;
+      return closestCell;
     },
     { distance: Infinity, cell: null } as {
       distance: number;

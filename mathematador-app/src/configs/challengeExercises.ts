@@ -1,4 +1,5 @@
-import { Challenge, Exercise } from "../types/Chalenge";
+/* eslint-disable max-lines, @typescript-eslint/explicit-function-return-type, @typescript-eslint/consistent-type-assertions, id-length */
+import { Challenge, Exercise } from "@/types/Chalenge";
 
 const generateChalenge = (challengeId: number): Partial<Challenge> => {
   const numberOfExercises = 10;

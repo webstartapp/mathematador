@@ -1,30 +1,31 @@
-import { z } from "zod";
-// Augment zod with email and uuid methods for Orval-generated schemas
-(z as any).email = (params?: any) => z.string().email(params);
-(z as any).uuid = (params?: any) => z.string().uuid(params);
-
-import express from "express";
-import cors from "cors";
-import resolvers from "./resolvers/expressResolver";
+/* eslint-disable no-console, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
 import bodyParser from "body-parser";
-import { generatedRoutes } from "@/_generated/sessionOperations";
+import cors from "cors";
+import express from "express";
+import { z as zodSchema } from "zod";
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: "100mb" }));
+import router from "@/routes";
 
-let PORT = process.env.PORT || 4021;
-const args = process.argv.slice(2);
+// Augment zod with email and uuid methods for Orval-generated schemas
+(zodSchema as any).email = (params?: any) => zodSchema.string().email(params);
+(zodSchema as any).uuid = (params?: any) => zodSchema.string().uuid(params);
 
-args.forEach((arg, index) => {
-  if (arg === "--port" && args[index + 1]) {
-    PORT = parseInt(args[index + 1], 10);
+const appServer = express();
+appServer.use(cors());
+appServer.use(bodyParser.urlencoded({ extended: true }));
+appServer.use(bodyParser.json({ limit: "100mb" }));
+
+let portNumber = process.env.PORT || 4021;
+const argsList = process.argv.slice(2);
+
+argsList.forEach((argItem, index) => {
+  if (argItem === "--port" && argsList[index + 1]) {
+    portNumber = parseInt(argsList[index + 1], 10);
   }
 });
 
-const router = resolvers([...generatedRoutes]);
+appServer.use(router);
 
-app.use(router);
-
-const server = app.listen(PORT, () => console.log("listening on port " + PORT));
+appServer.listen(portNumber, () => {
+  console.log("listening on port " + portNumber);
+});

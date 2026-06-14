@@ -1,6 +1,7 @@
-import { ExerciseInputPosition } from "@/src/types/Chalenge";
 import { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
+import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
 export type ExerciseDigitProps = {
   value?: string;

@@ -1,5 +1,7 @@
-import SingleLine from "../components/minigames/SingleLineMinigame";
-import { ChalengeResult, Challenge } from "../types/Chalenge";
+import { FC } from "react";
+
+import SingleLine from "@/components/minigames/SingleLineMinigame";
+import { ChalengeResult, Challenge } from "@/types/Chalenge";
 
 export type MinigameComponentProps = {
   challenge: Challenge;
@@ -10,7 +12,7 @@ type Minigame = {
   id: string;
   name: string;
   description: string;
-  component: React.FC<MinigameComponentProps>;
+  component: FC<MinigameComponentProps>;
   xpCoeficient: number;
   timeCoeficient: number;
   coinsCoeficient: number;

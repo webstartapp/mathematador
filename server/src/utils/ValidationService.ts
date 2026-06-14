@@ -1,9 +1,10 @@
-import * as yup from "yup";
+import * as yupValidator from "yup";
 import { ObjectShape } from "yup";
 
-yup.setLocale({
+yupValidator.setLocale({
   mixed: {
-    notType: ({ type, originalValue, path }: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notType: ({ type, originalValue, path }: { type: string; originalValue: any; path: string }): string => {
       // value, path,
       /*
             {value: null, originalValue: null, label: undefined, path: 'readme', type: 'string'}
@@ -13,34 +14,38 @@ yup.setLocale({
       if (!originalValue) return `${path} is required`;
       return `Incorrect format of ${path}`;
     },
-    required: ({ path }) => `${path} is as required`
+    required: ({ path }: { path: string }): string => `${path} is as required`
   },
   string: {
     email: "Incorrect email",
-    min: ({ min }) => `Lenght should be at least ${min} chracters`,
-    max: ({ max }) => `Lenght should be less than ${max} chracters`
+    min: ({ min }: { min: number }): string => `Lenght should be at least ${min} chracters`,
+    max: ({ max }: { max: number }): string => `Lenght should be less than ${max} chracters`
   },
   number: {
-    min: ({ min }) => `The minimum is ${min}`,
+    min: ({ min }: { min: number }): string => `The minimum is ${min}`,
     integer: "Should be inteeger"
   },
   date: {
-    min: ({ min }) => `Date should be not before ${min}`,
-    max: ({ max }) => `Date should be not after ${max}`
+    min: ({ min }: { min: Date | string | number }): string => `Date should be not before ${min}`,
+    max: ({ max }: { max: Date | string | number }): string => `Date should be not after ${max}`
   }
 });
 export const validateData = async (
   validationSchema?: ObjectShape,
-  data: any = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: Record<string, any> = {},
   dataName?: string
 ): Promise<string | undefined> => {
   if (!validationSchema) return undefined;
   const validateWith = dataName ? { [dataName]: validationSchema[dataName] } : validationSchema;
   try {
-    await yup.object().shape(validateWith).validate(data);
+    await yupValidator.object().shape(validateWith).validate(data);
     return undefined;
-  } catch (e: any) {
-    return e.message;
+  } catch (error) {
+    if (error instanceof yupValidator.ValidationError) {
+      return error.message;
+    }
+    return error instanceof Error ? error.message : String(error);
   }
 };
-export default yup;
+export default yupValidator;

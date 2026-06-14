@@ -1,4 +1,4 @@
-import React from "react";
+import { useState, FC, JSX } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 
 interface MathChallengeProps {
@@ -6,17 +6,17 @@ interface MathChallengeProps {
   onSubmit: (answer: string) => void;
 }
 
-const MathChallenge: React.FC<MathChallengeProps> = ({
+const MathChallenge: FC<MathChallengeProps> = ({
   question,
   onSubmit,
-}) => {
-  const [answer, setAnswer] = React.useState("");
+}): JSX.Element => {
+  const [answer, setAnswer] = useState("");
 
-  const handleChange = (text: string) => {
+  const handleChange = (text: string): void => {
     setAnswer(text);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
     onSubmit(answer);
     setAnswer("");
   };

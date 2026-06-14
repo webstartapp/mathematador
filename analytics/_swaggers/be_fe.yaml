@@ -3,7 +3,7 @@ servers: []
 info:
   version: 0.0.1
   title: Cyberspace-api
-  description: Hibrid game api to access databases
+  description: Hybrid game api to access databases
   contact: 
     email: limbaceha@gmail.com
     name: Karel Bohac
@@ -82,11 +82,11 @@ paths:
       responses:
         '201':
           description: Email sent
-  /Challenges/{operationId}:
+  /challenges/{operationId}:
     parameters:
       - $ref: '#/components/parameters/OperationId'
     post:
-      operationId: Challenge_start_new
+      operationId: challenge_start_new
       summary: Create a new game
       requestBody:
         required: true
@@ -100,34 +100,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Challenge'
-          description: Game Objet
+          description: Game Object
     get:
-      operationId: Challenge_get_all
-      summary: Get all user Challenges
+      operationId: challenge_get_all
+      summary: Get all user challenges
       responses:
         '200':
-          description: List of Challenges
+          description: List of challenges
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Challenge'
-  /chaleges/{operationId}/{id}:
+  /challenges/{operationId}/{id}:
     parameters:
       - $ref: '#/components/parameters/OperationId'
       - $ref: '#/components/parameters/Id'
     get:
-      operationId: Challenge_get
-      summary: Get Challenge by id
+      operationId: challenge_get
+      summary: Get challenge by id
       responses:
         '200':
-          description: Detail of Challenge
+          description: Detail of challenge
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Challenge'
     put:
-      operationId: Challenge_update_result
-      summary: Update Challenge items
+      operationId: challenge_update_result
+      summary: Update challenge items
       requestBody:
         required: true
         content:
@@ -141,10 +141,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameProgress'
-  /subscribtions:
+  /subscriptions:
     post:
-      operationId: subscribtion_update
-      summary: Add new subscribtion
+      operationId: subscription_update
+      summary: Add new subscription
       requestBody:
         required: true
         content:
@@ -153,17 +153,17 @@ paths:
               $ref: '#/components/schemas/SubscriptionCreate'
       responses:
         '200':
-          description: subscribtion added
+          description: subscription added
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
     delete:
-      operationId: subscribtion_cancel_imediatelly
-      summary: Remove subscribtion
+      operationId: subscription_cancel_immediately
+      summary: Remove subscription
       responses:
         '200':
-          description: subscribtion removed
+          description: subscription removed
   /game/progress:
     get:
       operationId: game_progress
@@ -181,19 +181,19 @@ components:
       name: operationId
       in: path
       required: true
-      description: Tags to filter by
+      description: Operation to filter by
       schema:
         type: string
         enum:
           - addition
           - subtraction
           - multiplication
-          - division+
+          - division
     Id:
       name: id
       in: path
       required: true
-      description: Unique identifier of a user registration
+      description: Unique identifier of a challenge session or user
       schema:
         type: string
         format: uuid
@@ -217,9 +217,9 @@ components:
           $ref: '#/components/schemas/Minigame'
         userId:
           $ref: '#/components/schemas/Id'
-        ChallengeId:
+        challengeId:
           $ref: '#/components/schemas/Id'
-    ExquationType:
+    EquationType:
       type: string
       enum:
         - entry
@@ -263,7 +263,7 @@ components:
               $ref: '#/components/schemas/ChallengeResultRequest'
             id:
               $ref: '#/components/schemas/Id'
-            exerises:
+            exercises:
               type: array
               items:
                 $ref: '#/components/schemas/Exercise'
@@ -301,7 +301,7 @@ components:
           type: number
         xp:
           type: number
-        Challenges:
+        challenges:
           type: array
           items:
             $ref: '#/components/schemas/Challenge'
@@ -375,7 +375,5 @@ components:
           $ref: '#/components/schemas/Id'
         name:
           type: string
-        subtraction:
+        subscription:
           $ref: '#/components/schemas/Subscription'
-        
-        

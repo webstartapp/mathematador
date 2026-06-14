@@ -1,105 +1,16 @@
-import { FC, useRef, useState } from "react";
+import { FC } from "react";
 import {
-  Animated,
   GestureResponderEvent,
-  PanResponder,
   PanResponderGestureState,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
-import { computePositionKey } from "../helpers/computePositionKey";
-import { ExerciseInputPosition } from "@/src/types/Chalenge";
+
+import { DraggableKeyboardDigit } from "@/components/minigames/components/DraggableKeyboardDigit";
+import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
+import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
-interface DraggableKeyboardDigitProps {
-  renderText: string;
-  digitSize: number;
-  orientation: "landscape" | "portrait";
-  onDrag: (
-    event: GestureResponderEvent,
-    gestureState: PanResponderGestureState,
-  ) => void;
-  onDragRelease: (
-    event: GestureResponderEvent,
-    gestureState: PanResponderGestureState,
-  ) => void;
-}
-
-const DraggableKeyboardDigit: React.FC<DraggableKeyboardDigitProps> = ({
-  renderText,
-  onDrag,
-  onDragRelease,
-  digitSize,
-  orientation,
-}) => {
-  const position = useRef(new Animated.ValueXY()).current;
-  const [initialPosition, setInitialPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
-        // Apply initial offset for better visibility under the finger
-        position.setOffset({
-          x: (position.x as any)._value,
-          y: (position.y as any)._value - 50,
-        });
-        position.setValue({ x: 0, y: 0 }); // reset so drag starts from (0,0)
-      },
-      onPanResponderMove: (event, gestureState) => {
-        Animated.event([null, { dx: position.x, dy: position.y }], {
-          useNativeDriver: false,
-        })(event, gestureState);
-        onDrag(event, gestureState);
-      },
-      onPanResponderRelease: (event, gestureState) => {
-        onDragRelease(event, gestureState);
-        position.flattenOffset();
-        // Animate back to the original position
-        Animated.spring(position, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-      onPanResponderTerminate: () => {
-        // Fallback for any unintentional release to return to the initial position
-        Animated.spring(position, {
-          toValue: { x: initialPosition?.x || 0, y: initialPosition?.y || 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-    }),
-  ).current;
-
-  return (
-    <Animated.View
-      style={[
-        styles.draggable,
-        {
-          transform: position.getTranslateTransform(),
-        },
-      ]}
-      {...panResponder.panHandlers}
-    >
-      <View style={{ position: "relative" }}>
-        <View
-          style={{
-            ...styles.draggableItem,
-            width: Math.min(digitSize, 40),
-            height: Math.min(digitSize, 40),
-          }}
-        >
-          <Text style={styles.draggableText}>{renderText}</Text>
-        </View>
-      </View>
-    </Animated.View>
-  );
-};
 const styles = StyleSheet.create({
   draggableWrapper: {
     backgroundColor: "#d49b57",
@@ -108,26 +19,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     userSelect: "none",
-  },
-  draggable: {
-    userSelect: "none",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "100%",
-  },
-  draggableItem: {
-    backgroundColor: "#d49b57",
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    userSelect: "none",
-  },
-  draggableText: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
   },
   keyboardContainer: {
     flexDirection: "row",
@@ -140,7 +31,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const digits = Array.from({ length: 10 }, (_, index) =>
+const digits = Array.from({ length: 10 }, (_ignored, index) =>
   index === 9 ? 0 : index + 1,
 );
 
@@ -171,8 +62,9 @@ const DraggableKeyboard: FC<DraggableKeyboardProps> = ({
     orientation === "landscape" ? minSizeLandscape : minSizePortrait;
   return (
     <View style={styles.keyboardContainer}>
-      {digits.map((digit, index) => (
+      {digits.map((digit) => (
         <View
+          key={`${digit}_${computePositionKey(exercisePositions)}`}
           style={{
             ...styles.draggableWrapper,
             width: orientation !== "landscape" ? digitSize : "50%",
@@ -181,9 +73,7 @@ const DraggableKeyboard: FC<DraggableKeyboardProps> = ({
           }}
         >
           <DraggableKeyboardDigit
-            key={`${digit}_${computePositionKey(exercisePositions)}`}
             renderText={String(digit)}
-            orientation={orientation}
             digitSize={digitSize}
             onDragRelease={(_event, gestureState) =>
               handleDragEnd(digit, gestureState)

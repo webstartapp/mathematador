@@ -1,4 +1,4 @@
-import { ChalengeResult, Challenge } from "./Chalenge";
+import { ChalengeResult, Challenge } from "@/types/Chalenge";
 
 export type RootStackParamList = {
   Home?: {};

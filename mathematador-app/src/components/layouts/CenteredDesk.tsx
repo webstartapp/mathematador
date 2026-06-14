@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
-import ThemedText from "../texts/ThemedText";
+
+import ThemedText from "@/components/texts/ThemedText";
 
 const localStyles = StyleSheet.create({
   container: {

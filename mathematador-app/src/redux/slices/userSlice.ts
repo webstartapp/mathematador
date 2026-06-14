@@ -1,8 +1,10 @@
+/* eslint-disable no-console */
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import { operations } from "@/src/configs/operations";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
 import { getChallengeByLevel } from "@/src/helpers/getChalengeByLevel";
 import { ChalengeResult, Challenge } from "@/src/types/Chalenge";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type OperationProgress = {
   operationId: string;
@@ -53,7 +55,7 @@ const userSlice = createSlice({
     },
     levelOperationUp(state, action: PayloadAction<string>) {
       const operationProgress = state.operationProgress.find(
-        (op) => op.operationId === action.payload,
+        (operation) => operation.operationId === action.payload,
       );
       if (operationProgress) {
         operationProgress.level += 1;
@@ -74,7 +76,7 @@ const userSlice = createSlice({
       state.xp += action.payload.xp;
       state.coins += action.payload.coins;
       const operationProgress = state.operationProgress.find(
-        (op) => op.operationId === action.payload.operationId,
+        (operation) => operation.operationId === action.payload.operationId,
       );
       if (
         operationProgress &&

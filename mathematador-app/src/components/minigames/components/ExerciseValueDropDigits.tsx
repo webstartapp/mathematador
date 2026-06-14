@@ -1,8 +1,9 @@
-import { ExerciseInputPosition } from "@/src/types/Chalenge";
 import { FC, useEffect, useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
-import ExerciseValuePreview from "./ExerciseValuePreview";
+
+import ExerciseValuePreview from "@/components/minigames/components/ExerciseValuePreview";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
+import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
 type ExerciseValueDropDigitsProps = {
   value: number | string;
@@ -29,12 +30,16 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
 
   const { primarySize } = useScreenSizes(75);
 
+  const resultValuesStr = Object.values(result || {}).join("");
   const partialResult = useMemo(() => {
     return String(value)
       .split("")
-      .map((v, i) => (result && result[i] ? result[i] : "?"))
+      .map((_valueItem, index) =>
+        result && result[index] !== undefined ? result[index] : "?",
+      )
       .join("");
-  }, [value, Object.values(result || {}).join("")]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, resultValuesStr]);
   return (
     <View style={styles.resultValue}>
       <ExerciseValuePreview

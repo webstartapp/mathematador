@@ -4,6 +4,7 @@
     "expo/tsconfig.base"
   ],
   "compilerOptions": {
+    "types": ["node", "jest"],
     "paths": {
       "@/*": [
         "./src/*",

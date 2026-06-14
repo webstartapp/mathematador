@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface NavigationParams {

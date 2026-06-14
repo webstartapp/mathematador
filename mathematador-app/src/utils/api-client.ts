@@ -1,6 +1,7 @@
-import axios, { AxiosRequestConfig } from "axios";
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import JWT from "expo-jwt";
+import axios from "axios";
+import jwtLib from "expo-jwt";
 
 const AXIOS_INSTANCE = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL || "http://localhost:4071",
@@ -8,34 +9,55 @@ const AXIOS_INSTANCE = axios.create({
 
 const PERSISTED_STATE_KEY = "persistedStateRestApi";
 
+const getAuthToken = (viewerId?: number): string | null => {
+  const secret = process.env.EXPO_PUBLIC_JWT_SECRET;
+  if (!secret || !viewerId) {
+    return null;
+  }
+  const currentTime = Math.floor(Date.now() / 1000);
+  const tokenBody = {
+    userId: viewerId,
+    exp: currentTime + 3600,
+    iat: currentTime,
+  };
+  return jwtLib.encode(tokenBody, secret);
+};
+
 export const customInstance = async <T>(
-  config: AxiosRequestConfig,
+  requestUrl: string,
+  config: any,
 ): Promise<T> => {
   const storage = await AsyncStorage.getItem(PERSISTED_STATE_KEY);
-  const { viewer } = JSON.parse(storage || "{}");
+  const parsedStorage = JSON.parse(storage || "{}");
+  const viewerId = parsedStorage?.viewer?.id;
 
   const headers: Record<string, string> = {};
 
-  if (config.headers) {
+  if (config?.headers) {
     Object.keys(config.headers).forEach((key) => {
-      headers[key] = String(config.headers![key]);
+      headers[key] = String(config.headers[key]);
     });
   }
 
-  if (process.env.EXPO_PUBLIC_JWT_SECRET && viewer?.id) {
-    const tokenBody = {
-      userId: viewer.id,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60,
-      iat: Math.floor(Date.now() / 1000),
-    };
-    const token = JWT.encode(tokenBody, process.env.EXPO_PUBLIC_JWT_SECRET);
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+  const token = getAuthToken(viewerId);
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const { body, ...rest } = config || {};
+  let requestData = body;
+  if (typeof body === "string") {
+    try {
+      requestData = JSON.parse(body);
+    } catch {
+      requestData = body;
     }
   }
 
   const response = await AXIOS_INSTANCE({
-    ...config,
+    url: requestUrl,
+    data: requestData,
+    ...rest,
     headers,
   });
   return response.data;

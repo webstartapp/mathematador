@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Dimensions } from "react-native";
 
-export function getScreenSizes(
+export const getScreenSizes = (
   primaryPercentage: number = 50,
   headerHeight: number = 0,
-) {
+) => {
   const { width, height } = Dimensions.get("window");
   const reducedHeight = height - headerHeight;
   const orientation = width > reducedHeight ? "landscape" : "portrait";
@@ -28,4 +29,4 @@ export function getScreenSizes(
     orientation,
     size: Math.min(width, reducedHeight),
   } as const;
-}
+};

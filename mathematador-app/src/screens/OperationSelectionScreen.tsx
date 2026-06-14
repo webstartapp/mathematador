@@ -1,15 +1,17 @@
+/* eslint-disable no-console, no-restricted-syntax, @typescript-eslint/explicit-function-return-type, unused-imports/no-unused-vars */
 // screens/OperationSelectionScreen.tsx
+import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { useNavigation } from "expo-router/react-navigation";
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { useNavigation } from "expo-router/react-navigation";
-import { StackNavigationProp } from "expo-router/js-stack";
-import { RootStackParamList } from "../types/Navigation";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { Operation, operations } from "../configs/operations";
-import CenteredDesk from "../components/layouts/CenteredDesk";
-import Layout from "../components/common/Layout";
 import { useDispatch } from "react-redux";
+
+import Layout from "@/components/common/Layout";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { Operation, operations } from "@/configs/operations";
+import { RootState } from "@/redux/store";
+import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
   RootStackParamList,

@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-argument, unused-imports/no-unused-vars */
 import { useEffect, useState } from "react";
-import { getScreenSizes } from "../helpers/getScreenSizes";
 import { Dimensions, NativeEventEmitter, NativeModules } from "react-native";
-import { getHeaderRef } from "./RefManager";
-import { HeaderEvents } from "../components/common/Header";
+
+import { HeaderEvents } from "@/components/common/Header";
+import { getScreenSizes } from "@/helpers/getScreenSizes";
+import { getHeaderRef } from "@/hooks/RefManager";
 
 const { HeaderModule } = NativeModules;
 
@@ -16,15 +18,12 @@ export const useScreenSizes = (primaryPercentage?: number) => {
     const onChange = () => {
       const headerRef = getHeaderRef();
       if (headerRef) {
-        headerRef?.measure((_x, _y, _width, height) => {
+        headerRef?.measure((_unusedX, _unusedY, _width, height) => {
           setScreenSizes(getScreenSizes(primaryPercentage, height));
         });
-        return () => {
-          subscription?.remove();
-          headerSubscription();
-        };
+      } else {
+        setScreenSizes(getScreenSizes(primaryPercentage));
       }
-      setScreenSizes(getScreenSizes(primaryPercentage));
     };
     onChange();
     const subscription = Dimensions.addEventListener("change", onChange);

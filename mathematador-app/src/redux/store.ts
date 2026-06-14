@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
   persistStore,
@@ -9,10 +10,10 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import userReducer from "./slices/userSlice";
-import gameReducer from "./slices/gameSlice";
-import navigationReducer from "./slices/navigationSlice";
+
+import gameReducer from "@/redux/slices/gameSlice";
+import navigationReducer from "@/redux/slices/navigationSlice";
+import userReducer from "@/redux/slices/userSlice";
 // Import other reducers as needed
 const persistConfig = {
   key: "root",

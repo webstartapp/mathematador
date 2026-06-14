@@ -1,10 +1,11 @@
-import React from "react";
+import { FC, JSX } from "react";
 import {
   TouchableOpacity,
   StyleSheet,
   GestureResponderEvent,
 } from "react-native";
-import ThemedText from "../texts/ThemedText";
+
+import ThemedText from "@/components/texts/ThemedText";
 
 interface ButtonProps {
   title: string;
@@ -13,12 +14,12 @@ interface ButtonProps {
   textStyle?: object;
 }
 
-const Button: React.FC<ButtonProps> = ({
+const Button: FC<ButtonProps> = ({
   title,
   onPress,
   style,
   textStyle,
-}) => {
+}): JSX.Element => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
       <ThemedText variant="title" style={[styles.text, textStyle]}>

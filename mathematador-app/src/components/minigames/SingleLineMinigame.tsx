@@ -1,154 +1,21 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { operations } from "../../configs/operations";
-import {
-  ChalengeResult,
-  Challenge,
-  ExerciseInputPosition,
-  ExerciseResult,
-} from "@/src/types/Chalenge";
-import MinigameKeyboard from "./components/MinigameKeyboard";
-import { computePositionKey } from "./helpers/computePositionKey";
-import ExerciseValueDropDigits from "./components/ExerciseValueDropDigits";
-import ExerciseValuePreview from "./components/ExerciseValuePreview";
-import HalvingLayout from "./components/HalvingLayout";
+import { FC, useState } from "react";
+import { Text } from "react-native";
+
+import { Exercise } from "@/components/minigames/components/Exercise";
+import HalvingLayout from "@/components/minigames/components/HalvingLayout";
+import MinigameKeyboard from "@/components/minigames/components/MinigameKeyboard";
+import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
+import { getChallengeResult } from "@/components/minigames/helpers/getChallengeResult";
+import { operations } from "@/configs/operations";
 import { MinigameComponentProps } from "@/src/configs/minigames";
+import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
-interface ExerciseProps {
-  exerciseId: number;
-  challenge: Challenge;
-  exerciseResult: Record<string, number>;
-  exercisePositions: ExerciseInputPosition[];
-  onAnswer: (answer: number) => void;
-  updateExercisePositions: (
-    exercisePositions: ExerciseInputPosition[],
-    exerciseId: number,
-  ) => void;
-}
-
-const Exercise: FC<ExerciseProps> = ({
-  challenge,
-  onAnswer,
-  updateExercisePositions,
-  exerciseResult,
-  exerciseId,
-  exercisePositions,
-}) => {
-  const exerciseIdRef = useRef(exerciseId);
-  const operation = operations.find(
-    (op) => op.operationId === challenge.operationId,
-  );
-  const exercise = challenge.exercises[exerciseId];
-  useEffect(() => {
-    exerciseIdRef.current = exerciseId;
-  }, [exerciseId]);
-
-  const result = useMemo(
-    () => operation?.getResult(exercise),
-    [exercise, operation],
-  );
-
-  const exerciseItems = useMemo(() => {
-    const exerciseList = [
-      ...(operation?.resultIsFirst ? [result] : exercise),
-      ...(!operation?.resultIsFirst ? exercise : [result]),
-    ];
-    return exerciseList.slice(0, exerciseList.length - 2);
-  }, [exercise, operation, result]);
-
-  const resultItem = useMemo(() => {
-    return operation?.resultIsFirst
-      ? exerciseItems[exerciseItems.length - 1]
-      : result;
-  }, [exerciseItems, result, operation]);
-
-  useEffect(() => {
-    const answer = Object.values(exerciseResult || {});
-    if (answer.length === String(resultItem).length) {
-      onAnswer(Number(answer.join("")));
-    }
-  }, [exerciseResult, resultItem, onAnswer]);
-
-  return (
-    <View style={styles.exerciseWrapper}>
-      <View style={styles.exercisePreviewContainer}>
-        {exerciseItems?.map((item, index) => (
-          <View style={styles.exerciseValues} key={`${item}_${index}`}>
-            <View key={index} style={styles.exerciseValue}>
-              {index !== 0 && (
-                <ExerciseValuePreview
-                  value={operation?.symbol}
-                  exerciseId={exerciseId}
-                />
-              )}
-              <ExerciseValuePreview
-                value={String(item)}
-                exerciseId={exerciseId}
-              />
-            </View>
-          </View>
-        ))}
-      </View>
-      <ExerciseValuePreview value={"="} exerciseId={exerciseId} />
-      <ExerciseValueDropDigits
-        value={resultItem || 0}
-        updateExercisePositions={(exercisePositions) =>
-          updateExercisePositions(
-            exercisePositions.map((item) => ({
-              ...item,
-              exerciseIndex: exerciseIdRef.current,
-            })),
-            exerciseIdRef.current,
-          )
-        }
-        result={exerciseResult}
-        exerciseId={exerciseId}
-        exercisePositions={exercisePositions}
-      />
-    </View>
-  );
-};
-
-const getChalengeResult = (
-  chalenge: Challenge,
-  results: Record<string, Record<string, number>>,
-  expectedResult: string | number[],
-): ChalengeResult => {
-  const exerciseResult: ExerciseResult[] = chalenge.exercises.map(
-    (exercise, index): ExerciseResult => {
-      const userResult = Object.values(results[index] || {}).join("");
-      return {
-        expectedResult: expectedResult[index],
-        userResult,
-        exercise,
-      };
-    },
-  );
-  const correctAnswers = exerciseResult.filter(
-    (exercise) =>
-      String(exercise.expectedResult) === String(exercise.userResult),
-  ).length;
-  return {
-    ...chalenge,
-    results: exerciseResult,
-    time: 0,
-    correctAnswers,
-    successful: correctAnswers + 1 >= chalenge.exercises.length,
-    coins: Math.ceil(
-      correctAnswers === chalenge.exercises.length
-        ? chalenge.coinsOnSuccess
-        : chalenge.coinsOnFailure,
-    ),
-    xp: Math.ceil(chalenge.experiencePoints),
-  };
-};
-
-const SingleLine: React.FC<MinigameComponentProps> = ({
+const SingleLine: FC<MinigameComponentProps> = ({
   challenge,
   submitResults,
 }) => {
   const operationConfig = operations.find(
-    (op) => op.operationId === challenge.operationId,
+    (operation) => operation.operationId === challenge.operationId,
   );
 
   const [exercisePositions, setExercisePositions] = useState<
@@ -159,7 +26,11 @@ const SingleLine: React.FC<MinigameComponentProps> = ({
   >({});
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
 
-  const addResponse = (exerciseId: number, keyId: number, value: number) => {
+  const addResponse = (
+    exerciseId: number,
+    keyId: number,
+    value: number,
+  ): void => {
     setExerciseResults((prev) => {
       const newResults = { ...prev };
       if (!newResults[exerciseId]) newResults[exerciseId] = {};
@@ -172,16 +43,16 @@ const SingleLine: React.FC<MinigameComponentProps> = ({
     return <Text>Challenge or Operation not found.</Text>;
   }
 
-  const { getResult, resultIsFirst, symbol } = operationConfig;
+  const { getResult } = operationConfig;
 
   const exercises = challenge.exercises;
 
-  const handleAnswer = () => {
+  const handleAnswer = (): void => {
     if (currentExerciseIndex === exercises.length - 1) {
       const expectedResults = exercises.map((exercise) =>
         getResult(exercise.slice(0, 2)),
       );
-      const results = getChalengeResult(
+      const results = getChallengeResult(
         challenge,
         exerciseResults,
         expectedResults,
@@ -210,7 +81,7 @@ const SingleLine: React.FC<MinigameComponentProps> = ({
           ) => {
             setExercisePositions((prev) => {
               const newPositions = prev.filter(
-                (pos) => pos.exerciseIndex !== exerciseIndex,
+                (position) => position.exerciseIndex !== exerciseIndex,
               );
               return [...newPositions, ...exPositions];
             });
@@ -233,44 +104,5 @@ const SingleLine: React.FC<MinigameComponentProps> = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 16,
-    userSelect: "none",
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  exerciseWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  exercisePreviewContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    userSelect: "none",
-    flexWrap: "wrap",
-  },
-  exerciseValues: {
-    flexDirection: "row",
-    alignItems: "center",
-    userSelect: "none",
-  },
-  exerciseValue: {
-    flexDirection: "row",
-    alignItems: "center",
-    userSelect: "none",
-  },
-});
 
 export default SingleLine;

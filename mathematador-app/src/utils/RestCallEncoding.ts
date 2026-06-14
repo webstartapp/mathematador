@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return */
 export const encodeRestCall = (data: Record<string, any>): string => {
   return Buffer.from(JSON.stringify(data || {}))
     .toString("base64")
@@ -21,7 +22,7 @@ export const decodeRestCall = (data: string): Record<string, any> => {
         "base64",
       ).toString("utf-8"),
     );
-  } catch (e) {
+  } catch {
     return {};
   }
 };
@@ -41,7 +42,7 @@ export const previewJSONData = (
     const debugDataStringPreview =
       debugDataString?.split("\n").slice(0, lines).join("\n") || "";
     return debugDataStringPreview;
-  } catch (e) {
+  } catch {
     return "Unknown data format";
   }
 };

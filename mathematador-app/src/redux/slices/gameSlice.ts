@@ -1,6 +1,7 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import { challenges } from "@/src/configs/challengeExercises";
 import { Challenge, ExerciseInputPosition } from "@/src/types/Chalenge";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface GameState {
   score: number;
@@ -26,8 +27,7 @@ const gameSlice = createSlice({
       state.currentOperation = action.payload;
     },
     nextChallenge: (state) => {
-      if (state.challenges.length > 0) {
-      } else {
+      if (state.challenges.length === 0) {
         state.currentOperation = null;
       }
     },

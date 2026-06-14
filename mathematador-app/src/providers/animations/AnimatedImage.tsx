@@ -1,4 +1,13 @@
-import { createContext, FC, useContext, useEffect, useState } from "react";
+/* eslint-disable max-lines, @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  ReactNode,
+} from "react";
 import { ImageSourcePropType, StyleSheet, View } from "react-native";
 import { Animated } from "react-native";
 
@@ -7,9 +16,9 @@ type AnimatedImageProps = {
 };
 
 export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
-  const scaleAnim = new Animated.Value(1);
-  const translateXAnim = new Animated.Value(0);
-  const translateYAnim = new Animated.Value(0);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const translateXAnim = useRef(new Animated.Value(0)).current;
+  const translateYAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.loop(
@@ -100,12 +109,12 @@ export const useAnimatedBackground = (image: ImageSourcePropType) => {
   }
   useEffect(() => {
     context.setBgImage(image);
-  }, [image]);
+  }, [image, context]);
   return context;
 };
 
 type AnimatedBackgroundProviderProps = {
-  children: JSX.Element;
+  children: ReactNode;
 };
 
 const AnimatedBackgroundProvider: FC<AnimatedBackgroundProviderProps> = ({

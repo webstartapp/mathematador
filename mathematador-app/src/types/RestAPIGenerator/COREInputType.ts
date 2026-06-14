@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ReactNode, ChangeEvent, FocusEventHandler } from "react";
+
 export enum COREInputTypeEnum {
   text = "text",
   password = "password",
@@ -12,16 +15,16 @@ export enum COREInputTypeEnum {
 
 export type COREInputType<T = any, ID extends keyof T = any> = {
   id: ID | `custom-${string}`;
-  label?: string | JSX.Element;
+  label?: string | ReactNode;
   selected?: boolean;
   onChange?: ({
     value,
     e,
   }: {
     value: string | string[];
-    e?: React.ChangeEvent;
+    e?: ChangeEvent;
   }) => void;
-  onFocus?: React.FocusEventHandler;
+  onFocus?: FocusEventHandler;
   type?: COREInputTypeEnum;
   tooltip?: string;
   maxLength?: number;

@@ -1,8 +1,4 @@
-import {
-  APIErrorObject,
-  APIRequestCallType,
-  ErrorObject,
-} from "@/types/RestAPIGenerator/RESTRequestType";
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, no-restricted-syntax, @typescript-eslint/explicit-function-return-type */
 import {
   UseMutationOptions,
   UseMutationResult,
@@ -11,30 +7,36 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-} from "react-query";
-import { restInnerCall } from "./RestCallHandlers";
+} from "@tanstack/react-query";
 import axios from "axios";
+
+import {
+  APIErrorObject,
+  APIRequestCallType,
+  ErrorObject,
+} from "@/types/RestAPIGenerator/RESTRequestType";
+import { restInnerCall } from "@/utils/RestCallHandlers";
 
 export const errorObject = (
   error: ErrorObject | string,
   statusCode?: number,
   APIError?: APIErrorObject,
 ) => {
-  const e: ErrorObject =
+  const errorObj: ErrorObject =
     typeof error === "string"
       ? {
           message: error,
         }
       : error;
-  if (Array.isArray(e.message)) {
-    const newMessage = e.message.join(", ");
-    e.message = newMessage;
+  if (Array.isArray(errorObj.message)) {
+    const newMessage = errorObj.message.join(", ");
+    errorObj.message = newMessage;
   }
-  e.title = typeof error === "string" ? "error.error" : error.title;
-  e.statusCode = statusCode || (error as any)?.statusCode;
-  e.APIError = APIError || (error as any)?.APIError;
-  e.stack = (error as any)?.stack || new Error().stack;
-  return e;
+  errorObj.title = typeof error === "string" ? "error.error" : error.title;
+  errorObj.statusCode = statusCode || (error as any)?.statusCode;
+  errorObj.APIError = APIError || (error as any)?.APIError;
+  errorObj.stack = (error as any)?.stack || new Error().stack;
+  return errorObj;
 };
 
 type UseCallFNType<
@@ -50,7 +52,7 @@ type UseMutationFNType<
   PATH extends keyof OPERATIONS,
 > = (
   path: PATH,
-  options: UseMutationOptions<any, ErrorObject>,
+  options: UseMutationOptions<any, ErrorObject, any>,
 ) => UseMutationResult<
   ReturnType<OPERATIONS[PATH]>["responseType"],
   ErrorObject,
@@ -86,9 +88,9 @@ export const wrapRestCalls = <
         path,
         ...params
       ) => {
-        return useQuery<any, ErrorObject>(
-          [path, JSON.stringify(params[0])],
-          async () => {
+        return useQuery<any, ErrorObject>({
+          queryKey: [path, JSON.stringify(params[0])],
+          queryFn: async () => {
             if (!operations[path])
               throw errorObject({
                 title: "error.network",
@@ -101,24 +103,26 @@ export const wrapRestCalls = <
             );
             return response.data;
           },
-          {
-            staleTime: 1000 * 60 * 15,
-            refetchOnWindowFocus: false,
-            ...useCallOptions,
-          },
-        );
+          staleTime: 1000 * 60 * 15,
+          refetchOnWindowFocus: false,
+          ...useCallOptions,
+        });
       };
       const mutateCall: UseMutationFNType<OPERATIONS, PATH> = (
         path: PATH,
-        options: UseMutationOptions<any, ErrorObject>,
+        options: UseMutationOptions<any, ErrorObject, any>,
       ) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useMutation(path as string, async (props) => {
-          const response = await restInnerCall(
-            operations[path](...(props as unknown as [any])),
-            axiosAPI,
-          );
-          return response.data;
+        return useMutation({
+          mutationKey: [path as string],
+          mutationFn: async (props: any) => {
+            const response = await restInnerCall(
+              operations[path](...(props as unknown as [any])),
+              axiosAPI,
+            );
+            return response.data;
+          },
+          ...options,
         });
       };
       const queryClient = useQueryClient();
@@ -133,12 +137,12 @@ export const wrapRestCalls = <
         },
         invalidateCall<T extends PATH>(paths: T[]) {
           paths.forEach((path) => {
-            queryClient.invalidateQueries([path]);
+            queryClient.invalidateQueries({ queryKey: [path] });
           });
         },
         useMutation<T extends PATH>(
           path: T,
-          options?: UseMutationOptions<any, ErrorObject>,
+          options?: UseMutationOptions<any, ErrorObject, any>,
         ) {
           return mutateCall(path, options || {}) as UseMutationResult<
             ReturnType<OPERATIONS[T]>["responseType"],

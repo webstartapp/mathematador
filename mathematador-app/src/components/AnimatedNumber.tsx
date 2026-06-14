@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax, react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, View, StyleSheet } from "react-native";
 

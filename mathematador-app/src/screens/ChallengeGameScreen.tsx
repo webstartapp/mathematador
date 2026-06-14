@@ -1,14 +1,15 @@
+/* eslint-disable no-console, no-restricted-syntax */
+import { useNavigation } from "expo-router";
+import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { RouteProp, useRoute } from "expo-router/react-navigation";
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Layout from "../components/common/Layout";
-import { RouteProp, useRoute } from "expo-router/react-navigation";
-
-import { RootStackParamList } from "../types/Navigation";
-import { completeChalange } from "../redux/slices/userSlice";
 import { useDispatch } from "react-redux";
-import { useNavigation } from "expo-router";
-import { StackNavigationProp } from "expo-router/js-stack";
-import { minigames } from "../configs/minigames";
+
+import Layout from "@/components/common/Layout";
+import { minigames } from "@/configs/minigames";
+import { completeChalange } from "@/redux/slices/userSlice";
+import { RootStackParamList } from "@/types/Navigation";
 
 type ChallengeScreenRouteProp = RouteProp<RootStackParamList, "Challenge">;
 type ChallengeScreenNavigationProps = StackNavigationProp<

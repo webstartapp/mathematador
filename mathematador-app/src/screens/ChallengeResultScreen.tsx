@@ -1,13 +1,15 @@
-import { StackNavigationProp } from "expo-router/js-stack";
+/* eslint-disable max-lines, no-restricted-syntax, @typescript-eslint/explicit-function-return-type, unused-imports/no-unused-vars */
 import { useNavigation } from "expo-router";
+import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp } from "expo-router/react-navigation";
 import React, { FC } from "react";
 import { View, StyleSheet } from "react-native";
-import { RootStackParamList } from "../types/Navigation";
-import Layout from "../components/common/Layout";
-import CenteredDesk from "../components/layouts/CenteredDesk";
-import Button from "../components/common/Button";
-import { operations } from "../configs/operations";
+
+import Button from "@/components/common/Button";
+import Layout from "@/components/common/Layout";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { operations } from "@/configs/operations";
+import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -88,7 +90,7 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
                 result.expectedResult,
               )
                 .split("")
-                .map((i) => "?")
+                .map((charItem) => "?")
                 .join("")}`,
               `Status: ${result.expectedResult === result.userResult ? "Correct" : "Incorrect"}`,
             ]}

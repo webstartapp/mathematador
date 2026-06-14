@@ -1,10 +1,12 @@
 import "module-alias/register";
-require("ts-node/register");
-require("tsconfig-paths/register");
-const dotenv = require("dotenv");
+import "ts-node/register";
+import "tsconfig-paths/register";
+import * as dotenv from "dotenv";
+
+import { configKnex } from "@/knexWrapper";
 
 dotenv.config({ path: ".env" });
 
-module.exports = require("@/knexWrapper").configKnex;
+module.exports = configKnex;
 
 export {};

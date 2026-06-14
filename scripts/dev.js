@@ -4,7 +4,7 @@ const path = require("path");
 
 // Load .env file from root
 const envPath = path.join(__dirname, "../.env");
-const env = {};
+const loadedEnv = {};
 if (fs.existsSync(envPath)) {
   const content = fs.readFileSync(envPath, "utf8");
   content.split("\n").forEach((line) => {
@@ -13,16 +13,16 @@ if (fs.existsSync(envPath)) {
       const match = trimmed.match(/^([^=]+)=(.*)$/);
       if (match) {
         const key = match[1].trim();
-        const val = match[2].trim().replace(/^["']|["']$/g, "");
-        env[key] = val;
-        process.env[key] = val;
+        const value = match[2].trim().replace(/^["']|["']$/g, "");
+        loadedEnv[key] = value;
+        process.env[key] = value;
       }
     }
   });
 }
 
-const port = env.PORT || "4071";
-const expoPort = env.EXPO_PORT || "4070";
+const port = loadedEnv.PORT || "4071";
+const expoPort = loadedEnv.EXPO_PORT || "4070";
 
 // Set environment variables for subprojects
 process.env.PORT = port;

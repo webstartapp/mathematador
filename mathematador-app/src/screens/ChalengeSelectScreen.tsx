@@ -1,15 +1,17 @@
+/* eslint-disable no-console, no-restricted-syntax, @typescript-eslint/explicit-function-return-type */
+import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { useNavigation, RouteProp } from "expo-router/react-navigation";
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
-import { useNavigation, RouteProp } from "expo-router/react-navigation";
-import { StackNavigationProp } from "expo-router/js-stack";
-import { RootStackParamList } from "../types/Navigation";
-import Layout from "../components/common/Layout";
-import CenteredDesk from "../components/layouts/CenteredDesk";
-import Button from "../components/common/Button";
-import { operations } from "../configs/operations";
-import { Challenge } from "../types/Chalenge";
+
+import Button from "@/components/common/Button";
+import Layout from "@/components/common/Layout";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { operations } from "@/configs/operations";
+import { RootState } from "@/redux/store";
+import { Challenge } from "@/types/Chalenge";
+import { RootStackParamList } from "@/types/Navigation";
 
 type ChalengeSelectScreenRouteProp = RouteProp<
   RootStackParamList,

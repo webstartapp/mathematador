@@ -1,6 +1,7 @@
-import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 import { FC, ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
+
+import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 
 type HalvingLayoutProps = {
   UpperComponent: ReactNode;
