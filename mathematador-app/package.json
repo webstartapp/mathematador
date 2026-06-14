@@ -57,7 +57,7 @@
     "jest": "^30.4.2",
     "jest-expo": "~56.0.5",
     "react-test-renderer": "19.2.3",
-    "typescript": "~5.3.3",
+    "typescript": "^6.0.3",
     "postcss": "^8.5.15",
     "ws": "^8.21.0",
     "undici": "^6.26.0",
