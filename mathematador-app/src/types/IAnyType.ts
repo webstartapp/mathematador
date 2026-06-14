@@ -1,4 +1,5 @@
-import { ObjectShape } from 'yup';
+/* eslint-disable */
+import { ObjectShape } from "yup";
 
 export type IAnyType = any;
 

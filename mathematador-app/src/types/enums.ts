@@ -1,32 +1,32 @@
 export enum DBReadEnum {
-  'all' = 'all',
-  'detail' = 'detail',
-  'none' = 'none',
+  "all" = "all",
+  "detail" = "detail",
+  "none" = "none",
 }
 export enum DBObjectEnum {
-  'none' = 'none',
-  'object' = 'object',
-  'array' = 'array',
+  "none" = "none",
+  "object" = "object",
+  "array" = "array",
 }
 export enum DBWriteEnum {
-  'createOnly' = 'createOnly',
-  'any' = 'any',
-  'none' = 'none',
+  "createOnly" = "createOnly",
+  "any" = "any",
+  "none" = "none",
 }
 export enum COREFormInputTypeEnum {
-  Input = 'input',
-  Select = 'select',
-  SelectProvider = 'selectProvider',
-  SelectUser = 'selectUser',
-  Date = 'date',
-  MultiSelect = 'multiselect',
-  Submit = 'submit',
-  Upload = 'upload',
-  Reset = 'reset',
-  Separator = 'separator',
-  Checkboxes = 'checkboxes',
-  Radio = 'radio',
-  Preview = 'preview',
+  Input = "input",
+  Select = "select",
+  SelectProvider = "selectProvider",
+  SelectUser = "selectUser",
+  Date = "date",
+  MultiSelect = "multiselect",
+  Submit = "submit",
+  Upload = "upload",
+  Reset = "reset",
+  Separator = "separator",
+  Checkboxes = "checkboxes",
+  Radio = "radio",
+  Preview = "preview",
 }
 export type COREFormInputType = `${COREFormInputTypeEnum}`;
 
@@ -38,13 +38,13 @@ export type COREFormInputType = `${COREFormInputTypeEnum}`;
  *
  */
 export enum COREInputTypeEnum {
-  text = 'text',
-  password = 'password',
-  date = 'date',
-  dateTime = 'datetime-local',
-  dateTimeSeconds = 'datetime-seconds',
-  time = 'time',
-  number = 'number',
-  email = 'email',
-  binary = 'file',
+  text = "text",
+  password = "password",
+  date = "date",
+  dateTime = "datetime-local",
+  dateTimeSeconds = "datetime-seconds",
+  time = "time",
+  number = "number",
+  email = "email",
+  binary = "file",
 }

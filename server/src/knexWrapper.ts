@@ -1,9 +1,10 @@
-// import knexHandler, { Config } from "knex";
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/explicit-function-return-type, no-console */
+import * as dotenv from "dotenv";
 import { knex as knexHandler, Knex } from "knex";
+
 import { ExpressResolverType } from "@/resolvers/expressTypeResolver";
 import { IDBType } from "@/types/KnexDBType";
 
-const dotenv = require("dotenv");
 dotenv.config({ path: ".env" });
 
 export const isItProductionDB = () => {
@@ -16,8 +17,8 @@ export const sanateInsertData = <T extends string>(
   withDefault: Partial<Record<T, any>> = {}
 ) => {
   const processedData = Array.isArray(data) ? data : [data];
-  return processedData.map((d) => {
-    const out: Record<string, any> = {
+  return processedData.map((dataItem) => {
+    const result: Record<string, any> = {
       ...withDefault
     };
     if (!Object.keys(DBModel.properties || {}).length) {
@@ -25,13 +26,13 @@ export const sanateInsertData = <T extends string>(
     }
     Object.keys(DBModel.properties || {}).forEach((key) => {
       const property = DBModel.properties[key as keyof typeof DBModel.properties];
-      if (Array.isArray(d[property])) {
-        out[key] = JSON.stringify(d[property]);
+      if (Array.isArray(dataItem[property])) {
+        result[key] = JSON.stringify(dataItem[property]);
       } else {
-        out[key] = d[property] === undefined ? out[key] : d[property];
+        result[key] = dataItem[property] === undefined ? result[key] : dataItem[property];
       }
     });
-    return out;
+    return result;
   });
 };
 export const unwrappDBJSON = <DATA extends Record<string, any> | Record<string, any>[]>(
@@ -39,25 +40,25 @@ export const unwrappDBJSON = <DATA extends Record<string, any> | Record<string, 
   properties: (DATA extends Array<infer T> ? keyof T : keyof DATA)[]
 ): DATA => {
   if (Array.isArray(data)) {
-    return data.map((d) => unwrappDBJSON(d, properties)) as DATA;
+    return data.map((dataItem) => unwrappDBJSON(dataItem, properties)) as DATA;
   }
-  const out = { ...data };
+  const result = { ...data };
   properties.forEach((prop) => {
-    console.log(prop, out[prop], typeof out[prop]);
-    if (typeof out[prop] === "string") {
+    console.log(prop, result[prop], typeof result[prop]);
+    if (typeof result[prop] === "string") {
       try {
-        out[prop] = JSON.parse(out[prop]);
-      } catch (e) {
-        out[prop] = [] as never;
-        console.log(51, e);
+        result[prop] = JSON.parse(result[prop]);
+      } catch (error) {
+        result[prop] = [] as never;
+        console.log(51, error);
         return;
       }
     }
   });
-  return out;
+  return result;
 };
 
-export const configKnex: (p?: { followerDB?: boolean }) => Knex.Config = (p) => ({
+export const configKnex: (params?: { followerDB?: boolean }) => Knex.Config = (_params) => ({
   client: "pg",
   connection: {
     connectionString: isItProductionDB() ? process.env.DATABASE_URL : process.env.STAGE_DATABASE_URL,

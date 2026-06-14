@@ -1,153 +1,73 @@
-require("tsconfig-paths/register");
-import { GameDB } from "@/entities/game/game";
-import { UserDB } from "@/entities/user/user";
-import { QuestBooksDB } from "@/entities/game/QuestBooks";
-import { SfinxDB } from "@/entities/game/sfinx";
-import { MediaTrapsDB } from "@/entities/game/MediaTraps";
-import { MonstersDB } from "@/entities/game/monsters";
-import { KnexMigrateType } from "@/types/KnexDBType";
+/* eslint-disable no-console */
 import type { Knex } from "knex";
+
 import { hashPassword } from "@/utils/password";
-import { IUserRoles } from "@/_generated/sessionOperations";
-import { TagsDB } from "@/entities/tags";
 
-const upUser = async (knex: KnexMigrateType<"users">) => {
-  await knex.schema.createTable(UserDB.table, (table) => {
-    console.log({
-      ...UserDB.properties
-    });
-    table.uuid(UserDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(UserDB.properties.created).defaultTo(knex.fn.now());
-    table.string(UserDB.properties.username);
-    table.string(UserDB.properties.email);
-    table.string(UserDB.properties.password);
-    table.string(UserDB.properties.role);
+export const up = async (knex: Knex): Promise<void> => {
+  // Enable UUID extension if not exists
+  await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+
+  // 1. Create users table
+  await knex.schema.createTable("users", (table) => {
+    table.uuid("id").primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
+    table.timestamp("created").defaultTo(knex.fn.now());
+    table.string("username").notNullable().unique();
+    table.string("email").notNullable();
+    table.string("password").notNullable();
+    table.string("role").notNullable().defaultTo("user");
   });
-  console.log("User table created");
-  return;
-};
+  console.log("Users table created");
 
-const upGame = async (knex: KnexMigrateType<"games">) => {
-  await knex.schema.createTable(GameDB.table, (table) => {
-    table.uuid(GameDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(GameDB.properties.created).defaultTo(knex.fn.now());
-    table.boolean(GameDB.properties.completed);
-    table.boolean(GameDB.properties.isLongGame);
-    table.string(GameDB.properties.language);
-    table.jsonb(GameDB.properties.sfinxs);
-    table.jsonb(GameDB.properties.mediaTraps);
-    table.jsonb(GameDB.properties.questBooks);
-    table.jsonb(GameDB.properties.monsters);
-    table.jsonb(GameDB.properties.tags);
-    table.jsonb(GameDB.properties.mediaTrapColorOrder);
-    table.jsonb(GameDB.properties.monsterColorOrder);
-    table.jsonb(GameDB.properties.sfinxColorOrder);
-    table.jsonb(GameDB.properties.questBookColorOrder);
+  // 2. Create subscriptions table
+  await knex.schema.createTable("subscriptions", (table) => {
+    table.uuid("id").primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
+    table.timestamp("created").defaultTo(knex.fn.now());
+    table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable();
+    table.string("type").notNullable(); // "addsFree" or "full"
+    table.boolean("auto_renew").notNullable().defaultTo(true);
   });
-  console.log("Game table created");
-  return;
-};
+  console.log("Subscriptions table created");
 
-const upTags = async (knex: KnexMigrateType<"tags">) => {
-  await knex.schema.createTable(TagsDB.table, (table) => {
-    table.uuid(TagsDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(TagsDB.properties.created).defaultTo(knex.fn.now());
-    table.string(TagsDB.properties.name);
-    table.boolean(TagsDB.properties.active);
-    table.text(TagsDB.properties.icon);
+  // 3. Create challenges table
+  await knex.schema.createTable("challenges", (table) => {
+    table.uuid("id").primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
+    table.timestamp("created").defaultTo(knex.fn.now());
+    table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable();
+    table.string("operation_id").notNullable(); // "addition", "subtraction", "multiplication", "division"
+    table.string("minigame").notNullable(); // "singleLine", "dragAndDrop", "crossNumbers", "memory"
+    table.jsonb("exercises").notNullable(); // array of exercise objects
+    table.jsonb("result"); // result object (time, results, correctAnswers, coins, xp)
+    table.boolean("completed").notNullable().defaultTo(false);
   });
-  console.log("Tags table created");
-  return;
-};
+  console.log("Challenges table created");
 
-const upSfinx = async (knex: KnexMigrateType<"sfinxs">) => {
-  await knex.schema.createTable(SfinxDB.table, (table) => {
-    table.uuid(SfinxDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(SfinxDB.properties.created).defaultTo(knex.fn.now());
-    table.text(SfinxDB.properties.answers);
-    table.text(SfinxDB.properties.correctAnswer);
-    table.string(SfinxDB.properties.question);
-    table.string(SfinxDB.properties.title);
-    table.text(SfinxDB.properties.picture);
-    table.jsonb(SfinxDB.properties.tags);
-    table.string(SfinxDB.properties.offlineKey);
-    table.boolean(SfinxDB.properties.active).defaultTo(false);
+  // 4. Create operation_progress table
+  await knex.schema.createTable("operation_progress", (table) => {
+    table.uuid("id").primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
+    table.timestamp("created").defaultTo(knex.fn.now());
+    table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable();
+    table.string("operation_id").notNullable(); // "addition", "subtraction", "multiplication", "division"
+    table.integer("level").notNullable().defaultTo(1);
+    table.integer("xp").notNullable().defaultTo(0);
+    // Unique constraint on (user_id, operation_id) to prevent duplicate tracks
+    table.unique(["user_id", "operation_id"]);
   });
-  console.log("Sfinx table created");
-  return;
-};
+  console.log("Operation progress table created");
 
-const upMediaTraps = async (knex: KnexMigrateType<"media_traps">) => {
-  await knex.schema.createTable(MediaTrapsDB.table, (table) => {
-    table.uuid(MediaTrapsDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(MediaTrapsDB.properties.created).defaultTo(knex.fn.now());
-    table.string(MediaTrapsDB.properties.title);
-    table.boolean(MediaTrapsDB.properties.isTrue);
-    table.text(MediaTrapsDB.properties.media);
-    table.string(MediaTrapsDB.properties.question);
-    table.jsonb(MediaTrapsDB.properties.tags);
-    table.boolean(MediaTrapsDB.properties.active).defaultTo(false);
-  });
-  console.log("MediaTraps table created");
-  return;
-};
-
-const upMonsters = async (knex: KnexMigrateType<"monsters">) => {
-  await knex.schema.createTable(MonstersDB.table, (table) => {
-    table.uuid(MonstersDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(MonstersDB.properties.created).defaultTo(knex.fn.now());
-    table.string(MonstersDB.properties.title);
-    table.string(MonstersDB.properties.description);
-    table.text(MonstersDB.properties.image);
-    table.integer(MonstersDB.properties.awarensess);
-    table.string(MonstersDB.properties.offlineKey);
-    table.boolean(MonstersDB.properties.active).defaultTo(false);
-  });
-  console.log("Monsters table created");
-  return;
-};
-
-const upQuestBooks = async (knex: KnexMigrateType<"quest_books">) => {
-  await knex.schema.createTable(QuestBooksDB.table, (table) => {
-    table.uuid(QuestBooksDB.properties.id).primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp(QuestBooksDB.properties.created).defaultTo(knex.fn.now());
-    table.string(QuestBooksDB.properties.title);
-    table.string(QuestBooksDB.properties.question);
-    table.jsonb(QuestBooksDB.properties.answer1);
-    table.jsonb(QuestBooksDB.properties.answer2);
-    table.jsonb(QuestBooksDB.properties.tags);
-    table.boolean(QuestBooksDB.properties.active).defaultTo(false);
-  });
-  console.log("QuestBooks table created");
-  return;
-};
-
-export async function up(
-  knex: KnexMigrateType<"games" | "users" | "sfinxs" | "media_traps" | "monsters" | "quest_books" | "tags">
-): Promise<void> {
-  console.log(UserDB);
-  await upUser(knex as KnexMigrateType<"users">);
-  await upGame(knex as KnexMigrateType<"games">);
-  await upSfinx(knex as KnexMigrateType<"sfinxs">);
-  await upMediaTraps(knex as KnexMigrateType<"media_traps">);
-  await upMonsters(knex as KnexMigrateType<"monsters">);
-  await upQuestBooks(knex as KnexMigrateType<"quest_books">);
-  await upTags(knex as KnexMigrateType<"tags">);
+  // Create a default root admin user
   const rootPasswordHash = await hashPassword("cestapoznani");
   await knex("users").insert({
     username: "root",
     password: rootPasswordHash,
-    email: "",
-    role: IUserRoles.Admin
+    email: "root@example.com",
+    role: "admin"
   });
-}
+  console.log("Root user created");
+};
 
-export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTable(UserDB.table);
-  await knex.schema.dropTable(GameDB.table);
-  await knex.schema.dropTable(SfinxDB.table);
-  await knex.schema.dropTable(MediaTrapsDB.table);
-  await knex.schema.dropTable(MonstersDB.table);
-  await knex.schema.dropTable(QuestBooksDB.table);
-  await knex.schema.dropTable(TagsDB.table);
-}
+export const down = async (knex: Knex): Promise<void> => {
+  await knex.schema.dropTableIfExists("operation_progress");
+  await knex.schema.dropTableIfExists("challenges");
+  await knex.schema.dropTableIfExists("subscriptions");
+  await knex.schema.dropTableIfExists("users");
+};

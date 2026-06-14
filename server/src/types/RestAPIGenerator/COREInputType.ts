@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export enum COREInputTypeEnum {
   text = "text",
   password = "password",
@@ -30,7 +31,6 @@ export type CORESelectOptionsType = {
   negative?: string | number | boolean;
 };
 
-// eslint-disable-next-line no-use-before-define
 export type CORESelectOnFilter = (filetrData: { value: string; field: CORESelectType }) => void;
 
 export type CORESelectType<T = any, ID extends keyof T = keyof T> = COREInputType<T, ID> & {

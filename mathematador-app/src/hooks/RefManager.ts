@@ -1,11 +1,12 @@
-import { View } from 'react-native';
+/* eslint-disable @typescript-eslint/explicit-function-return-type, @typescript-eslint/consistent-type-assertions */
+import { View } from "react-native";
 
 const RefManager = {
-    headerRef: null as null | View,
+  headerRef: null as null | View,
 };
 
-export const setHeaderRef = (ref: View | null) => {
-    RefManager.headerRef = ref;
+export const setHeaderRef = (headerRefInstance: View | null) => {
+  RefManager.headerRef = headerRefInstance;
 };
 
 export const getHeaderRef = () => RefManager.headerRef;

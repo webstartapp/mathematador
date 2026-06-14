@@ -1,30 +1,35 @@
-import { ITokenBody } from "@/_generated/sessionOperations";
-import JWT from "jsonwebtoken";
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
+import jwtLib from "jsonwebtoken";
+
+export interface ITokenBody {
+  userId: string;
+  role: string;
+}
 
 export const tokenContext = (token: string): ITokenBody => {
   const validToken = verifyToken(token);
   if (!validToken) {
     throw new Error("Invalid token");
   }
-  const tokenData = JWT.decode(token);
+  const tokenData = jwtLib.decode(token);
   if (!tokenData) {
     throw new Error("Invalid token");
   }
   return tokenData as ITokenBody;
 };
 
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): string | jwtLib.JwtPayload => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error("JWT secret is not defined");
   }
-  return JWT.verify(token, secret);
+  return jwtLib.verify(token, secret);
 };
 
-export const signToken = (data: ITokenBody) => {
+export const signToken = (data: ITokenBody): string => {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error("JWT secret is not defined");
   }
-  return JWT.sign(data, secret);
+  return jwtLib.sign(data, secret);
 };

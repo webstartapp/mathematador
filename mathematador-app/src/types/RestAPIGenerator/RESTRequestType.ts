@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type RESTRequestType<T = any> = {
   method: string;
   url: string;
@@ -30,7 +31,7 @@ export type APIRequestCallType<T = any, U = any, V = any> = (
 
 export type APIRequestType<
   RequestCallType extends APIRequestCallType = APIRequestCallType,
-> = Omit<Request, 'query' | 'body' | 'headers'> & {
+> = Omit<Request, "query" | "body" | "headers"> & {
   query: Parameters<RequestCallType>[0];
   json: () => Promise<Parameters<RequestCallType>[1]>;
   headers: { get: (header: string) => string };

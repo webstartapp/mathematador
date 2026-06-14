@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ReactNode } from "react";
+
+import { COREFormInputTypeEnum } from "@/types/enums";
 import {
   COREInputType,
   CORESelectType,
-  // eslint-disable-next-line import/no-unresolved
-} from '@/types/RestAPIGenerator/COREInputType';
-// eslint-disable-next-line import/no-unresolved
-import { COREFormInputTypeEnum } from '@/types/enums';
+} from "@/types/RestAPIGenerator/COREInputType";
 
 export type COREFormFieldType<T = any> = COREInputType<
   T,
@@ -12,7 +13,7 @@ export type COREFormFieldType<T = any> = COREInputType<
 > &
   CORESelectType & {
     input?: COREFormInputTypeEnum;
-    custom?: JSX.Element;
+    custom?: ReactNode;
     preview?: boolean;
     hidden?: boolean;
   };

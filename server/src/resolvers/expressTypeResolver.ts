@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions */
+import { Request } from "express";
+
 import { APIResolversType } from "@/_generated/sessionOperations";
 import { DBConfig, DBConfigType, IDBType } from "@/types/KnexDBType";
-import { Request } from "express";
 
 export type Viewer = {
   id: string;

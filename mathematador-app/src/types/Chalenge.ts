@@ -1,6 +1,7 @@
 export type Exercise = number[];
 
 export type Challenge = {
+  challengeId: number;
   challengeOrderId: number;
   exercises: Exercise[];
   maxTime: number;
@@ -28,12 +29,12 @@ export type ChalengeResult = Challenge & {
 };
 
 export type InputPosition = {
-    x: number;
-    y: number;
-    width: number;
-}
+  x: number;
+  y: number;
+  width: number;
+};
 
 export type ExerciseInputPosition = InputPosition & {
-    exerciseIndex: number;
-    inputIndex: number;
-  };
+  exerciseIndex: number;
+  inputIndex: number;
+};

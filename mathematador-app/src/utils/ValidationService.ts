@@ -1,7 +1,7 @@
-import * as yup from 'yup';
-import { ObjectShape } from 'yup';
+import * as yupValidator from "yup";
+import { ObjectShape } from "yup";
 
-// yup.setLocale({
+// yupValidator.setLocale({
 //   mixed: {
 //     notType: ({ type, originalValue, path }: any) => {
 //       // Customize error messages based on type
@@ -20,8 +20,6 @@ import { ObjectShape } from 'yup';
 //   number: {
 //     min: ({ min }) => `The minimum is ${min}`,
 //     integer: 'Should be an integer',
-//   },
-//   date: {
 //     min: ({ min }) => `Date should not be before ${min}`,
 //     max: ({ max }) => `Date should not be after ${max}`,
 //   },
@@ -29,22 +27,32 @@ import { ObjectShape } from 'yup';
 
 export const validateData = (
   validationSchema?: ObjectShape,
-  data: any = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: Record<string, any> = {},
   dataName?: string,
 ): Record<string, string> | undefined => {
   if (!validationSchema) return undefined;
-  const validateWith = dataName ? { [dataName]: validationSchema[dataName] } : validationSchema;
+  const validateWith = dataName
+    ? { [dataName]: validationSchema[dataName] }
+    : validationSchema;
   try {
-    yup.object().shape(validateWith).validateSync(data, { abortEarly: false });
+    yupValidator
+      .object()
+      .shape(validateWith)
+      .validateSync(data, { abortEarly: false });
     return undefined;
-  } catch (e: any) {
-    console.log(41, e.inner);
-    const errorOut: Record<string, string> = {};
-    e.inner?.forEach((error: any) => {
-      errorOut[error.path] = error.message;
-    });
-    return errorOut;
+  } catch (error) {
+    if (error instanceof yupValidator.ValidationError) {
+      const errorOut: Record<string, string> = {};
+      error.inner.forEach((errorItem) => {
+        if (errorItem.path) {
+          errorOut[errorItem.path] = errorItem.message;
+        }
+      });
+      return errorOut;
+    }
+    return { global: error instanceof Error ? error.message : String(error) };
   }
 };
 
-export default yup;
+export default yupValidator;

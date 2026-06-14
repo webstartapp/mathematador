@@ -1,17 +1,18 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-import Button from '../components/common/Button';
-import Layout from '../components/common/Layout';
-import { StackNavigationProp } from '@react-navigation/stack';
-import imageBG from '../../assets/images/intro-screen.png';
-import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../types/Navigation';
-import { useAnimatedBackground } from '../providers/animations/AnimatedImage';
-import CenteredDesk from '../components/layouts/CenteredDesk';
-import { getChallengeByLevel } from '../helpers/getChalengeByLevel';
+/* eslint-disable no-restricted-syntax, @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-argument */
+import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { useNavigation } from "expo-router/react-navigation";
+import React from "react";
+import { useSelector } from "react-redux";
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
+import imageBG from "@/assets/images/intro-screen.png";
+import Button from "@/components/common/Button";
+import Layout from "@/components/common/Layout";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
+import { RootState } from "@/redux/store";
+import { RootStackParamList } from "@/types/Navigation";
+
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 
 const HomeScreen: React.FC = () => {
   useAnimatedBackground(imageBG);
@@ -19,17 +20,14 @@ const HomeScreen: React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
 
   const handleStartGame = () => {
-    navigation.navigate('SelectOperation');
+    navigation.navigate("SelectOperation");
   };
 
   return (
     <Layout>
       <CenteredDesk
         title={`Welcome, ${user.name}`}
-        subtitles={[
-          `Level ${user.level}`,
-          `XP: ${user.xp}`,
-        ]}
+        subtitles={[`Level ${user.level}`, `XP: ${user.xp}`]}
       >
         <Button title="Start Game" onPress={handleStartGame} />
       </CenteredDesk>

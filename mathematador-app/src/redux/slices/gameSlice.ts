@@ -1,6 +1,7 @@
-import { challenges } from '@/src/configs/challengeExercises';
-import { Challenge, ExerciseInputPosition } from '@/src/types/Chalenge';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { challenges } from "@/src/configs/challengeExercises";
+import { Challenge, ExerciseInputPosition } from "@/src/types/Chalenge";
 
 interface GameState {
   score: number;
@@ -19,15 +20,14 @@ const initialState: GameState = {
 };
 
 const gameSlice = createSlice({
-  name: 'game',
+  name: "game",
   initialState,
   reducers: {
     setCurrentOperation: (state, action: PayloadAction<string | null>) => {
       state.currentOperation = action.payload;
     },
     nextChallenge: (state) => {
-      if (state.challenges.length > 0) {
-      } else {
+      if (state.challenges.length === 0) {
         state.currentOperation = null;
       }
     },
@@ -38,14 +38,23 @@ const gameSlice = createSlice({
       state.level += 1;
       state.score = 0;
     },
-    setInputPositions: (state, action: PayloadAction<ExerciseInputPosition[]>) => {
-      const newExercises = action.payload.map(({exerciseIndex}) => exerciseIndex);
-      const updatedInputPositions = state.inputPositions.filter(position=> !newExercises.includes(position.exerciseIndex));
+    setInputPositions: (
+      state,
+      action: PayloadAction<ExerciseInputPosition[]>,
+    ) => {
+      const newExercises = action.payload.map(
+        ({ exerciseIndex }) => exerciseIndex,
+      );
+      const updatedInputPositions = state.inputPositions.filter(
+        (position) => !newExercises.includes(position.exerciseIndex),
+      );
       state.inputPositions = [...updatedInputPositions, ...action.payload];
     },
     keepOnlyInputPositions: (state, actions: PayloadAction<number[]>) => {
-      state.inputPositions = state.inputPositions.filter(({exerciseIndex}) => actions.payload.includes(exerciseIndex));
-    }
+      state.inputPositions = state.inputPositions.filter(({ exerciseIndex }) =>
+        actions.payload.includes(exerciseIndex),
+      );
+    },
   },
 });
 

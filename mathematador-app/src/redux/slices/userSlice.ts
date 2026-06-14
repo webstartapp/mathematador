@@ -1,8 +1,10 @@
-import { operations } from '@/src/configs/operations';
-import { calculateXPToNextLevel } from '@/src/helpers/calculateXPToNextLevel';
-import { getChallengeByLevel } from '@/src/helpers/getChalengeByLevel';
-import { ChalengeResult, Challenge, Exercise } from '@/src/types/Chalenge';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+/* eslint-disable no-console */
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+import { operations } from "@/src/configs/operations";
+import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
+import { getChallengeByLevel } from "@/src/helpers/getChalengeByLevel";
+import { ChalengeResult, Challenge } from "@/src/types/Chalenge";
 
 type OperationProgress = {
   operationId: string;
@@ -12,7 +14,7 @@ type OperationProgress = {
   currentChallengeId: number;
   currentChallenge: Challenge;
   completedChallenges: ChalengeResult[];
-}
+};
 interface UserState {
   name: string;
   level: number;
@@ -23,12 +25,12 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  name: 'Corina',
+  name: "Corina",
   level: 1,
   xp: 0,
   coins: 0,
   xpToNextLevel: calculateXPToNextLevel(1 * 2),
-  operationProgress: operations.map(operation => ({
+  operationProgress: operations.map((operation) => ({
     completedChallenges: [],
     currentChallengeId: 1,
     level: 1,
@@ -40,7 +42,7 @@ const initialState: UserState = {
 };
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setName(state, action: PayloadAction<string>) {
@@ -52,30 +54,49 @@ const userSlice = createSlice({
       state.xpToNextLevel = calculateXPToNextLevel(state.level); // Recalculate XP requirement
     },
     levelOperationUp(state, action: PayloadAction<string>) {
-      const operationProgress = state.operationProgress.find(op => op.operationId === action.payload);
+      const operationProgress = state.operationProgress.find(
+        (operation) => operation.operationId === action.payload,
+      );
       if (operationProgress) {
         operationProgress.level += 1;
-        operationProgress.xp = operationProgress.xp - operationProgress.xpToNextLevel;
-        operationProgress.xpToNextLevel = calculateXPToNextLevel(operationProgress.level);
-        operationProgress.currentChallenge = getChallengeByLevel(operationProgress.level, operationProgress.operationId, operationProgress.currentChallengeId);
+        operationProgress.xp =
+          operationProgress.xp - operationProgress.xpToNextLevel;
+        operationProgress.xpToNextLevel = calculateXPToNextLevel(
+          operationProgress.level,
+        );
+        operationProgress.currentChallenge = getChallengeByLevel(
+          operationProgress.level,
+          operationProgress.operationId,
+          operationProgress.currentChallengeId,
+        );
       }
     },
     completeChalange(state, action: PayloadAction<ChalengeResult>) {
       console.log(50, action.payload);
       state.xp += action.payload.xp;
       state.coins += action.payload.coins;
-      const operationProgress = state.operationProgress.find(op => op.operationId === action.payload.operationId);
-      if (operationProgress && operationProgress.currentChallengeId === action.payload.challengeOrderId) {
+      const operationProgress = state.operationProgress.find(
+        (operation) => operation.operationId === action.payload.operationId,
+      );
+      if (
+        operationProgress &&
+        operationProgress.currentChallengeId === action.payload.challengeOrderId
+      ) {
         const nextChallengeId = operationProgress.currentChallengeId + 1;
         operationProgress.xp += action.payload.xp;
         operationProgress.currentChallengeId = nextChallengeId;
-        operationProgress.currentChallenge = getChallengeByLevel(operationProgress.level, operationProgress.operationId, nextChallengeId);
+        operationProgress.currentChallenge = getChallengeByLevel(
+          operationProgress.level,
+          operationProgress.operationId,
+          nextChallengeId,
+        );
         operationProgress.completedChallenges.push(action.payload);
       }
-    }
+    },
     // Add other reducers as needed
   },
 });
 
-export const { setName, levelOperationUp, levelUserUp, completeChalange } = userSlice.actions;
+export const { setName, levelOperationUp, levelUserUp, completeChalange } =
+  userSlice.actions;
 export default userSlice.reducer;

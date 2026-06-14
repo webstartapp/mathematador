@@ -1,27 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ReactNode, ChangeEvent, FocusEventHandler } from "react";
+
 export enum COREInputTypeEnum {
-  text = 'text',
-  password = 'password',
-  date = 'date',
-  dateTime = 'datetime-local',
-  dateTimeSeconds = 'datetime-seconds',
-  time = 'time',
-  number = 'number',
-  email = 'email',
-  binary = 'file',
+  text = "text",
+  password = "password",
+  date = "date",
+  dateTime = "datetime-local",
+  dateTimeSeconds = "datetime-seconds",
+  time = "time",
+  number = "number",
+  email = "email",
+  binary = "file",
 }
 
 export type COREInputType<T = any, ID extends keyof T = any> = {
   id: ID | `custom-${string}`;
-  label?: string | JSX.Element;
+  label?: string | ReactNode;
   selected?: boolean;
   onChange?: ({
     value,
     e,
   }: {
     value: string | string[];
-    e?: React.ChangeEvent;
+    e?: ChangeEvent;
   }) => void;
-  onFocus?: React.FocusEventHandler;
+  onFocus?: FocusEventHandler;
   type?: COREInputTypeEnum;
   tooltip?: string;
   maxLength?: number;
@@ -34,7 +37,6 @@ export type CORESelectOptionsType = {
   negative?: string | number | boolean;
 };
 
-// eslint-disable-next-line no-use-before-define
 export type CORESelectOnFilter = (filetrData: {
   value: string;
   field: CORESelectType;

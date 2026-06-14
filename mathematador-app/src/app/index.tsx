@@ -1,22 +1,28 @@
-import { createStackNavigator } from "@react-navigation/stack";
-
-import HomeScreen from '../screens/HomeScreen';
-import ChallengeScreen from '../screens/ChallengeGameScreen';
-import GameHeader from "../components/common/Header";
-import { RootStackParamList } from "../types/Navigation";
-import OperationSelectionScreen from "../screens/OperationSelectionScreen";
-import ChalengeSelectScreen from "../screens/ChalengeSelectScreen";
-import ChallengeResultScreen from "../screens/ChallengeResultScreen";
+import {
+  createStackNavigator,
+  StackHeaderProps,
+} from "expo-router/build/react-navigation/stack";
+import { JSX } from "react";
 import { View } from "react-native";
-import AnimatedBackgroundProvider from "../providers/animations/AnimatedImage";
-// Import other screens as needed
 
+import GameHeader from "@/components/common/Header";
+import AnimatedBackgroundProvider from "@/providers/animations/AnimatedImage";
+import ChalengeSelectScreen from "@/screens/ChalengeSelectScreen";
+import ChallengeScreen from "@/screens/ChallengeGameScreen";
+import ChallengeResultScreen from "@/screens/ChallengeResultScreen";
+import HomeScreen from "@/screens/HomeScreen";
+import OperationSelectionScreen from "@/screens/OperationSelectionScreen";
+import { RootStackParamList } from "@/types/Navigation";
+// Import other screens as needed
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-const IndexPage = () => (
-  <AnimatedBackgroundProvider>  
-    <View style={{ flex: 1, backgroundColor: 'transparent', width: '100%' }} id="_main_layout_holder">
+const IndexPage = (): JSX.Element => (
+  <AnimatedBackgroundProvider>
+    <View
+      style={{ flex: 1, backgroundColor: "transparent", width: "100%" }}
+      id="_main_layout_holder"
+    >
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
@@ -28,7 +34,7 @@ const IndexPage = () => (
           component={HomeScreen}
           options={{
             headerShown: true,
-            header: (props) => <GameHeader props={props} />,
+            header: (props: StackHeaderProps) => <GameHeader props={props} />,
           }}
         />
         <Stack.Screen
@@ -36,7 +42,9 @@ const IndexPage = () => (
           component={OperationSelectionScreen}
           options={{
             headerShown: true,
-            header: (props) => <GameHeader backTo="Home" props={props} />,
+            header: (props: StackHeaderProps) => (
+              <GameHeader backTo="Home" props={props} />
+            ),
           }}
         />
         <Stack.Screen
@@ -44,7 +52,9 @@ const IndexPage = () => (
           component={ChalengeSelectScreen}
           options={{
             headerShown: true,
-            header: (props) => <GameHeader backTo="Home" showOperation props={props} />,
+            header: (props: StackHeaderProps) => (
+              <GameHeader backTo="Home" showOperation props={props} />
+            ),
           }}
         />
         <Stack.Screen
@@ -52,7 +62,9 @@ const IndexPage = () => (
           component={ChallengeResultScreen}
           options={{
             headerShown: true,
-            header: (props) => <GameHeader backTo="Home" showOperation props={props} />,
+            header: (props: StackHeaderProps) => (
+              <GameHeader backTo="Home" showOperation props={props} />
+            ),
           }}
         />
         <Stack.Screen
@@ -60,7 +72,9 @@ const IndexPage = () => (
           component={ChallengeScreen}
           options={{
             headerShown: true,
-            header: (props) => <GameHeader backTo="Home" showOperation props={props} />,
+            header: (props: StackHeaderProps) => (
+              <GameHeader backTo="Home" showOperation props={props} />
+            ),
           }}
         />
         {/* Add other screens here */}

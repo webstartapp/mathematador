@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, no-console, @typescript-eslint/explicit-function-return-type */
 import { NextFunction, Request, Response, Router } from "express";
-import jwt from "jsonwebtoken";
-import { ContextType, LocalResolverType, Viewer } from "./expressTypeResolver";
-import { UserDB } from "../entities/user/user";
-import { apiResolvers, ITokenBody, IUserRoles } from "@/_generated/sessionOperations";
-import { tokenContext } from "@/utils/JWT";
+
+import { apiResolvers, IUserRoles } from "@/_generated/sessionOperations";
 import knex from "@/knexWrapper";
+import { ContextType, LocalResolverType, Viewer } from "@/resolvers/expressTypeResolver";
+import { tokenContext } from "@/utils/JWT";
 
 const router = Router();
 
@@ -15,8 +15,8 @@ export type ExpressRouteType<ARGS extends Record<string, any> = any, RET extends
   security?: string[];
 };
 
-const getViewer = async (req: Request) => {
-  const session = req.headers?.authorization || (req.headers?.Authorization as string);
+const getViewer = async (request: Request) => {
+  const session = request.headers?.authorization || (request.headers?.Authorization as string);
   if (!session) {
     throw new Error("No session");
   }
@@ -48,70 +48,73 @@ const getViewer = async (req: Request) => {
 
 const resolvers = (routes: ExpressRouteType[]) => {
   routes.forEach((route) => {
-    router[route.method.toLowerCase() as "get"](route.path, async (req: Request, res: Response, next: NextFunction) => {
-      let viewer: Viewer | undefined = undefined;
-      console.log(route);
-      try {
-        viewer = await getViewer(req);
-      } catch (e) {
-        console.log(46, e);
-        if (route.security?.includes("bearerAuth")) {
-          const errorData = await apiResolvers._401(
-            {},
-            {},
-            {
-              req,
-              res,
-              statusSet: false,
-              setResponseStatus: (status: number) => {
-                res.status(status);
+    router[route.method.toLowerCase() as "get"](
+      route.path,
+      async (request: Request, response: Response, _next: NextFunction) => {
+        let viewer: Viewer | undefined = undefined;
+        console.log(route);
+        try {
+          viewer = await getViewer(request);
+        } catch (error) {
+          console.log(46, error);
+          if (route.security?.includes("bearerAuth")) {
+            const errorData = await apiResolvers._401(
+              {},
+              {},
+              {
+                req: request,
+                res: response,
+                statusSet: false,
+                setResponseStatus: (status: number) => {
+                  response.status(status);
+                }
               }
+            );
+            response.json(errorData);
+            return;
+          }
+        }
+        const context: ContextType = {
+          req: request,
+          res: response,
+          viewer,
+          resolvers: apiResolvers,
+          statusSet: false,
+          setResponseStatus: (status: number) => {
+            if (!context.statusSet) {
+              context.statusSet = true;
+              response.status(status);
             }
+          },
+          responseHeaders: { Authorization: request.headers?.Authorization as string }
+        };
+        try {
+          const params = request.params;
+          const query = request.query;
+          const result = await route.resolver(
+            {
+              ...params,
+              ...query
+            },
+            request.body,
+            context
           );
-          res.json(errorData);
+          console.log(68, context.statusSet);
+          context.setResponseStatus(200);
+          Object.keys(context.responseHeaders).forEach((key) => {
+            if (context.responseHeaders[key]) {
+              response.setHeader(key, context.responseHeaders[key]);
+            }
+          });
+          response.json(result);
           return;
+        } catch (error: any) {
+          console.trace(error);
+          const errorData = await apiResolvers._500({ message: error?.message }, {}, context);
+          response.json(errorData);
         }
       }
-      const context: ContextType = {
-        req,
-        res,
-        viewer,
-        resolvers: apiResolvers,
-        statusSet: false,
-        setResponseStatus: (status: number) => {
-          if (!context.statusSet) {
-            context.statusSet = true;
-            res.status(status);
-          }
-        },
-        responseHeaders: { Authorization: req.headers?.Authorization as string }
-      };
-      try {
-        const params = req.params;
-        const query = req.query;
-        const result = await route.resolver(
-          {
-            ...params,
-            ...query
-          },
-          req.body,
-          context
-        );
-        console.log(68, context.statusSet);
-        context.setResponseStatus(200);
-        Object.keys(context.responseHeaders).forEach((key) => {
-          if (context.responseHeaders[key]) {
-            res.setHeader(key, context.responseHeaders[key]);
-          }
-        });
-        res.json(result);
-        return;
-      } catch (e: any) {
-        console.trace(e);
-        const errorData = await apiResolvers._500({ message: e?.message }, {}, context);
-        res.json(errorData);
-      }
-    });
+    );
   });
   return router;
 };
