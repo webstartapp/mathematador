@@ -14,7 +14,7 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "rootDir": "src",
+    "rootDir": "./",
     "module": "node16",
     "moduleResolution": "node16",
     "isolatedModules": true,
@@ -26,6 +26,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src/**/*", "declaration.d.ts"],
+  "include": ["src/**/*", "declaration.d.ts", "knexfile.ts"],
   "exclude": ["node_modules", "build"]
 }

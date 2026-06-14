@@ -14,7 +14,7 @@
     "test": "jest",
     "pretty": "prettier --write \"**/*.{ts,tsx}\"",
     "lint": "eslint .",
-    "build": "tsc && tsc-alias"
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json"
   },
   "jest": {
     "testEnvironment": "node",
