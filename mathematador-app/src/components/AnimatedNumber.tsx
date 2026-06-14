@@ -1,5 +1,3 @@
-import { headerStyles } from '@/styles/headerStyles';
-import { layoutStyles } from '@/styles/layoutStyles';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Text, View, StyleSheet } from 'react-native';
 
@@ -39,10 +37,18 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
 
   return (
     <View>
-      <Animated.Text style={headerStyles.whiteText}>
+      <Animated.Text style={styles.whiteText}>
         {displayValue}
       </Animated.Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  whiteText: {
+    color: '#FFFFFF',
+  },
+});
+
 export default AnimatedNumber;
+

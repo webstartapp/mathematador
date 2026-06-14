@@ -113,6 +113,7 @@ export const wrapRestCalls = <
         path: PATH,
         options: UseMutationOptions<any, ErrorObject>,
       ) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         return useMutation(path as string, async (props) => {
           const response = await restInnerCall(
             operations[path](...(props as unknown as [any])),
