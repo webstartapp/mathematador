@@ -16,401 +16,525 @@ import type {
   Subscription,
   SubscriptionCreate,
   UserProfile
-} from "./model";
+} from './model';
+
 
 export type userForgottenResponse201 = {
-  data: void;
-  status: 201;
-};
+  data: void
+  status: 201
+}
 
-export type userForgottenResponseSuccess = userForgottenResponse201 & {
+export type userForgottenResponseSuccess = (userForgottenResponse201) & {
   headers: Headers;
 };
-export type userForgottenResponse = userForgottenResponseSuccess;
+;
+
+export type userForgottenResponse = (userForgottenResponseSuccess)
 
 export const getUserForgottenUrl = () => {
-  return `/user/forgotten`;
-};
 
-export const userForgotten = async (
-  credentialsEmail: CredentialsEmail,
-  options?: RequestInit
-): Promise<userForgottenResponse> => {
-  const res = await fetch(getUserForgottenUrl(), {
+
+
+
+  return `/user/forgotten`
+}
+
+export const userForgotten = async (credentialsEmail: CredentialsEmail, options?: RequestInit): Promise<userForgottenResponse> => {
+
+  const res = await fetch(getUserForgottenUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(credentialsEmail)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: userForgottenResponse["data"] = body ? JSON.parse(body) : undefined;
-  return { data, status: res.status, headers: res.headers } as userForgottenResponse;
-};
+  const data: userForgottenResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as userForgottenResponse
+}
+
+
 
 export type userLoginResponse200 = {
-  data: UserProfile;
-  status: 200;
-};
+  data: UserProfile
+  status: 200
+}
 
-export type userLoginResponseSuccess = userLoginResponse200 & {
+export type userLoginResponseSuccess = (userLoginResponse200) & {
   headers: Headers;
 };
-export type userLoginResponse = userLoginResponseSuccess;
+;
+
+export type userLoginResponse = (userLoginResponseSuccess)
 
 export const getUserLoginUrl = () => {
-  return `/user/login`;
-};
+
+
+
+
+  return `/user/login`
+}
 
 /**
  * @summary check the credentials and login
  */
 export const userLogin = async (credentials: Credentials, options?: RequestInit): Promise<userLoginResponse> => {
-  const res = await fetch(getUserLoginUrl(), {
+
+  const res = await fetch(getUserLoginUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(credentials)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: userLoginResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as userLoginResponse;
-};
+  const data: userLoginResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userLoginResponse
+}
+
+
 
 export type userLoginPasswordResponse200 = {
-  data: UserProfile;
-  status: 200;
-};
+  data: UserProfile
+  status: 200
+}
 
-export type userLoginPasswordResponseSuccess = userLoginPasswordResponse200 & {
+export type userLoginPasswordResponseSuccess = (userLoginPasswordResponse200) & {
   headers: Headers;
 };
-export type userLoginPasswordResponse = userLoginPasswordResponseSuccess;
+;
+
+export type userLoginPasswordResponse = (userLoginPasswordResponseSuccess)
 
 export const getUserLoginPasswordUrl = () => {
-  return `/user/login`;
-};
+
+
+
+
+  return `/user/login`
+}
 
 /**
  * @summary submit new password after forgotten
  */
-export const userLoginPassword = async (
-  credentialsPassword: CredentialsPassword,
-  options?: RequestInit
-): Promise<userLoginPasswordResponse> => {
-  const res = await fetch(getUserLoginPasswordUrl(), {
+export const userLoginPassword = async (credentialsPassword: CredentialsPassword, options?: RequestInit): Promise<userLoginPasswordResponse> => {
+
+  const res = await fetch(getUserLoginPasswordUrl(),
+  {
     ...options,
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(credentialsPassword)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: userLoginPasswordResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as userLoginPasswordResponse;
-};
+  const data: userLoginPasswordResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userLoginPasswordResponse
+}
+
+
 
 export type userRegisterResponse200 = {
-  data: UserProfile;
-  status: 200;
-};
+  data: UserProfile
+  status: 200
+}
 
-export type userRegisterResponseSuccess = userRegisterResponse200 & {
+export type userRegisterResponseSuccess = (userRegisterResponse200) & {
   headers: Headers;
 };
-export type userRegisterResponse = userRegisterResponseSuccess;
+;
+
+export type userRegisterResponse = (userRegisterResponseSuccess)
 
 export const getUserRegisterUrl = () => {
-  return `/user/register`;
-};
+
+
+
+
+  return `/user/register`
+}
 
 /**
  * @summary Register a new user
  */
 export const userRegister = async (credentials: Credentials, options?: RequestInit): Promise<userRegisterResponse> => {
-  const res = await fetch(getUserRegisterUrl(), {
+
+  const res = await fetch(getUserRegisterUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(credentials)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: userRegisterResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as userRegisterResponse;
-};
+  const data: userRegisterResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userRegisterResponse
+}
+
+
 
 export type userForgottenPasswordResponse201 = {
-  data: void;
-  status: 201;
-};
+  data: void
+  status: 201
+}
 
-export type userForgottenPasswordResponseSuccess = userForgottenPasswordResponse201 & {
+export type userForgottenPasswordResponseSuccess = (userForgottenPasswordResponse201) & {
   headers: Headers;
 };
-export type userForgottenPasswordResponse = userForgottenPasswordResponseSuccess;
+;
+
+export type userForgottenPasswordResponse = (userForgottenPasswordResponseSuccess)
 
 export const getUserForgottenPasswordUrl = () => {
-  return `/user/forgotten-password`;
-};
+
+
+
+
+  return `/user/forgotten-password`
+}
 
 /**
  * @summary Send forgotten password email
  */
-export const userForgottenPassword = async (
-  credentialsEmail: CredentialsEmail,
-  options?: RequestInit
-): Promise<userForgottenPasswordResponse> => {
-  const res = await fetch(getUserForgottenPasswordUrl(), {
+export const userForgottenPassword = async (credentialsEmail: CredentialsEmail, options?: RequestInit): Promise<userForgottenPasswordResponse> => {
+
+  const res = await fetch(getUserForgottenPasswordUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(credentialsEmail)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: userForgottenPasswordResponse["data"] = body ? JSON.parse(body) : undefined;
-  return { data, status: res.status, headers: res.headers } as userForgottenPasswordResponse;
-};
+  const data: userForgottenPasswordResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as userForgottenPasswordResponse
+}
+
+
 
 export type challengeStartNewResponse200 = {
-  data: Challenge;
-  status: 200;
-};
+  data: Challenge
+  status: 200
+}
 
-export type challengeStartNewResponseSuccess = challengeStartNewResponse200 & {
+export type challengeStartNewResponseSuccess = (challengeStartNewResponse200) & {
   headers: Headers;
 };
-export type challengeStartNewResponse = challengeStartNewResponseSuccess;
+;
 
-export const getChallengeStartNewUrl = (operationId: "addition" | "subtraction" | "multiplication" | "division") => {
-  return `/challenges/${operationId}`;
-};
+export type challengeStartNewResponse = (challengeStartNewResponseSuccess)
+
+export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+
+
+
+
+  return `/challenges/${operationId}`
+}
 
 /**
  * @summary Create a new game
  */
-export const challengeStartNew = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  challengeRequest: ChallengeRequest,
-  options?: RequestInit
-): Promise<challengeStartNewResponse> => {
-  const res = await fetch(getChallengeStartNewUrl(operationId), {
+export const challengeStartNew = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    challengeRequest: ChallengeRequest, options?: RequestInit): Promise<challengeStartNewResponse> => {
+
+  const res = await fetch(getChallengeStartNewUrl(operationId),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(challengeRequest)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: challengeStartNewResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as challengeStartNewResponse;
-};
+  const data: challengeStartNewResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as challengeStartNewResponse
+}
+
+
 
 export type challengeGetAllResponse200 = {
-  data: Challenge;
-  status: 200;
-};
+  data: Challenge
+  status: 200
+}
 
-export type challengeGetAllResponseSuccess = challengeGetAllResponse200 & {
+export type challengeGetAllResponseSuccess = (challengeGetAllResponse200) & {
   headers: Headers;
 };
-export type challengeGetAllResponse = challengeGetAllResponseSuccess;
+;
 
-export const getChallengeGetAllUrl = (operationId: "addition" | "subtraction" | "multiplication" | "division") => {
-  return `/challenges/${operationId}`;
-};
+export type challengeGetAllResponse = (challengeGetAllResponseSuccess)
+
+export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+
+
+
+
+  return `/challenges/${operationId}`
+}
 
 /**
  * @summary Get all user challenges
  */
-export const challengeGetAll = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  options?: RequestInit
-): Promise<challengeGetAllResponse> => {
-  const res = await fetch(getChallengeGetAllUrl(operationId), {
+export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: RequestInit): Promise<challengeGetAllResponse> => {
+
+  const res = await fetch(getChallengeGetAllUrl(operationId),
+  {
     ...options,
-    method: "GET"
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: challengeGetAllResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as challengeGetAllResponse;
-};
+  const data: challengeGetAllResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as challengeGetAllResponse
+}
+
+
 
 export type challengeGetResponse200 = {
-  data: Challenge;
-  status: 200;
-};
+  data: Challenge
+  status: 200
+}
 
-export type challengeGetResponseSuccess = challengeGetResponse200 & {
+export type challengeGetResponseSuccess = (challengeGetResponse200) & {
   headers: Headers;
 };
-export type challengeGetResponse = challengeGetResponseSuccess;
+;
 
-export const getChallengeGetUrl = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string
-) => {
-  return `/challenges/${operationId}/${id}`;
-};
+export type challengeGetResponse = (challengeGetResponseSuccess)
+
+export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,) => {
+
+
+
+
+  return `/challenges/${operationId}/${id}`
+}
 
 /**
  * @summary Get challenge by id
  */
-export const challengeGet = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-  options?: RequestInit
-): Promise<challengeGetResponse> => {
-  const res = await fetch(getChallengeGetUrl(operationId, id), {
+export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string, options?: RequestInit): Promise<challengeGetResponse> => {
+
+  const res = await fetch(getChallengeGetUrl(operationId,id),
+  {
     ...options,
-    method: "GET"
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: challengeGetResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as challengeGetResponse;
-};
+  const data: challengeGetResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as challengeGetResponse
+}
+
+
 
 export type challengeUpdateResultResponse200 = {
-  data: GameProgress;
-  status: 200;
-};
+  data: GameProgress
+  status: 200
+}
 
-export type challengeUpdateResultResponseSuccess = challengeUpdateResultResponse200 & {
+export type challengeUpdateResultResponseSuccess = (challengeUpdateResultResponse200) & {
   headers: Headers;
 };
-export type challengeUpdateResultResponse = challengeUpdateResultResponseSuccess;
+;
 
-export const getChallengeUpdateResultUrl = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string
-) => {
-  return `/challenges/${operationId}/${id}`;
-};
+export type challengeUpdateResultResponse = (challengeUpdateResultResponseSuccess)
+
+export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,) => {
+
+
+
+
+  return `/challenges/${operationId}/${id}`
+}
 
 /**
  * @summary Update challenge items
  */
-export const challengeUpdateResult = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-  challengeResultRequest: ChallengeResultRequest,
-  options?: RequestInit
-): Promise<challengeUpdateResultResponse> => {
-  const res = await fetch(getChallengeUpdateResultUrl(operationId, id), {
+export const challengeUpdateResult = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,
+    challengeResultRequest: ChallengeResultRequest, options?: RequestInit): Promise<challengeUpdateResultResponse> => {
+
+  const res = await fetch(getChallengeUpdateResultUrl(operationId,id),
+  {
     ...options,
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(challengeResultRequest)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: challengeUpdateResultResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as challengeUpdateResultResponse;
-};
+  const data: challengeUpdateResultResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as challengeUpdateResultResponse
+}
+
+
 
 export type subscriptionUpdateResponse200 = {
-  data: Subscription;
-  status: 200;
-};
+  data: Subscription
+  status: 200
+}
 
-export type subscriptionUpdateResponseSuccess = subscriptionUpdateResponse200 & {
+export type subscriptionUpdateResponseSuccess = (subscriptionUpdateResponse200) & {
   headers: Headers;
 };
-export type subscriptionUpdateResponse = subscriptionUpdateResponseSuccess;
+;
+
+export type subscriptionUpdateResponse = (subscriptionUpdateResponseSuccess)
 
 export const getSubscriptionUpdateUrl = () => {
-  return `/subscriptions`;
-};
+
+
+
+
+  return `/subscriptions`
+}
 
 /**
  * @summary Add new subscription
  */
-export const subscriptionUpdate = async (
-  subscriptionCreate: SubscriptionCreate,
-  options?: RequestInit
-): Promise<subscriptionUpdateResponse> => {
-  const res = await fetch(getSubscriptionUpdateUrl(), {
+export const subscriptionUpdate = async (subscriptionCreate: SubscriptionCreate, options?: RequestInit): Promise<subscriptionUpdateResponse> => {
+
+  const res = await fetch(getSubscriptionUpdateUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(subscriptionCreate)
-  });
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: subscriptionUpdateResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as subscriptionUpdateResponse;
-};
+  const data: subscriptionUpdateResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as subscriptionUpdateResponse
+}
+
+
 
 export type subscriptionCancelImmediatelyResponse200 = {
-  data: void;
-  status: 200;
-};
+  data: void
+  status: 200
+}
 
-export type subscriptionCancelImmediatelyResponseSuccess = subscriptionCancelImmediatelyResponse200 & {
+export type subscriptionCancelImmediatelyResponseSuccess = (subscriptionCancelImmediatelyResponse200) & {
   headers: Headers;
 };
-export type subscriptionCancelImmediatelyResponse = subscriptionCancelImmediatelyResponseSuccess;
+;
+
+export type subscriptionCancelImmediatelyResponse = (subscriptionCancelImmediatelyResponseSuccess)
 
 export const getSubscriptionCancelImmediatelyUrl = () => {
-  return `/subscriptions`;
-};
+
+
+
+
+  return `/subscriptions`
+}
 
 /**
  * @summary Remove subscription
  */
-export const subscriptionCancelImmediately = async (
-  options?: RequestInit
-): Promise<subscriptionCancelImmediatelyResponse> => {
-  const res = await fetch(getSubscriptionCancelImmediatelyUrl(), {
+export const subscriptionCancelImmediately = async ( options?: RequestInit): Promise<subscriptionCancelImmediatelyResponse> => {
+
+  const res = await fetch(getSubscriptionCancelImmediatelyUrl(),
+  {
     ...options,
-    method: "DELETE"
-  });
+    method: 'DELETE'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: subscriptionCancelImmediatelyResponse["data"] = body ? JSON.parse(body) : undefined;
-  return { data, status: res.status, headers: res.headers } as subscriptionCancelImmediatelyResponse;
-};
+  const data: subscriptionCancelImmediatelyResponse['data'] = body ? JSON.parse(body) : undefined
+  return { data, status: res.status, headers: res.headers } as subscriptionCancelImmediatelyResponse
+}
+
+
 
 export type gameProgressResponse200 = {
-  data: GameProgress;
-  status: 200;
-};
+  data: GameProgress
+  status: 200
+}
 
-export type gameProgressResponseSuccess = gameProgressResponse200 & {
+export type gameProgressResponseSuccess = (gameProgressResponse200) & {
   headers: Headers;
 };
-export type gameProgressResponse = gameProgressResponseSuccess;
+;
+
+export type gameProgressResponse = (gameProgressResponseSuccess)
 
 export const getGameProgressUrl = () => {
-  return `/game/progress`;
-};
+
+
+
+
+  return `/game/progress`
+}
 
 /**
  * @summary Get game status
  */
-export const gameProgress = async (options?: RequestInit): Promise<gameProgressResponse> => {
-  const res = await fetch(getGameProgressUrl(), {
+export const gameProgress = async ( options?: RequestInit): Promise<gameProgressResponse> => {
+
+  const res = await fetch(getGameProgressUrl(),
+  {
     ...options,
-    method: "GET"
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: gameProgressResponse["data"] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as gameProgressResponse;
-};
+  const data: gameProgressResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as gameProgressResponse
+}
+
+
+

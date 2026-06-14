@@ -5,7 +5,7 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { GameOperationProgress } from "./gameOperationProgress";
+import type { GameOperationProgress } from './gameOperationProgress';
 
 export type GameProgress = {
   level?: number;

@@ -6,11 +6,12 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type OperationId = (typeof OperationId)[keyof typeof OperationId];
+export type OperationId = typeof OperationId[keyof typeof OperationId];
+
 
 export const OperationId = {
-  addition: "addition",
-  subtraction: "subtraction",
-  multiplication: "multiplication",
-  division: "division"
+  addition: 'addition',
+  subtraction: 'subtraction',
+  multiplication: 'multiplication',
+  division: 'division',
 } as const;
