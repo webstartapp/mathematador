@@ -102,6 +102,7 @@ const SingleLine: React.FC<MinigameComponentProps> = ({ challenge, submitResults
 
   const [exercisePositions, setExercisePositions] = useState<ExerciseInputPosition[]>([]);
   const [exerciseResults, setExerciseResults] = useState<Record<string, Record<string, number>>>({});
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
 
   const addResponse = (exerciseId: number, keyId: number, value: number) => {
     setExerciseResults(prev=>{
@@ -116,7 +117,6 @@ const SingleLine: React.FC<MinigameComponentProps> = ({ challenge, submitResults
     return <Text>Challenge or Operation not found.</Text>;
   }
 
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const { getResult, resultIsFirst, symbol } = operationConfig;
 
   const exercises = challenge.exercises;
