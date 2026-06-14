@@ -17,7 +17,7 @@ if (!issueNum || isNaN(Number(issueNum))) {
 let desc = args[2] || 'work';
 desc = desc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-const branchName = `issue-${issueNum}-${desc}`;
+const branchName = desc ? `issue-${issueNum}-${desc}` : `issue-${issueNum}`;
 
 try {
   // Check if dirty

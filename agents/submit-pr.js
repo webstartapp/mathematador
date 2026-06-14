@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 
 function getBranchName() {
   return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
@@ -19,12 +19,11 @@ if (!match) {
 const issueNum = match[1];
 const desc = match[2];
 
-// Push branch to origin
+// Push branch to origin using argument-based execution to prevent command injection
 console.log(`Pushing branch "${branchName}" to origin...`);
-try {
-  execSync(`git push -u origin ${branchName}`, { stdio: 'inherit' });
-} catch (error) {
-  console.error('[ERROR] Failed to push branch:', error.message);
+const pushResult = spawnSync('git', ['push', '-u', 'origin', branchName], { stdio: 'inherit' });
+if (pushResult.status !== 0) {
+  console.error('[ERROR] Failed to push branch');
   process.exit(1);
 }
 
@@ -43,7 +42,8 @@ if (token) {
     process.exit(1);
   }
 
-  const repoMatch = remoteUrl.match(/github\.com[/:]([^/]+)\/([^.]+)/);
+  // Parse owner and repo names, supporting dots in repo names and removing trailing .git
+  const repoMatch = remoteUrl.match(/github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?$/);
   if (!repoMatch) {
     console.error('[ERROR] Failed to parse owner/repo from remote URL:', remoteUrl);
     process.exit(1);

@@ -26,7 +26,7 @@ To keep development clean and prevent code bloat or scope creep, agents must ali
 ## 2. Core Architectural & Code Constraints
 
 ### package.json & Package Management
-*   **Clean NPM only**: Do not use Yarn. Running Yarn or installing Yarn lockfiles is prohibited. Use `npm install`, `npm run test`, and `npm run lint`.
+*   **Clean NPM only**: Do not use Yarn. Running Yarn or installing Yarn lockfiles is prohibited. Use `npm install`, `npm run test`, and `npm run lint`. *(Note: Any existing Yarn configurations, lockfiles, or `packageManager` entries in package.json files are legacy and should be deleted immediately if encountered).*
 
 ### Android Offline-First Capabilities
 *   **Redux Persistence**: The React Native application must be offline-ready. Redux state must be persisted using `redux-persist` and `@react-native-async-storage/async-storage` (already configured in `store.ts`).
@@ -63,7 +63,7 @@ To keep development clean and prevent code bloat or scope creep, agents must ali
 
 ### Step 3: Implement & Develop
 *   Write clean, modular code adhering to the repository style and roles.
-*   Do not leave placeholder code or comments.
+*   Do not leave placeholder code, dummy comments, or TODOs in production code. *(Note: Initial placeholder test files are acceptable only if explicitly requested to bootstrap testing pipelines).*
 
 ### Step 4: Verify Locally
 *   Run the verification commands individually in their respective directories:

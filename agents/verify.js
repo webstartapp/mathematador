@@ -58,7 +58,7 @@ function verify() {
 
   // 6. Test Server
   console.log('\n[INFO] Testing Server...');
-  const serverTestPassed = runCommand('npm test', serverDir);
+  const serverTestPassed = runCommand('npm test -- --watchAll=false', serverDir);
 
   console.log('\n=== Verification Summary ===');
   console.log(`App Lint:   ${appLintPassed ? 'PASSED' : 'FAILED'}`);
