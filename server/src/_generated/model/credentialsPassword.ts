@@ -6,6 +6,6 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface CredentialsPassword {
+export type CredentialsPassword = {
   password?: string;
-}
+};

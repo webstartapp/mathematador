@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
-import { Request, Response } from "express";
-
 import knex from "@/knexWrapper";
+import { restAPICall } from "@/utils/restAPI";
 
-export const userForgotten = async (request: Request, response: Response): Promise<void> => {
+export const userForgotten = restAPICall("mathematador", "userForgotten", async (request, response): Promise<void> => {
   const { email } = request.body;
 
   const userRecord = await knex("users").where("email", email).first();
@@ -13,4 +11,4 @@ export const userForgotten = async (request: Request, response: Response): Promi
   }
 
   response.status(201).json({ message: "User found" });
-};
+});

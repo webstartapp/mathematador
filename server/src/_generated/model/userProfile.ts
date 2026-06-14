@@ -8,8 +8,8 @@
 import type { Id } from "./id";
 import type { Subscription } from "./subscription";
 
-export interface UserProfile {
+export type UserProfile = {
   id?: Id;
   name?: string;
   subscription?: Subscription;
-}
+};

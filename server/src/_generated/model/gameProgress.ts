@@ -7,9 +7,9 @@
  */
 import type { GameOperationProgress } from "./gameOperationProgress";
 
-export interface GameProgress {
+export type GameProgress = {
   level?: number;
   xp?: number;
   coins?: number;
   operations?: GameOperationProgress[];
-}
+};

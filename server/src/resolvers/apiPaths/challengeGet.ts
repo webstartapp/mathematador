@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-import { Request, Response } from "express";
-
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/consistent-type-assertions */
+import { OperationId, Minigame } from "@/_generated/model";
 import knex from "@/knexWrapper";
+import { restAPICall } from "@/utils/restAPI";
 
-export const challengeGet = async (request: Request, response: Response): Promise<void> => {
+export const challengeGet = restAPICall("mathematador", "challengeGet", async (request, response): Promise<void> => {
   const operationId = String(request.params.operationId);
   const id = String(request.params.id);
   const userId = request.userId;
@@ -32,8 +32,8 @@ export const challengeGet = async (request: Request, response: Response): Promis
   response.status(200).json({
     id: challengeRecord.id,
     userId: challengeRecord.user_id,
-    operationId: challengeRecord.operation_id,
-    minigame: challengeRecord.minigame,
+    operationId: challengeRecord.operation_id as OperationId,
+    minigame: challengeRecord.minigame as Minigame,
     exercises: parsedExercises,
     result: parsedResult || undefined,
     maxTime: 60,
@@ -44,4 +44,4 @@ export const challengeGet = async (request: Request, response: Response): Promis
     coins: challengeRecord.result ? parsedResult?.coins || 0 : 0,
     allowedMistakes: 3
   });
-};
+});

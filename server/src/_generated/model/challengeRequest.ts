@@ -9,9 +9,9 @@ import type { Id } from "./id";
 import type { Minigame } from "./minigame";
 import type { OperationId } from "./operationId";
 
-export interface ChallengeRequest {
+export type ChallengeRequest = {
   operationId?: OperationId;
   minigame?: Minigame;
   userId?: Id;
   challengeId?: Id;
-}
+};

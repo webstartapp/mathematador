@@ -7,8 +7,8 @@
  */
 import type { Challenge } from "./challenge";
 
-export interface GameOperationProgress {
+export type GameOperationProgress = {
   level?: number;
   xp?: number;
   challenges?: Challenge[];
-}
+};

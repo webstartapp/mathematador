@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import "module-alias/register";
 import "ts-node/register";
 import "tsconfig-paths/register";

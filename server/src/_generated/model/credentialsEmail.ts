@@ -6,6 +6,6 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface CredentialsEmail {
+export type CredentialsEmail = {
   email?: string;
-}
+};

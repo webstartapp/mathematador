@@ -6,9 +6,9 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface Exercise {
+export type Exercise = {
   values?: number[];
   result?: number;
   separator?: string;
   userInput?: string;
-}
+};

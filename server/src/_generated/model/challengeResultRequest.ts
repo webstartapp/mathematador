@@ -7,10 +7,10 @@
  */
 import type { Exercise } from "./exercise";
 
-export interface ChallengeResultRequest {
+export type ChallengeResultRequest = {
   time?: number;
   results?: Exercise[];
   correctAnswers?: number;
   coins?: number;
   xp?: number;
-}
+};

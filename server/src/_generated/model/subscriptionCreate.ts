@@ -7,7 +7,7 @@
  */
 import type { SubscriptionType } from "./subscriptionType";
 
-export interface SubscriptionCreate {
+export type SubscriptionCreate = {
   type?: SubscriptionType;
   autoRenew?: boolean;
-}
+};

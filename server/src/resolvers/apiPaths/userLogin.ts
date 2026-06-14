@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
-import { Request, Response } from "express";
-
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
+import { SubscriptionType } from "@/_generated/model";
 import knex from "@/knexWrapper";
 import { signToken } from "@/utils/JWT";
 import { comparePassword } from "@/utils/password";
+import { restAPICall } from "@/utils/restAPI";
 
-export const userLogin = async (request: Request, response: Response): Promise<void> => {
+export const userLogin = restAPICall("mathematador", "userLogin", async (request, response): Promise<void> => {
   const { email, password } = request.body;
 
   // Find user by email
@@ -38,9 +38,9 @@ export const userLogin = async (request: Request, response: Response): Promise<v
     subscription: subscriptionRecord
       ? {
           id: subscriptionRecord.id,
-          type: subscriptionRecord.type,
+          type: subscriptionRecord.type as SubscriptionType,
           autoRenew: subscriptionRecord.auto_renew
         }
       : undefined
   });
-};
+});

@@ -6,6 +6,6 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export interface ForgottenToken {
+export type ForgottenToken = {
   tokenForgotten?: string;
-}
+};

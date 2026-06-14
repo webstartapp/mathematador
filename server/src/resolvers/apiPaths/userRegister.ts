@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument */
-import { Request, Response } from "express";
-
 import knex from "@/knexWrapper";
 import { signToken } from "@/utils/JWT";
 import { hashPassword } from "@/utils/password";
+import { restAPICall } from "@/utils/restAPI";
 
-export const userRegister = async (request: Request, response: Response): Promise<void> => {
+export const userRegister = restAPICall("mathematador", "userRegister", async (request, response): Promise<void> => {
   const { email, password } = request.body;
 
   // Check if email already registered
@@ -43,4 +41,4 @@ export const userRegister = async (request: Request, response: Response): Promis
     name: newUser.username,
     subscription: undefined
   });
-};
+});

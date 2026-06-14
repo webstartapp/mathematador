@@ -5,7 +5,10 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   MutationFunction,
   QueryFunction,
@@ -13,8 +16,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   Challenge,
@@ -26,1228 +29,1021 @@ import type {
   GameProgress,
   Subscription,
   SubscriptionCreate,
-  UserProfile,
-} from "./model";
+  UserProfile
+} from './model';
 
-import { customInstance } from "../utils/api-client";
+import { customInstance } from '../utils/api-client';
+
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export type userForgottenResponse201 = {
-  data: void;
-  status: 201;
-};
 
-export type userForgottenResponseSuccess = userForgottenResponse201 & {
+
+export type userForgottenResponse201 = {
+  data: void
+  status: 201
+}
+
+export type userForgottenResponseSuccess = (userForgottenResponse201) & {
   headers: Headers;
 };
-export type userForgottenResponse = userForgottenResponseSuccess;
+;
+
+export type userForgottenResponse = (userForgottenResponseSuccess)
 
 export const getUserForgottenUrl = () => {
-  return `/user/forgotten`;
-};
 
-export const userForgotten = async (
-  credentialsEmail: CredentialsEmail,
-  options?: RequestInit,
-): Promise<userForgottenResponse> => {
-  return customInstance<userForgottenResponse>(getUserForgottenUrl(), {
+
+
+
+  return `/user/forgotten`
+}
+
+export const userForgotten = async (credentialsEmail: CredentialsEmail, options?: RequestInit): Promise<userForgottenResponse> => {
+
+  return customInstance<userForgottenResponse>(getUserForgottenUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(credentialsEmail),
-  });
-};
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(credentialsEmail)
+  }
+);}
 
-export const getUserForgottenMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userForgotten>>,
-    TError,
-    { data: CredentialsEmail },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof userForgotten>>,
-  TError,
-  { data: CredentialsEmail },
-  TContext
-> => {
-  const mutationKey = ["userForgotten"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof userForgotten>>,
-    { data: CredentialsEmail }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return userForgotten(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getUserForgottenMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userForgotten>>, TError,{data: CredentialsEmail}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userForgotten>>, TError,{data: CredentialsEmail}, TContext> => {
 
-export type UserForgottenMutationResult = NonNullable<
-  Awaited<ReturnType<typeof userForgotten>>
->;
-export type UserForgottenMutationBody = CredentialsEmail;
-export type UserForgottenMutationError = unknown;
+const mutationKey = ['userForgotten'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-export const useUserForgotten = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userForgotten>>,
-    TError,
-    { data: CredentialsEmail },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof userForgotten>>,
-  TError,
-  { data: CredentialsEmail },
-  TContext
-> => {
-  return useMutation(getUserForgottenMutationOptions(options));
-};
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userForgotten>>, {data: CredentialsEmail}> = (props) => {
+          const {data} = props ?? {};
+
+          return  userForgotten(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserForgottenMutationResult = NonNullable<Awaited<ReturnType<typeof userForgotten>>>
+    export type UserForgottenMutationBody = CredentialsEmail
+    export type UserForgottenMutationError = unknown
+
+    export const useUserForgotten = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userForgotten>>, TError,{data: CredentialsEmail}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userForgotten>>,
+        TError,
+        {data: CredentialsEmail},
+        TContext
+      > => {
+      return useMutation(getUserForgottenMutationOptions(options));
+    }
 
 export type userLoginResponse200 = {
-  data: UserProfile;
-  status: 200;
-};
+  data: UserProfile
+  status: 200
+}
 
-export type userLoginResponseSuccess = userLoginResponse200 & {
+export type userLoginResponseSuccess = (userLoginResponse200) & {
   headers: Headers;
 };
-export type userLoginResponse = userLoginResponseSuccess;
+;
+
+export type userLoginResponse = (userLoginResponseSuccess)
 
 export const getUserLoginUrl = () => {
-  return `/user/login`;
-};
+
+
+
+
+  return `/user/login`
+}
 
 /**
  * @summary check the credentials and login
  */
-export const userLogin = async (
-  credentials: Credentials,
-  options?: RequestInit,
-): Promise<userLoginResponse> => {
-  return customInstance<userLoginResponse>(getUserLoginUrl(), {
+export const userLogin = async (credentials: Credentials, options?: RequestInit): Promise<userLoginResponse> => {
+
+  return customInstance<userLoginResponse>(getUserLoginUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(credentials),
-  });
-};
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(credentials)
+  }
+);}
 
-export const getUserLoginMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userLogin>>,
-    TError,
-    { data: Credentials },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof userLogin>>,
-  TError,
-  { data: Credentials },
-  TContext
-> => {
-  const mutationKey = ["userLogin"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof userLogin>>,
-    { data: Credentials }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return userLogin(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getUserLoginMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userLogin>>, TError,{data: Credentials}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userLogin>>, TError,{data: Credentials}, TContext> => {
 
-export type UserLoginMutationResult = NonNullable<
-  Awaited<ReturnType<typeof userLogin>>
->;
-export type UserLoginMutationBody = Credentials;
-export type UserLoginMutationError = unknown;
+const mutationKey = ['userLogin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userLogin>>, {data: Credentials}> = (props) => {
+          const {data} = props ?? {};
+
+          return  userLogin(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserLoginMutationResult = NonNullable<Awaited<ReturnType<typeof userLogin>>>
+    export type UserLoginMutationBody = Credentials
+    export type UserLoginMutationError = unknown
+
+    /**
  * @summary check the credentials and login
  */
-export const useUserLogin = <TError = unknown, TContext = unknown>(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userLogin>>,
-    TError,
-    { data: Credentials },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof userLogin>>,
-  TError,
-  { data: Credentials },
-  TContext
-> => {
-  return useMutation(getUserLoginMutationOptions(options));
-};
+export const useUserLogin = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userLogin>>, TError,{data: Credentials}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userLogin>>,
+        TError,
+        {data: Credentials},
+        TContext
+      > => {
+      return useMutation(getUserLoginMutationOptions(options));
+    }
 
 export type userLoginPasswordResponse200 = {
-  data: UserProfile;
-  status: 200;
-};
+  data: UserProfile
+  status: 200
+}
 
-export type userLoginPasswordResponseSuccess = userLoginPasswordResponse200 & {
+export type userLoginPasswordResponseSuccess = (userLoginPasswordResponse200) & {
   headers: Headers;
 };
-export type userLoginPasswordResponse = userLoginPasswordResponseSuccess;
+;
+
+export type userLoginPasswordResponse = (userLoginPasswordResponseSuccess)
 
 export const getUserLoginPasswordUrl = () => {
-  return `/user/login`;
-};
+
+
+
+
+  return `/user/login`
+}
 
 /**
  * @summary submit new password after forgotten
  */
-export const userLoginPassword = async (
-  credentialsPassword: CredentialsPassword,
-  options?: RequestInit,
-): Promise<userLoginPasswordResponse> => {
-  return customInstance<userLoginPasswordResponse>(getUserLoginPasswordUrl(), {
+export const userLoginPassword = async (credentialsPassword: CredentialsPassword, options?: RequestInit): Promise<userLoginPasswordResponse> => {
+
+  return customInstance<userLoginPasswordResponse>(getUserLoginPasswordUrl(),
+  {
     ...options,
-    method: "PUT",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(credentialsPassword),
-  });
-};
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(credentialsPassword)
+  }
+);}
 
-export const getUserLoginPasswordMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userLoginPassword>>,
-    TError,
-    { data: CredentialsPassword },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof userLoginPassword>>,
-  TError,
-  { data: CredentialsPassword },
-  TContext
-> => {
-  const mutationKey = ["userLoginPassword"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof userLoginPassword>>,
-    { data: CredentialsPassword }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return userLoginPassword(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getUserLoginPasswordMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userLoginPassword>>, TError,{data: CredentialsPassword}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userLoginPassword>>, TError,{data: CredentialsPassword}, TContext> => {
 
-export type UserLoginPasswordMutationResult = NonNullable<
-  Awaited<ReturnType<typeof userLoginPassword>>
->;
-export type UserLoginPasswordMutationBody = CredentialsPassword;
-export type UserLoginPasswordMutationError = unknown;
+const mutationKey = ['userLoginPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userLoginPassword>>, {data: CredentialsPassword}> = (props) => {
+          const {data} = props ?? {};
+
+          return  userLoginPassword(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserLoginPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof userLoginPassword>>>
+    export type UserLoginPasswordMutationBody = CredentialsPassword
+    export type UserLoginPasswordMutationError = unknown
+
+    /**
  * @summary submit new password after forgotten
  */
-export const useUserLoginPassword = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userLoginPassword>>,
-    TError,
-    { data: CredentialsPassword },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof userLoginPassword>>,
-  TError,
-  { data: CredentialsPassword },
-  TContext
-> => {
-  return useMutation(getUserLoginPasswordMutationOptions(options));
-};
+export const useUserLoginPassword = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userLoginPassword>>, TError,{data: CredentialsPassword}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userLoginPassword>>,
+        TError,
+        {data: CredentialsPassword},
+        TContext
+      > => {
+      return useMutation(getUserLoginPasswordMutationOptions(options));
+    }
 
 export type userRegisterResponse200 = {
-  data: UserProfile;
-  status: 200;
-};
+  data: UserProfile
+  status: 200
+}
 
-export type userRegisterResponseSuccess = userRegisterResponse200 & {
+export type userRegisterResponseSuccess = (userRegisterResponse200) & {
   headers: Headers;
 };
-export type userRegisterResponse = userRegisterResponseSuccess;
+;
+
+export type userRegisterResponse = (userRegisterResponseSuccess)
 
 export const getUserRegisterUrl = () => {
-  return `/user/register`;
-};
+
+
+
+
+  return `/user/register`
+}
 
 /**
  * @summary Register a new user
  */
-export const userRegister = async (
-  credentials: Credentials,
-  options?: RequestInit,
-): Promise<userRegisterResponse> => {
-  return customInstance<userRegisterResponse>(getUserRegisterUrl(), {
+export const userRegister = async (credentials: Credentials, options?: RequestInit): Promise<userRegisterResponse> => {
+
+  return customInstance<userRegisterResponse>(getUserRegisterUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(credentials),
-  });
-};
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(credentials)
+  }
+);}
 
-export const getUserRegisterMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userRegister>>,
-    TError,
-    { data: Credentials },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof userRegister>>,
-  TError,
-  { data: Credentials },
-  TContext
-> => {
-  const mutationKey = ["userRegister"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof userRegister>>,
-    { data: Credentials }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return userRegister(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getUserRegisterMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userRegister>>, TError,{data: Credentials}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userRegister>>, TError,{data: Credentials}, TContext> => {
 
-export type UserRegisterMutationResult = NonNullable<
-  Awaited<ReturnType<typeof userRegister>>
->;
-export type UserRegisterMutationBody = Credentials;
-export type UserRegisterMutationError = unknown;
+const mutationKey = ['userRegister'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
 
-/**
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userRegister>>, {data: Credentials}> = (props) => {
+          const {data} = props ?? {};
+
+          return  userRegister(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof userRegister>>>
+    export type UserRegisterMutationBody = Credentials
+    export type UserRegisterMutationError = unknown
+
+    /**
  * @summary Register a new user
  */
-export const useUserRegister = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userRegister>>,
-    TError,
-    { data: Credentials },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof userRegister>>,
-  TError,
-  { data: Credentials },
-  TContext
-> => {
-  return useMutation(getUserRegisterMutationOptions(options));
-};
+export const useUserRegister = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userRegister>>, TError,{data: Credentials}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userRegister>>,
+        TError,
+        {data: Credentials},
+        TContext
+      > => {
+      return useMutation(getUserRegisterMutationOptions(options));
+    }
 
 export type userForgottenPasswordResponse201 = {
-  data: void;
-  status: 201;
-};
+  data: void
+  status: 201
+}
 
-export type userForgottenPasswordResponseSuccess =
-  userForgottenPasswordResponse201 & {
-    headers: Headers;
-  };
-export type userForgottenPasswordResponse =
-  userForgottenPasswordResponseSuccess;
+export type userForgottenPasswordResponseSuccess = (userForgottenPasswordResponse201) & {
+  headers: Headers;
+};
+;
+
+export type userForgottenPasswordResponse = (userForgottenPasswordResponseSuccess)
 
 export const getUserForgottenPasswordUrl = () => {
-  return `/user/forgotten-password`;
-};
+
+
+
+
+  return `/user/forgotten-password`
+}
 
 /**
  * @summary Send forgotten password email
  */
-export const userForgottenPassword = async (
-  credentialsEmail: CredentialsEmail,
-  options?: RequestInit,
-): Promise<userForgottenPasswordResponse> => {
-  return customInstance<userForgottenPasswordResponse>(
-    getUserForgottenPasswordUrl(),
-    {
-      ...options,
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...options?.headers },
-      body: JSON.stringify(credentialsEmail),
-    },
-  );
-};
+export const userForgottenPassword = async (credentialsEmail: CredentialsEmail, options?: RequestInit): Promise<userForgottenPasswordResponse> => {
 
-export const getUserForgottenPasswordMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userForgottenPassword>>,
-    TError,
-    { data: CredentialsEmail },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof userForgottenPassword>>,
-  TError,
-  { data: CredentialsEmail },
-  TContext
-> => {
-  const mutationKey = ["userForgottenPassword"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
+  return customInstance<userForgottenPasswordResponse>(getUserForgottenPasswordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(credentialsEmail)
+  }
+);}
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof userForgottenPassword>>,
-    { data: CredentialsEmail }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return userForgottenPassword(data, requestOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type UserForgottenPasswordMutationResult = NonNullable<
-  Awaited<ReturnType<typeof userForgottenPassword>>
->;
-export type UserForgottenPasswordMutationBody = CredentialsEmail;
-export type UserForgottenPasswordMutationError = unknown;
+export const getUserForgottenPasswordMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userForgottenPassword>>, TError,{data: CredentialsEmail}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userForgottenPassword>>, TError,{data: CredentialsEmail}, TContext> => {
 
-/**
+const mutationKey = ['userForgottenPassword'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userForgottenPassword>>, {data: CredentialsEmail}> = (props) => {
+          const {data} = props ?? {};
+
+          return  userForgottenPassword(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserForgottenPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof userForgottenPassword>>>
+    export type UserForgottenPasswordMutationBody = CredentialsEmail
+    export type UserForgottenPasswordMutationError = unknown
+
+    /**
  * @summary Send forgotten password email
  */
-export const useUserForgottenPassword = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof userForgottenPassword>>,
-    TError,
-    { data: CredentialsEmail },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof userForgottenPassword>>,
-  TError,
-  { data: CredentialsEmail },
-  TContext
-> => {
-  return useMutation(getUserForgottenPasswordMutationOptions(options));
-};
+export const useUserForgottenPassword = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userForgottenPassword>>, TError,{data: CredentialsEmail}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userForgottenPassword>>,
+        TError,
+        {data: CredentialsEmail},
+        TContext
+      > => {
+      return useMutation(getUserForgottenPasswordMutationOptions(options));
+    }
 
 export type challengeStartNewResponse200 = {
-  data: Challenge;
-  status: 200;
-};
+  data: Challenge
+  status: 200
+}
 
-export type challengeStartNewResponseSuccess = challengeStartNewResponse200 & {
+export type challengeStartNewResponseSuccess = (challengeStartNewResponse200) & {
   headers: Headers;
 };
-export type challengeStartNewResponse = challengeStartNewResponseSuccess;
+;
 
-export const getChallengeStartNewUrl = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-) => {
-  return `/challenges/${operationId}`;
-};
+export type challengeStartNewResponse = (challengeStartNewResponseSuccess)
+
+export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+
+
+
+
+  return `/challenges/${operationId}`
+}
 
 /**
  * @summary Create a new game
  */
-export const challengeStartNew = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  challengeRequest: ChallengeRequest,
-  options?: RequestInit,
-): Promise<challengeStartNewResponse> => {
-  return customInstance<challengeStartNewResponse>(
-    getChallengeStartNewUrl(operationId),
-    {
-      ...options,
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...options?.headers },
-      body: JSON.stringify(challengeRequest),
-    },
-  );
-};
+export const challengeStartNew = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    challengeRequest: ChallengeRequest, options?: RequestInit): Promise<challengeStartNewResponse> => {
 
-export const getChallengeStartNewMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof challengeStartNew>>,
-    TError,
-    {
-      operationId: "addition" | "subtraction" | "multiplication" | "division";
-      data: ChallengeRequest;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof challengeStartNew>>,
-  TError,
+  return customInstance<challengeStartNewResponse>(getChallengeStartNewUrl(operationId),
   {
-    operationId: "addition" | "subtraction" | "multiplication" | "division";
-    data: ChallengeRequest;
-  },
-  TContext
-> => {
-  const mutationKey = ["challengeStartNew"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(challengeRequest)
+  }
+);}
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof challengeStartNew>>,
-    {
-      operationId: "addition" | "subtraction" | "multiplication" | "division";
-      data: ChallengeRequest;
+
+
+
+export const getChallengeStartNewMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}, TContext> => {
+
+const mutationKey = ['challengeStartNew'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof challengeStartNew>>, {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}> = (props) => {
+          const {operationId,data} = props ?? {};
+
+          return  challengeStartNew(operationId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ChallengeStartNewMutationResult = NonNullable<Awaited<ReturnType<typeof challengeStartNew>>>
+    export type ChallengeStartNewMutationBody = ChallengeRequest
+    export type ChallengeStartNewMutationError = unknown
+
+    /**
+ * @summary Create a new game
+ */
+export const useChallengeStartNew = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof challengeStartNew>>,
+        TError,
+        {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest},
+        TContext
+      > => {
+      return useMutation(getChallengeStartNewMutationOptions(options));
     }
-  > = (props) => {
-    const { operationId, data } = props ?? {};
-
-    return challengeStartNew(operationId, data, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ChallengeStartNewMutationResult = NonNullable<
-  Awaited<ReturnType<typeof challengeStartNew>>
->;
-export type ChallengeStartNewMutationBody = ChallengeRequest;
-export type ChallengeStartNewMutationError = unknown;
-
-/**
- * @summary Create a new game
- */
-export const useChallengeStartNew = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof challengeStartNew>>,
-    TError,
-    {
-      operationId: "addition" | "subtraction" | "multiplication" | "division";
-      data: ChallengeRequest;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof challengeStartNew>>,
-  TError,
-  {
-    operationId: "addition" | "subtraction" | "multiplication" | "division";
-    data: ChallengeRequest;
-  },
-  TContext
-> => {
-  return useMutation(getChallengeStartNewMutationOptions(options));
-};
 
 export type challengeGetAllResponse200 = {
-  data: Challenge;
-  status: 200;
-};
+  data: Challenge
+  status: 200
+}
 
-export type challengeGetAllResponseSuccess = challengeGetAllResponse200 & {
+export type challengeGetAllResponseSuccess = (challengeGetAllResponse200) & {
   headers: Headers;
 };
-export type challengeGetAllResponse = challengeGetAllResponseSuccess;
+;
 
-export const getChallengeGetAllUrl = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-) => {
-  return `/challenges/${operationId}`;
-};
+export type challengeGetAllResponse = (challengeGetAllResponseSuccess)
+
+export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+
+
+
+
+  return `/challenges/${operationId}`
+}
 
 /**
  * @summary Get all user challenges
  */
-export const challengeGetAll = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  options?: RequestInit,
-): Promise<challengeGetAllResponse> => {
-  return customInstance<challengeGetAllResponse>(
-    getChallengeGetAllUrl(operationId),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: RequestInit): Promise<challengeGetAllResponse> => {
 
-export const getChallengeGetAllQueryKey = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
+  return customInstance<challengeGetAllResponse>(getChallengeGetAllUrl(operationId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getChallengeGetAllQueryKey = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+    return [
+    `/challenges/${operationId}`
+    ] as const;
+    }
+
+
+export const getChallengeGetAllQueryOptions = <TData = Awaited<ReturnType<typeof challengeGetAll>>, TError = unknown>(operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/challenges/${operationId}`] as const;
-};
 
-export const getChallengeGetAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof challengeGetAll>>,
-  TError = unknown,
->(
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof challengeGetAll>>,
-      TError,
-      TData
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getChallengeGetAllQueryKey(operationId);
+  const queryKey =  queryOptions?.queryKey ?? getChallengeGetAllQueryKey(operationId);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof challengeGetAll>>> = ({
-    signal,
-  }) => challengeGetAll(operationId, { signal, ...requestOptions });
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: operationId !== null && operationId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof challengeGetAll>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
 
-export type ChallengeGetAllQueryResult = NonNullable<
-  Awaited<ReturnType<typeof challengeGetAll>>
->;
-export type ChallengeGetAllQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof challengeGetAll>>> = ({ signal }) => challengeGetAll(operationId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ChallengeGetAllQueryResult = NonNullable<Awaited<ReturnType<typeof challengeGetAll>>>
+export type ChallengeGetAllQueryError = unknown
+
 
 /**
  * @summary Get all user challenges
  */
 
-export function useChallengeGetAll<
-  TData = Awaited<ReturnType<typeof challengeGetAll>>,
-  TError = unknown,
->(
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof challengeGetAll>>,
-      TError,
-      TData
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getChallengeGetAllQueryOptions(operationId, options);
+export function useChallengeGetAll<TData = Awaited<ReturnType<typeof challengeGetAll>>, TError = unknown>(
+ operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getChallengeGetAllQueryOptions(operationId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+
 
 export type challengeGetResponse200 = {
-  data: Challenge;
-  status: 200;
-};
+  data: Challenge
+  status: 200
+}
 
-export type challengeGetResponseSuccess = challengeGetResponse200 & {
+export type challengeGetResponseSuccess = (challengeGetResponse200) & {
   headers: Headers;
 };
-export type challengeGetResponse = challengeGetResponseSuccess;
+;
 
-export const getChallengeGetUrl = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-) => {
-  return `/challenges/${operationId}/${id}`;
-};
+export type challengeGetResponse = (challengeGetResponseSuccess)
+
+export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,) => {
+
+
+
+
+  return `/challenges/${operationId}/${id}`
+}
 
 /**
  * @summary Get challenge by id
  */
-export const challengeGet = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-  options?: RequestInit,
-): Promise<challengeGetResponse> => {
-  return customInstance<challengeGetResponse>(
-    getChallengeGetUrl(operationId, id),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string, options?: RequestInit): Promise<challengeGetResponse> => {
 
-export const getChallengeGetQueryKey = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
+  return customInstance<challengeGetResponse>(getChallengeGetUrl(operationId,id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getChallengeGetQueryKey = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,) => {
+    return [
+    `/challenges/${operationId}/${id}`
+    ] as const;
+    }
+
+
+export const getChallengeGetQueryOptions = <TData = Awaited<ReturnType<typeof challengeGet>>, TError = unknown>(operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGet>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 ) => {
-  return [`/challenges/${operationId}/${id}`] as const;
-};
 
-export const getChallengeGetQueryOptions = <
-  TData = Awaited<ReturnType<typeof challengeGet>>,
-  TError = unknown,
->(
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof challengeGet>>,
-      TError,
-      TData
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getChallengeGetQueryKey(operationId, id);
+  const queryKey =  queryOptions?.queryKey ?? getChallengeGetQueryKey(operationId,id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof challengeGet>>> = ({
-    signal,
-  }) => challengeGet(operationId, id, { signal, ...requestOptions });
 
-  return {
-    queryKey,
-    queryFn,
-    enabled:
-      operationId !== null &&
-      operationId !== undefined &&
-      id !== null &&
-      id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof challengeGet>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
 
-export type ChallengeGetQueryResult = NonNullable<
-  Awaited<ReturnType<typeof challengeGet>>
->;
-export type ChallengeGetQueryError = unknown;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof challengeGet>>> = ({ signal }) => challengeGet(operationId,id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof challengeGet>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ChallengeGetQueryResult = NonNullable<Awaited<ReturnType<typeof challengeGet>>>
+export type ChallengeGetQueryError = unknown
+
 
 /**
  * @summary Get challenge by id
  */
 
-export function useChallengeGet<
-  TData = Awaited<ReturnType<typeof challengeGet>>,
-  TError = unknown,
->(
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof challengeGet>>,
-      TError,
-      TData
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getChallengeGetQueryOptions(operationId, id, options);
+export function useChallengeGet<TData = Awaited<ReturnType<typeof challengeGet>>, TError = unknown>(
+ operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGet>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getChallengeGetQueryOptions(operationId,id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+
 
 export type challengeUpdateResultResponse200 = {
-  data: GameProgress;
-  status: 200;
-};
+  data: GameProgress
+  status: 200
+}
 
-export type challengeUpdateResultResponseSuccess =
-  challengeUpdateResultResponse200 & {
-    headers: Headers;
-  };
-export type challengeUpdateResultResponse =
-  challengeUpdateResultResponseSuccess;
-
-export const getChallengeUpdateResultUrl = (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-) => {
-  return `/challenges/${operationId}/${id}`;
-};
-
-/**
- * @summary Update challenge items
- */
-export const challengeUpdateResult = async (
-  operationId: "addition" | "subtraction" | "multiplication" | "division",
-  id: string,
-  challengeResultRequest: ChallengeResultRequest,
-  options?: RequestInit,
-): Promise<challengeUpdateResultResponse> => {
-  return customInstance<challengeUpdateResultResponse>(
-    getChallengeUpdateResultUrl(operationId, id),
-    {
-      ...options,
-      method: "PUT",
-      headers: { "Content-Type": "application/json", ...options?.headers },
-      body: JSON.stringify(challengeResultRequest),
-    },
-  );
-};
-
-export const getChallengeUpdateResultMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof challengeUpdateResult>>,
-    TError,
-    {
-      operationId: "addition" | "subtraction" | "multiplication" | "division";
-      id: string;
-      data: ChallengeResultRequest;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof challengeUpdateResult>>,
-  TError,
-  {
-    operationId: "addition" | "subtraction" | "multiplication" | "division";
-    id: string;
-    data: ChallengeResultRequest;
-  },
-  TContext
-> => {
-  const mutationKey = ["challengeUpdateResult"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof challengeUpdateResult>>,
-    {
-      operationId: "addition" | "subtraction" | "multiplication" | "division";
-      id: string;
-      data: ChallengeResultRequest;
-    }
-  > = (props) => {
-    const { operationId, id, data } = props ?? {};
-
-    return challengeUpdateResult(operationId, id, data, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type ChallengeUpdateResultMutationResult = NonNullable<
-  Awaited<ReturnType<typeof challengeUpdateResult>>
->;
-export type ChallengeUpdateResultMutationBody = ChallengeResultRequest;
-export type ChallengeUpdateResultMutationError = unknown;
-
-/**
- * @summary Update challenge items
- */
-export const useChallengeUpdateResult = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof challengeUpdateResult>>,
-    TError,
-    {
-      operationId: "addition" | "subtraction" | "multiplication" | "division";
-      id: string;
-      data: ChallengeResultRequest;
-    },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof challengeUpdateResult>>,
-  TError,
-  {
-    operationId: "addition" | "subtraction" | "multiplication" | "division";
-    id: string;
-    data: ChallengeResultRequest;
-  },
-  TContext
-> => {
-  return useMutation(getChallengeUpdateResultMutationOptions(options));
-};
-
-export type subscriptionUpdateResponse200 = {
-  data: Subscription;
-  status: 200;
-};
-
-export type subscriptionUpdateResponseSuccess =
-  subscriptionUpdateResponse200 & {
-    headers: Headers;
-  };
-export type subscriptionUpdateResponse = subscriptionUpdateResponseSuccess;
-
-export const getSubscriptionUpdateUrl = () => {
-  return `/subscriptions`;
-};
-
-/**
- * @summary Add new subscription
- */
-export const subscriptionUpdate = async (
-  subscriptionCreate: SubscriptionCreate,
-  options?: RequestInit,
-): Promise<subscriptionUpdateResponse> => {
-  return customInstance<subscriptionUpdateResponse>(
-    getSubscriptionUpdateUrl(),
-    {
-      ...options,
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...options?.headers },
-      body: JSON.stringify(subscriptionCreate),
-    },
-  );
-};
-
-export const getSubscriptionUpdateMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof subscriptionUpdate>>,
-    TError,
-    { data: SubscriptionCreate },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof subscriptionUpdate>>,
-  TError,
-  { data: SubscriptionCreate },
-  TContext
-> => {
-  const mutationKey = ["subscriptionUpdate"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof subscriptionUpdate>>,
-    { data: SubscriptionCreate }
-  > = (props) => {
-    const { data } = props ?? {};
-
-    return subscriptionUpdate(data, requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type SubscriptionUpdateMutationResult = NonNullable<
-  Awaited<ReturnType<typeof subscriptionUpdate>>
->;
-export type SubscriptionUpdateMutationBody = SubscriptionCreate;
-export type SubscriptionUpdateMutationError = unknown;
-
-/**
- * @summary Add new subscription
- */
-export const useSubscriptionUpdate = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof subscriptionUpdate>>,
-    TError,
-    { data: SubscriptionCreate },
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof subscriptionUpdate>>,
-  TError,
-  { data: SubscriptionCreate },
-  TContext
-> => {
-  return useMutation(getSubscriptionUpdateMutationOptions(options));
-};
-
-export type subscriptionCancelImmediatelyResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type subscriptionCancelImmediatelyResponseSuccess =
-  subscriptionCancelImmediatelyResponse200 & {
-    headers: Headers;
-  };
-export type subscriptionCancelImmediatelyResponse =
-  subscriptionCancelImmediatelyResponseSuccess;
-
-export const getSubscriptionCancelImmediatelyUrl = () => {
-  return `/subscriptions`;
-};
-
-/**
- * @summary Remove subscription
- */
-export const subscriptionCancelImmediately = async (
-  options?: RequestInit,
-): Promise<subscriptionCancelImmediatelyResponse> => {
-  return customInstance<subscriptionCancelImmediatelyResponse>(
-    getSubscriptionCancelImmediatelyUrl(),
-    {
-      ...options,
-      method: "DELETE",
-    },
-  );
-};
-
-export const getSubscriptionCancelImmediatelyMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof subscriptionCancelImmediately>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof subscriptionCancelImmediately>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["subscriptionCancelImmediately"];
-  const { mutation: mutationOptions, request: requestOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof subscriptionCancelImmediately>>,
-    void
-  > = () => {
-    return subscriptionCancelImmediately(requestOptions);
-  };
-
-  return { mutationFn, ...mutationOptions };
-};
-
-export type SubscriptionCancelImmediatelyMutationResult = NonNullable<
-  Awaited<ReturnType<typeof subscriptionCancelImmediately>>
->;
-
-export type SubscriptionCancelImmediatelyMutationError = unknown;
-
-/**
- * @summary Remove subscription
- */
-export const useSubscriptionCancelImmediately = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof subscriptionCancelImmediately>>,
-    TError,
-    void,
-    TContext
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseMutationResult<
-  Awaited<ReturnType<typeof subscriptionCancelImmediately>>,
-  TError,
-  void,
-  TContext
-> => {
-  return useMutation(getSubscriptionCancelImmediatelyMutationOptions(options));
-};
-
-export type gameProgressResponse200 = {
-  data: GameProgress;
-  status: 200;
-};
-
-export type gameProgressResponseSuccess = gameProgressResponse200 & {
+export type challengeUpdateResultResponseSuccess = (challengeUpdateResultResponse200) & {
   headers: Headers;
 };
-export type gameProgressResponse = gameProgressResponseSuccess;
+;
+
+export type challengeUpdateResultResponse = (challengeUpdateResultResponseSuccess)
+
+export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,) => {
+
+
+
+
+  return `/challenges/${operationId}/${id}`
+}
+
+/**
+ * @summary Update challenge items
+ */
+export const challengeUpdateResult = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+    id: string,
+    challengeResultRequest: ChallengeResultRequest, options?: RequestInit): Promise<challengeUpdateResultResponse> => {
+
+  return customInstance<challengeUpdateResultResponse>(getChallengeUpdateResultUrl(operationId,id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(challengeResultRequest)
+  }
+);}
+
+
+
+
+export const getChallengeUpdateResultMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}, TContext> => {
+
+const mutationKey = ['challengeUpdateResult'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof challengeUpdateResult>>, {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}> = (props) => {
+          const {operationId,id,data} = props ?? {};
+
+          return  challengeUpdateResult(operationId,id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ChallengeUpdateResultMutationResult = NonNullable<Awaited<ReturnType<typeof challengeUpdateResult>>>
+    export type ChallengeUpdateResultMutationBody = ChallengeResultRequest
+    export type ChallengeUpdateResultMutationError = unknown
+
+    /**
+ * @summary Update challenge items
+ */
+export const useChallengeUpdateResult = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof challengeUpdateResult>>,
+        TError,
+        {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest},
+        TContext
+      > => {
+      return useMutation(getChallengeUpdateResultMutationOptions(options));
+    }
+
+export type subscriptionUpdateResponse200 = {
+  data: Subscription
+  status: 200
+}
+
+export type subscriptionUpdateResponseSuccess = (subscriptionUpdateResponse200) & {
+  headers: Headers;
+};
+;
+
+export type subscriptionUpdateResponse = (subscriptionUpdateResponseSuccess)
+
+export const getSubscriptionUpdateUrl = () => {
+
+
+
+
+  return `/subscriptions`
+}
+
+/**
+ * @summary Add new subscription
+ */
+export const subscriptionUpdate = async (subscriptionCreate: SubscriptionCreate, options?: RequestInit): Promise<subscriptionUpdateResponse> => {
+
+  return customInstance<subscriptionUpdateResponse>(getSubscriptionUpdateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(subscriptionCreate)
+  }
+);}
+
+
+
+
+export const getSubscriptionUpdateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscriptionUpdate>>, TError,{data: SubscriptionCreate}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof subscriptionUpdate>>, TError,{data: SubscriptionCreate}, TContext> => {
+
+const mutationKey = ['subscriptionUpdate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof subscriptionUpdate>>, {data: SubscriptionCreate}> = (props) => {
+          const {data} = props ?? {};
+
+          return  subscriptionUpdate(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubscriptionUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof subscriptionUpdate>>>
+    export type SubscriptionUpdateMutationBody = SubscriptionCreate
+    export type SubscriptionUpdateMutationError = unknown
+
+    /**
+ * @summary Add new subscription
+ */
+export const useSubscriptionUpdate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscriptionUpdate>>, TError,{data: SubscriptionCreate}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof subscriptionUpdate>>,
+        TError,
+        {data: SubscriptionCreate},
+        TContext
+      > => {
+      return useMutation(getSubscriptionUpdateMutationOptions(options));
+    }
+
+export type subscriptionCancelImmediatelyResponse200 = {
+  data: void
+  status: 200
+}
+
+export type subscriptionCancelImmediatelyResponseSuccess = (subscriptionCancelImmediatelyResponse200) & {
+  headers: Headers;
+};
+;
+
+export type subscriptionCancelImmediatelyResponse = (subscriptionCancelImmediatelyResponseSuccess)
+
+export const getSubscriptionCancelImmediatelyUrl = () => {
+
+
+
+
+  return `/subscriptions`
+}
+
+/**
+ * @summary Remove subscription
+ */
+export const subscriptionCancelImmediately = async ( options?: RequestInit): Promise<subscriptionCancelImmediatelyResponse> => {
+
+  return customInstance<subscriptionCancelImmediatelyResponse>(getSubscriptionCancelImmediatelyUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getSubscriptionCancelImmediatelyMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscriptionCancelImmediately>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof subscriptionCancelImmediately>>, TError,void, TContext> => {
+
+const mutationKey = ['subscriptionCancelImmediately'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof subscriptionCancelImmediately>>, void> = () => {
+
+
+          return  subscriptionCancelImmediately(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubscriptionCancelImmediatelyMutationResult = NonNullable<Awaited<ReturnType<typeof subscriptionCancelImmediately>>>
+
+    export type SubscriptionCancelImmediatelyMutationError = unknown
+
+    /**
+ * @summary Remove subscription
+ */
+export const useSubscriptionCancelImmediately = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscriptionCancelImmediately>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof subscriptionCancelImmediately>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getSubscriptionCancelImmediatelyMutationOptions(options));
+    }
+
+export type gameProgressResponse200 = {
+  data: GameProgress
+  status: 200
+}
+
+export type gameProgressResponseSuccess = (gameProgressResponse200) & {
+  headers: Headers;
+};
+;
+
+export type gameProgressResponse = (gameProgressResponseSuccess)
 
 export const getGameProgressUrl = () => {
-  return `/game/progress`;
-};
+
+
+
+
+  return `/game/progress`
+}
 
 /**
  * @summary Get game status
  */
-export const gameProgress = async (
-  options?: RequestInit,
-): Promise<gameProgressResponse> => {
-  return customInstance<gameProgressResponse>(getGameProgressUrl(), {
+export const gameProgress = async ( options?: RequestInit): Promise<gameProgressResponse> => {
+
+  return customInstance<gameProgressResponse>(getGameProgressUrl(),
+  {
     ...options,
-    method: "GET",
-  });
-};
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
 
 export const getGameProgressQueryKey = () => {
-  return [`/game/progress`] as const;
-};
+    return [
+    `/game/progress`
+    ] as const;
+    }
 
-export const getGameProgressQueryOptions = <
-  TData = Awaited<ReturnType<typeof gameProgress>>,
-  TError = unknown,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof gameProgress>>,
-    TError,
-    TData
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGameProgressQueryKey();
+export const getGameProgressQueryOptions = <TData = Awaited<ReturnType<typeof gameProgress>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof gameProgress>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+) => {
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof gameProgress>>> = ({
-    signal,
-  }) => gameProgress({ signal, ...requestOptions });
+const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof gameProgress>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
+  const queryKey =  queryOptions?.queryKey ?? getGameProgressQueryKey();
 
-export type GameProgressQueryResult = NonNullable<
-  Awaited<ReturnType<typeof gameProgress>>
->;
-export type GameProgressQueryError = unknown;
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof gameProgress>>> = ({ signal }) => gameProgress({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof gameProgress>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GameProgressQueryResult = NonNullable<Awaited<ReturnType<typeof gameProgress>>>
+export type GameProgressQueryError = unknown
+
 
 /**
  * @summary Get game status
  */
 
-export function useGameProgress<
-  TData = Awaited<ReturnType<typeof gameProgress>>,
-  TError = unknown,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof gameProgress>>,
-    TError,
-    TData
-  >;
-  request?: SecondParameter<typeof customInstance>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGameProgressQueryOptions(options);
+export function useGameProgress<TData = Awaited<ReturnType<typeof gameProgress>>, TError = unknown>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof gameProgress>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGameProgressQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+
+

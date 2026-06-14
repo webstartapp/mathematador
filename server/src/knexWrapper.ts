@@ -1,39 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument, @typescript-eslint/explicit-function-return-type, no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/explicit-function-return-type, no-console */
 import * as dotenv from "dotenv";
 import { knex as knexHandler, Knex } from "knex";
 
-import { ExpressResolverType } from "@/resolvers/expressTypeResolver";
 import { IDBType } from "@/types/KnexDBType";
 
 dotenv.config({ path: ".env" });
 
 export const isItProductionDB = () => {
   return process.env.DATABASE === "production";
-};
-
-export const sanateInsertData = <T extends string>(
-  DBModel: ExpressResolverType,
-  data: Record<string, any> | Record<string, any>[],
-  withDefault: Partial<Record<T, any>> = {}
-) => {
-  const processedData = Array.isArray(data) ? data : [data];
-  return processedData.map((dataItem) => {
-    const result: Record<string, any> = {
-      ...withDefault
-    };
-    if (!Object.keys(DBModel.properties || {}).length) {
-      throw new Error("DBModel.properties is not defined");
-    }
-    Object.keys(DBModel.properties || {}).forEach((key) => {
-      const property = DBModel.properties[key as keyof typeof DBModel.properties];
-      if (Array.isArray(dataItem[property])) {
-        result[key] = JSON.stringify(dataItem[property]);
-      } else {
-        result[key] = dataItem[property] === undefined ? result[key] : dataItem[property];
-      }
-    });
-    return result;
-  });
 };
 export const unwrappDBJSON = <DATA extends Record<string, any> | Record<string, any>[]>(
   data: DATA,

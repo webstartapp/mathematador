@@ -1,4 +1,6 @@
-module.exports = {
+import { defineConfig } from "orval";
+
+const config = defineConfig({
   app: {
     input: "./analytics/_swaggers/be_fe.yaml",
     output: {
@@ -14,7 +16,7 @@ module.exports = {
       },
     },
   },
-  server: {
+  serverZod: {
     input: "./analytics/_swaggers/be_fe.yaml",
     output: {
       mode: "split",
@@ -23,4 +25,18 @@ module.exports = {
       client: "zod",
     },
   },
-};
+  serverAPI: {
+    input: "./analytics/_swaggers/be_fe.yaml",
+    output: {
+      mode: "split",
+      target: "./server/src/_generated/serverAPI.ts",
+      schemas: "./server/src/_generated/model",
+      client: "fetch",
+      override: {
+        useTypeOverInterfaces: true,
+      },
+    },
+  },
+});
+
+export default config;

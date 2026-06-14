@@ -6,10 +6,11 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type EquationType = (typeof EquationType)[keyof typeof EquationType];
+export type EquationType = typeof EquationType[keyof typeof EquationType];
+
 
 export const EquationType = {
-  entry: "entry",
-  result: "result",
-  operator: "operator",
+  entry: 'entry',
+  result: 'result',
+  operator: 'operator',
 } as const;
