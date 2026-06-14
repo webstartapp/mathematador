@@ -42,6 +42,7 @@ To keep development clean and prevent code bloat or scope creep, agents must ali
     `issue-<number>-<short-description>`
     *(Example: `issue-3-agentic-workflow-files`)*
 3.  **PR Merging**: Pull Requests must target `develop` and require passing automated verification checks before human approval and merge.
+4.  **Push Policy**: Pushes to branches other than `develop` (i.e. feature branches like `issue-*`) are always pre-approved and should be run directly by agents.
 
 ---
 
