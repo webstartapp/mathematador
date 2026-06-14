@@ -1,4 +1,4 @@
-import { ObjectShape } from 'yup';
+import { ObjectShape } from "yup";
 
 export type IAnyType = any;
 

@@ -1,3 +1,8 @@
+import { z } from "zod";
+// Augment zod with email and uuid methods for Orval-generated schemas
+(z as any).email = (params?: any) => z.string().email(params);
+(z as any).uuid = (params?: any) => z.string().uuid(params);
+
 import express from "express";
 import cors from "cors";
 import resolvers from "./resolvers/expressResolver";

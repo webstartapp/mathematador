@@ -1,6 +1,10 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, GestureResponderEvent } from 'react-native';
-import ThemedText from '../texts/ThemedText';
+import React from "react";
+import {
+  TouchableOpacity,
+  StyleSheet,
+  GestureResponderEvent,
+} from "react-native";
+import ThemedText from "../texts/ThemedText";
 
 interface ButtonProps {
   title: string;
@@ -9,25 +13,31 @@ interface ButtonProps {
   textStyle?: object;
 }
 
-const Button: React.FC<ButtonProps> = ({ title, onPress, style, textStyle }) => {
+const Button: React.FC<ButtonProps> = ({
+  title,
+  onPress,
+  style,
+  textStyle,
+}) => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <ThemedText variant="title" style={[styles.text, textStyle]}>{title}</ThemedText>
+      <ThemedText variant="title" style={[styles.text, textStyle]}>
+        {title}
+      </ThemedText>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#704c21',
+    backgroundColor: "#704c21",
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 10,
   },
-  text: {
-  },
+  text: {},
 });
 
 export default Button;

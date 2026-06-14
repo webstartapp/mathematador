@@ -2,7 +2,6 @@ import knex from "@/knexWrapper";
 import { ExpressTypeResolver } from "@/resolvers/expressTypeResolver";
 import { Request } from "express";
 import { IUserProfile } from "@/_generated/sessionOperations";
-import { randomUUID } from "crypto";
 import { comparePassword, hashPassword } from "@/utils/password";
 
 export const getToken = (req: Request) => {

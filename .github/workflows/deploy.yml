@@ -1,43 +1,137 @@
-name: Deploy Expo App
+name: Deploy Production
 
 on:
   push:
     branches:
-      - main  # Trigger this action on pushes to the main branch (adjust as needed)
+      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
 
       - name: Install dependencies
-        working-directory: mathematador-app
-        run: npm install
+        run: npm ci
 
-      - name: Build the app
-        working-directory: mathematador-app
-        run: npm run build
+      - name: Lint check
+        run: npm run lint
 
-      - name: Install sshpass
+      - name: Build server
+        run: npm run build --workspace=server
+
+      - name: Build app (Expo Web)
+        run: npm run build --workspace=mathematador-app
+
+      - name: Install zip and sshpass
+        run: sudo apt-get update && sudo apt-get install -y zip sshpass
+
+      - name: Prepare stage folder
         run: |
-          sudo apt-get update
-          sudo apt-get install -y sshpass
+          mkdir -p stage/web
+          mkdir -p stage/server
 
-      - name: Copy dist folder to server
+          # Copy Expo Web build
+          cp -r mathematador-app/dist/. stage/web/
+
+          # Copy Server build & runtime config
+          cp -r server/build/. stage/server/build/
+          cp server/package.json stage/server/
+          cp server/package-lock.json stage/server/
+          cp server/knexfile.ts stage/server/
+          cp -r server/src stage/server/src
+
+      - name: Zip stage folder
+        run: cd stage && zip -r ../deploy.zip .
+
+      - name: Validate server secrets
+        run: |
+          [ -n "${{ secrets.DEPLOY_PATH }}" ]        || { echo "ERROR: DEPLOY_PATH is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_USER }}" ]         || { echo "ERROR: SERVER_USER is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_HOST }}" ]         || { echo "ERROR: SERVER_HOST is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_PASSWORD }}" ]     || { echo "ERROR: SERVER_PASSWORD is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_ENV_FILE }}" ]     || { echo "ERROR: SERVER_ENV_FILE is not set"; exit 1; }
+          [ -n "${{ secrets.PM2_APP_NAME }}" ]        || { echo "ERROR: PM2_APP_NAME is not set"; exit 1; }
+          echo "All required secrets are set"
+
+      - name: Prepare remote folders
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
-        working-directory: mathematador-app
         run: |
-          sshpass -e scp -o StrictHostKeyChecking=no -r ./dist/* \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH }}
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            mkdir -p "${{ secrets.DEPLOY_PATH }}/web"
+            mkdir -p "${{ secrets.DEPLOY_PATH }}/server"
+          ENDSSH
 
-      - name: Restart PM2 process
+      - name: Transfer zip to server
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            pm2 restart ${{ secrets.PM2_APP_NAME }} || pm2 start ${{ secrets.DEPLOY_PATH }}/index.js --name ${{ secrets.PM2_APP_NAME }}
-          "
+          sshpass -e scp -o StrictHostKeyChecking=no ./deploy.zip \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.DEPLOY_PATH }}/deploy.zip
+
+      - name: Unzip deployment on server
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
+            unzip -o deploy.zip
+            rm deploy.zip
+          ENDSSH
+
+      - name: Copy backend environment file
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            cp "${{ secrets.SERVER_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/server/.env"
+            echo "Server .env copied"
+          ENDSSH
+
+      - name: Install server production dependencies
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}/server"
+            npm install --omit=dev
+          ENDSSH
+
+      - name: Run Knex migrations
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}/server"
+            npx knex migrate:latest
+          ENDSSH
+
+      - name: Restart or Start server under PM2
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            if pm2 describe ${{ secrets.PM2_APP_NAME }} > /dev/null 2>&1; then
+              echo "PM2 process is running, restarting..."
+              pm2 restart ${{ secrets.PM2_APP_NAME }} --update-env
+            else
+              echo "PM2 process is not running, starting..."
+              cd "${{ secrets.DEPLOY_PATH }}/server"
+              pm2 start build/index.js --name ${{ secrets.PM2_APP_NAME }}
+            fi
+          ENDSSH

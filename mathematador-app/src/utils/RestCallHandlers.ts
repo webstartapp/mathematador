@@ -1,11 +1,11 @@
-import { RESTRequestType } from '@/types/RestAPIGenerator/RESTRequestType';
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { errorObject } from './wrapRestCalls';
-import JWT from 'expo-jwt';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ITokenBody } from '@/_generated/sessionOperations';
+import { RESTRequestType } from "@/types/RestAPIGenerator/RESTRequestType";
+import { AxiosInstance, AxiosRequestConfig } from "axios";
+import { errorObject } from "./wrapRestCalls";
+import JWT from "expo-jwt";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ITokenBody } from "@/_generated/sessionOperations";
 
-const PERSISTED_STATE_KEY = 'persistedStateRestApi';
+const PERSISTED_STATE_KEY = "persistedStateRestApi";
 
 export const restInnerCall = async (
   requestContext: Partial<RESTRequestType>,
@@ -14,13 +14,13 @@ export const restInnerCall = async (
   const request = {
     ...requestContext,
     headers: {
-      'Content-Type': requestContext.requestContentType || 'application/json',
+      "Content-Type": requestContext.requestContentType || "application/json",
       ...requestContext.headers,
     },
   } as Required<AxiosRequestConfig>;
 
   const storage = await AsyncStorage.getItem(PERSISTED_STATE_KEY);
-  const { viewer } = JSON.parse(storage || '{}');
+  const { viewer } = JSON.parse(storage || "{}");
 
   if (process.env.EXPO_PUBLIC_JWT_SECRET && viewer?.id) {
     const tokenBody: ITokenBody = {
@@ -31,7 +31,7 @@ export const restInnerCall = async (
     console.log(tokenBody, process.env.EXPO_PUBLIC_JWT_SECRET);
     const token = JWT.encode(tokenBody, process.env.EXPO_PUBLIC_JWT_SECRET);
     if (token) {
-      request.headers['Authorization'] = `Bearer ${token}`;
+      request.headers["Authorization"] = `Bearer ${token}`;
     }
   }
 
@@ -40,15 +40,15 @@ export const restInnerCall = async (
     return response;
   } catch (e: any) {
     throw errorObject({
-      title: 'error.unauthorized',
-      message: 'error.unauthorized_message',
+      title: "error.unauthorized",
+      message: "error.unauthorized_message",
       APIError: {
         path: requestContext?.url,
         params: requestContext?.params,
         method: requestContext?.method,
         name: requestContext?.name,
         data: Buffer.from(JSON.stringify(requestContext.data || {})).toString(
-          'base64',
+          "base64",
         ),
         body: e?.response?.data,
         isAxiosError: true,

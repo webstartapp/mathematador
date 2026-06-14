@@ -1,12 +1,4 @@
-import {
-  IGame,
-  IMediaTrap,
-  IMonster,
-  IQuestBook,
-  IQuestBookItem,
-  ISfinx,
-  IUserRoles
-} from "@/_generated/sessionOperations";
+import { IMediaTrap, IMonster, IQuestBook, ISfinx, IUserRoles } from "@/_generated/sessionOperations";
 import { Knex } from "knex";
 type DBCOnfigItem<T extends string[]> = {
   [K in T[number]]: K;

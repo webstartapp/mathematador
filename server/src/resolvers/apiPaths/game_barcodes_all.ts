@@ -1,7 +1,6 @@
 import { Igame_barcodes_allCallResolver } from "@/_generated/sessionOperations";
 import { MonstersDB } from "@/entities/game/monsters";
 import { SfinxDB } from "@/entities/game/sfinx";
-import knex from "@/knexWrapper";
 
 const gameBarcodesAll: Igame_barcodes_allCallResolver = async () => {
   const monsters = await MonstersDB.resolvers.getAllMonsters();

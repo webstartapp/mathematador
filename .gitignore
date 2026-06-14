@@ -1,2 +1,17 @@
+# Dependencies
 **/node_modules
+
+# Environment secrets (keep .env.example files)
+.env
+mathematador-app/.env
 server/.env
+
+# Build output
+server/build/
+mathematador-app/dist/
+
+# TypeScript incremental build cache
+**/*.tsbuildinfo
+
+# Expo
+mathematador-app/.expo/

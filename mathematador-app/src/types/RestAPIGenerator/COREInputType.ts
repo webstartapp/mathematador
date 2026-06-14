@@ -1,13 +1,13 @@
 export enum COREInputTypeEnum {
-  text = 'text',
-  password = 'password',
-  date = 'date',
-  dateTime = 'datetime-local',
-  dateTimeSeconds = 'datetime-seconds',
-  time = 'time',
-  number = 'number',
-  email = 'email',
-  binary = 'file',
+  text = "text",
+  password = "password",
+  date = "date",
+  dateTime = "datetime-local",
+  dateTimeSeconds = "datetime-seconds",
+  time = "time",
+  number = "number",
+  email = "email",
+  binary = "file",
 }
 
 export type COREInputType<T = any, ID extends keyof T = any> = {
@@ -34,7 +34,6 @@ export type CORESelectOptionsType = {
   negative?: string | number | boolean;
 };
 
-// eslint-disable-next-line no-use-before-define
 export type CORESelectOnFilter = (filetrData: {
   value: string;
   field: CORESelectType;

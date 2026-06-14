@@ -2,9 +2,8 @@ import {
   APIErrorObject,
   APIRequestCallType,
   ErrorObject,
-} from '@/types/RestAPIGenerator/RESTRequestType';
+} from "@/types/RestAPIGenerator/RESTRequestType";
 import {
-  QueryClient,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -12,9 +11,9 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-} from 'react-query';
-import { restInnerCall } from './RestCallHandlers';
-import axios from 'axios';
+} from "react-query";
+import { restInnerCall } from "./RestCallHandlers";
+import axios from "axios";
 
 export const errorObject = (
   error: ErrorObject | string,
@@ -22,16 +21,16 @@ export const errorObject = (
   APIError?: APIErrorObject,
 ) => {
   const e: ErrorObject =
-    typeof error === 'string'
+    typeof error === "string"
       ? {
           message: error,
         }
       : error;
   if (Array.isArray(e.message)) {
-    const newMessage = e.message.join(', ');
+    const newMessage = e.message.join(", ");
     e.message = newMessage;
   }
-  e.title = typeof error === 'string' ? 'error.error' : error.title;
+  e.title = typeof error === "string" ? "error.error" : error.title;
   e.statusCode = statusCode || (error as any)?.statusCode;
   e.APIError = APIError || (error as any)?.APIError;
   e.stack = (error as any)?.stack || new Error().stack;
@@ -44,7 +43,7 @@ type UseCallFNType<
 > = (
   path: PATH,
   ...params: Parameters<OPERATIONS[PATH]>
-) => UseQueryResult<ReturnType<OPERATIONS[PATH]>['responseType'], ErrorObject>;
+) => UseQueryResult<ReturnType<OPERATIONS[PATH]>["responseType"], ErrorObject>;
 
 type UseMutationFNType<
   OPERATIONS extends Record<string, APIRequestCallType>,
@@ -53,7 +52,7 @@ type UseMutationFNType<
   path: PATH,
   options: UseMutationOptions<any, ErrorObject>,
 ) => UseMutationResult<
-  ReturnType<OPERATIONS[PATH]>['responseType'],
+  ReturnType<OPERATIONS[PATH]>["responseType"],
   ErrorObject,
   Parameters<OPERATIONS[PATH]>
 >;
@@ -92,7 +91,7 @@ export const wrapRestCalls = <
           async () => {
             if (!operations[path])
               throw errorObject({
-                title: 'error.network',
+                title: "error.network",
                 message: `Path ${path as string} is not defined in API.`,
               });
 
@@ -124,28 +123,25 @@ export const wrapRestCalls = <
       };
       const queryClient = useQueryClient();
       return {
-        useCall<T extends PATH>(
-          path : T,
-          ...params: Parameters<OPERATIONS[T]>  
-        ) { return useCallInner(path, ...params) as {
-            data: ReturnType<OPERATIONS[T]>['responseType'],
-            error: ErrorObject,
-            isLoading: boolean,
-            refetch: () => void,
+        useCall<T extends PATH>(path: T, ...params: Parameters<OPERATIONS[T]>) {
+          return useCallInner(path, ...params) as {
+            data: ReturnType<OPERATIONS[T]>["responseType"];
+            error: ErrorObject;
+            isLoading: boolean;
+            refetch: () => void;
           };
         },
         invalidateCall<T extends PATH>(paths: T[]) {
           paths.forEach((path) => {
             queryClient.invalidateQueries([path]);
-          }
-          );
+          });
         },
         useMutation<T extends PATH>(
           path: T,
           options?: UseMutationOptions<any, ErrorObject>,
         ) {
           return mutateCall(path, options || {}) as UseMutationResult<
-            ReturnType<OPERATIONS[T]>['responseType'],
+            ReturnType<OPERATIONS[T]>["responseType"],
             ErrorObject,
             Parameters<OPERATIONS[T]>
           >;

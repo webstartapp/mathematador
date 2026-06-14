@@ -83,9 +83,9 @@ paths:
         '201':
           description: Email sent
   /Challenges/{operationId}:
+    parameters:
+      - $ref: '#/components/parameters/OperationId'
     post:
-      parameters:
-        - $ref: '#/components/parameters/OperationId'
       operationId: Challenge_start_new
       summary: Create a new game
       requestBody:
@@ -112,10 +112,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Challenge'
   /chaleges/{operationId}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/OperationId'
+      - $ref: '#/components/parameters/Id'
     get:
       operationId: Challenge_get
-      parameters:
-        - $ref: '#/components/parameters/Id'
       summary: Get Challenge by id
       responses:
         '200':
@@ -126,8 +127,6 @@ paths:
                 $ref: '#/components/schemas/Challenge'
     put:
       operationId: Challenge_update_result
-      parameters:
-        - $ref: '#/components/parameters/Id'
       summary: Update Challenge items
       requestBody:
         required: true

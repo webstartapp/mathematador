@@ -183,3 +183,34 @@ export const generatedRoutes: ExpressRouteType[] = [
         resolver: _404
     }
 ];
+
+export enum IUserRoles {
+  Admin = "Admin",
+  User = "User"
+}
+
+export interface ITokenBody {
+  userId: string;
+  exp: number;
+  iat: number;
+}
+
+export type IGame = any;
+export type IGameItemRequest = any;
+export type IGameRequest = any;
+export type IMediaTrap = any;
+export type IMediaTrapRequest = any;
+export type IMonster = any;
+export type IMonsterRequest = any;
+export type IQuestBook = any;
+export type IQuestBookRequest = any;
+export type ISfinx = any;
+export type ISfinxRequest = any;
+export type ITag = any;
+export type ITagRequest = any;
+export type IUserProfile = any;
+export type Iadmin_tags_allCallResolver = any;
+export type Iadmin_loginCallResolver = any;
+export type Igame_barcodes_allCallResolver = any;
+export type IQuestBookItem = any;
+export type IGameConfiguration = any;

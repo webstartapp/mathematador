@@ -1,6 +1,6 @@
 {
-  "name": "resq-context",
-  "version": "0.0.0",
+  "name": "mathematador-server",
+  "version": "1.0.0",
   "author": "karel Bohac",
   "license": "MIT",
   "scripts": {
@@ -18,9 +18,17 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/build/"
+    ],
+    "modulePathIgnorePatterns": [
+      "/build/"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/dist/"
+      "/dist/",
+      "/build/"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
@@ -33,38 +41,36 @@
   },
 
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.17",
+    "@types/cors": "^2.8.19",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.12.7",
-    "@types/pg": "^8.11.5",
+    "@types/node": "^25.9.3",
+    "@types/pg": "^8.20.0",
     "@typescript-eslint/eslint-plugin": "^8.61.0",
     "@typescript-eslint/parser": "^8.61.0",
     "jest": "^30.4.2",
-    "module-alias": "^2.2.3",
-    "prettier": "^3.2.5",
+    "module-alias": "^2.3.4",
+    "prettier": "^3.8.4",
     "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.10",
-    "typescript": "^5.4.5",
+    "tsc-alias": "^1.8.17",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.61.0"
   },
   "dependencies": {
-    "@types/express": "^4.17.21",
-    "@types/express-jwt": "^7.4.2",
-    "@types/jsonwebtoken": "^9.0.6",
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "dayjs": "^1.11.11",
-    "dotenv": "^16.4.5",
-    "eslint": "^9.0.0",
-    "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2",
-    "knex": "^3.1.0",
-    "nodemon": "^3.1.0",
-    "pg": "^8.11.5",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.21",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "knex": "^3.2.10",
+    "nodemon": "^3.1.14",
+    "pg": "^8.21.0",
     "tsconfig-paths": "^4.2.0",
-    "yup": "^1.4.0"
+    "yup": "^1.7.1",
+    "zod": "^3.23.8"
   }
 }

@@ -1,6 +1,6 @@
-import { createContext, FC, useContext, useEffect, useState } from 'react';
-import { ImageSourcePropType, StyleSheet, Text, View } from 'react-native';
-import { Animated } from 'react-native';
+import { createContext, FC, useContext, useEffect, useState } from "react";
+import { ImageSourcePropType, StyleSheet, View } from "react-native";
+import { Animated } from "react-native";
 
 type AnimatedImageProps = {
   image: any;
@@ -95,7 +95,7 @@ export const useAnimatedBackground = (image: ImageSourcePropType) => {
   const context = useContext(AnimatedImageContext);
   if (!context) {
     throw new Error(
-      'useAnimatedBackground must be used within a AnimatedImageContext',
+      "useAnimatedBackground must be used within a AnimatedImageContext",
     );
   }
   useEffect(() => {
@@ -128,29 +128,29 @@ export default AnimatedBackgroundProvider;
 
 const styles = StyleSheet.create({
   backgroundImage: {
-    position: 'absolute',
-    width: '120%',
-    height: '110%',
+    position: "absolute",
+    width: "120%",
+    height: "110%",
   },
   container: {
-    display: 'flex',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
+    display: "flex",
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
   },
   childrenWrapper: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    display: 'flex',
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    display: "flex",
     flex: 1,
-    alignContent: 'center',
+    alignContent: "center",
     padding: 0,
     margin: 0,
-  }
+  },
 });

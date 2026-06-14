@@ -1,34 +1,44 @@
-import { useRoute } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useNavigation } from 'expo-router';
-import { RouteProp } from '@react-navigation/native';
-import React, { FC } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
-import { RootStackParamList } from '../types/Navigation';
-import { ChalengeResult } from '../types/Chalenge';
-import ParallaxScrollView from '../components/ParallaxScrollView';
-import Layout from '../components/common/Layout';
-import CenteredDesk from '../components/layouts/CenteredDesk';
-import Button from '../components/common/Button';
-import { operations } from '../configs/operations';
+import { StackNavigationProp } from "expo-router/js-stack";
+import { useNavigation } from "expo-router";
+import { RouteProp } from "expo-router/react-navigation";
+import React, { FC } from "react";
+import { View, StyleSheet } from "react-native";
+import { RootStackParamList } from "../types/Navigation";
+import Layout from "../components/common/Layout";
+import CenteredDesk from "../components/layouts/CenteredDesk";
+import Button from "../components/common/Button";
+import { operations } from "../configs/operations";
 
-type OperationSelectionScreenNavigationProp = StackNavigationProp<RootStackParamList, 'ChallengeResult'>;
+type OperationSelectionScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "ChallengeResult"
+>;
 
-type LevelScreenRouteProp = RouteProp<RootStackParamList, 'ChallengeResult'>;
+type LevelScreenRouteProp = RouteProp<RootStackParamList, "ChallengeResult">;
 
 type ChallengeResultScreenProps = {
   route: LevelScreenRouteProp;
-
-}
+};
 
 const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
-  const { challengeOrderId, operationId, successful, results, time, correctAnswers, coins, xp } = route.params;
+  const {
+    challengeOrderId,
+    operationId,
+    successful,
+    results,
+    time,
+    correctAnswers,
+    coins,
+    xp,
+  } = route.params;
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
 
-  const operation = operations.find(operationItem => operationItem.operationId === operationId);
+  const operation = operations.find(
+    (operationItem) => operationItem.operationId === operationId,
+  );
 
   const handleReturn = () => {
-    navigation.navigate('ChalengeSelect', { operationId });
+    navigation.navigate("ChalengeSelect", { operationId });
   };
 
   return (
@@ -38,12 +48,12 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
           styles={{
             wrapper: {
               marginBottom: 40,
-            }
+            },
           }}
-          title={'Challenge Results'}
+          title={"Challenge Results"}
           subtitles={[
             `Challenge ID: ${challengeOrderId}`,
-            successful ? "Success!" : "Try Again!"
+            successful ? "Success!" : "Try Again!",
           ]}
           descriptions={[
             `Operation: ${operationId}`,
@@ -59,29 +69,34 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
           styles={{
             wrapper: {
               marginBottom: 20,
-            }
+            },
           }}
-          title={'Exercise results'} 
+          title={"Exercise results"}
         />
         {results.map((result, index) => (
           <CenteredDesk
-              styles={{
-                wrapper: {
-                  marginBottom: 20,
-                }
-              }}
-              title={`Exercise ${index + 1}`}
-              subtitles={[
-                `Expected Result: ${result.expectedResult}`,
-                `Your Result: ${result.userResult}`,
-                `${result.exercise.join(' ' + operation?.symbol + ' ')}=${String(result.expectedResult).split('').map(i=>'?').join('')}`,
-                `Status: ${result.expectedResult == result.userResult ? "Correct" : "Incorrect"}`,
-              ]}
-              key={`Exercise_index_${index}_${result.expectedResult}`}
-          />   
+            styles={{
+              wrapper: {
+                marginBottom: 20,
+              },
+            }}
+            title={`Exercise ${index + 1}`}
+            subtitles={[
+              `Expected Result: ${result.expectedResult}`,
+              `Your Result: ${result.userResult}`,
+              `${result.exercise.join(" " + operation?.symbol + " ")}=${String(
+                result.expectedResult,
+              )
+                .split("")
+                .map((i) => "?")
+                .join("")}`,
+              `Status: ${result.expectedResult === result.userResult ? "Correct" : "Incorrect"}`,
+            ]}
+            key={`Exercise_index_${index}_${result.expectedResult}`}
+          />
         ))}
-        </View>
-        </Layout>
+      </View>
+    </Layout>
   );
 };
 
@@ -95,13 +110,13 @@ const styles = StyleSheet.create({
   summaryContainer: {
     padding: 20,
     marginBottom: 20,
-    backgroundColor: '#E6E6FA',
+    backgroundColor: "#E6E6FA",
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   summaryTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   summaryText: {
@@ -110,23 +125,23 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 10,
-    color: '#008080',
+    color: "#008080",
   },
   exerciseContainer: {
     padding: 15,
     marginBottom: 10,
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 4,
   },
   exerciseTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   exerciseText: {
@@ -135,14 +150,14 @@ const styles = StyleSheet.create({
   resultStatus: {
     fontSize: 16,
     marginTop: 5,
-    fontWeight: 'bold',
-    textAlign: 'right',
+    fontWeight: "bold",
+    textAlign: "right",
   },
   correct: {
-    color: 'green',
+    color: "green",
   },
   incorrect: {
-    color: 'red',
+    color: "red",
   },
   buttonContainer: {
     marginTop: 20,

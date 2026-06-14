@@ -1,5 +1,5 @@
-import * as yup from 'yup';
-import { ObjectShape } from 'yup';
+import * as yup from "yup";
+import { ObjectShape } from "yup";
 
 // yup.setLocale({
 //   mixed: {
@@ -33,7 +33,9 @@ export const validateData = (
   dataName?: string,
 ): Record<string, string> | undefined => {
   if (!validationSchema) return undefined;
-  const validateWith = dataName ? { [dataName]: validationSchema[dataName] } : validationSchema;
+  const validateWith = dataName
+    ? { [dataName]: validationSchema[dataName] }
+    : validationSchema;
   try {
     yup.object().shape(validateWith).validateSync(data, { abortEarly: false });
     return undefined;

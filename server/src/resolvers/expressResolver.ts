@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
-import jwt from "jsonwebtoken";
 import { ContextType, LocalResolverType, Viewer } from "./expressTypeResolver";
-import { UserDB } from "../entities/user/user";
-import { apiResolvers, ITokenBody, IUserRoles } from "@/_generated/sessionOperations";
+import { apiResolvers, IUserRoles } from "@/_generated/sessionOperations";
 import { tokenContext } from "@/utils/JWT";
 import knex from "@/knexWrapper";
 

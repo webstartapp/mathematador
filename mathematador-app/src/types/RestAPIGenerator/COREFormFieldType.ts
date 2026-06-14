@@ -1,10 +1,9 @@
 import {
   COREInputType,
   CORESelectType,
-  // eslint-disable-next-line import/no-unresolved
-} from '@/types/RestAPIGenerator/COREInputType';
-// eslint-disable-next-line import/no-unresolved
-import { COREFormInputTypeEnum } from '@/types/enums';
+} from "@/types/RestAPIGenerator/COREInputType";
+
+import { COREFormInputTypeEnum } from "@/types/enums";
 
 export type COREFormFieldType<T = any> = COREInputType<
   T,

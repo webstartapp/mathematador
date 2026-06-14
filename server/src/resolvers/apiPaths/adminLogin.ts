@@ -2,7 +2,7 @@ import { Iadmin_loginCallResolver } from "@/_generated/sessionOperations";
 import { UserDB } from "@/entities/user/user";
 import { signToken } from "@/utils/JWT";
 
-const loginUser: Iadmin_loginCallResolver = async (props, body, context) => {
+const loginUser: Iadmin_loginCallResolver = async (props: any, body: any, context: any) => {
   const user = await UserDB.resolvers.loginUser(body);
   context.responseHeaders.Authorization = `Bearer ${signToken({
     userId: user.id,

@@ -1,24 +1,24 @@
-declare module '*.jpeg' {
+declare module "*.jpeg" {
   const value: any;
   export default value;
 }
-declare module '*.jpg' {
+declare module "*.jpg" {
   const value: any;
   export default value;
 }
-declare module '*.png' {
+declare module "*.png" {
   const value: any;
   export default value;
 }
-declare module '*.mp3' {
+declare module "*.mp3" {
   const value: any;
   export default value;
 }
-declare module '*.mp4' {
+declare module "*.mp4" {
   const value: any;
   export default value;
 }
-declare module '*.svg' {
+declare module "*.svg" {
   const value: any;
   export default value;
 }

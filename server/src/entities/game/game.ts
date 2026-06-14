@@ -24,15 +24,17 @@ export const GameDB = ExpressTypeResolver({
         "questBookColorOrder"
       ]) as IGame;
       if (!game) throw new Error("Game not found");
-      const sfinxs = await Promise.all((game.sfinxs || []).map((sfinxId) => SfinxDB.resolvers.getSfinx({ sfinxId })));
+      const sfinxs = await Promise.all(
+        (game.sfinxs || []).map((sfinxId: any) => SfinxDB.resolvers.getSfinx({ sfinxId }))
+      );
       const mediaTraps = await Promise.all(
-        (game.mediaTraps || []).map((mediaTrapId) => MediaTrapsDB.resolvers.getMediaTrap({ mediaTrapId }))
+        (game.mediaTraps || []).map((mediaTrapId: any) => MediaTrapsDB.resolvers.getMediaTrap({ mediaTrapId }))
       );
       const questBooks = await Promise.all(
-        (game.questBooks || []).map((questBookId) => QuestBooksDB.resolvers.getQuestBook({ questBookId }))
+        (game.questBooks || []).map((questBookId: any) => QuestBooksDB.resolvers.getQuestBook({ questBookId }))
       );
       const monsters = await Promise.all(
-        (game.monsters || []).map((monsterId) => MonstersDB.resolvers.getMonster({ monsterId }))
+        (game.monsters || []).map((monsterId: any) => MonstersDB.resolvers.getMonster({ monsterId }))
       );
       return {
         ...game,
@@ -64,16 +66,16 @@ export const GameDB = ExpressTypeResolver({
         sfinxs: gameData.sfinxs
       };
       if (!game) throw new Error("Game not found");
-      body.remove?.forEach((remove) => {
+      body.remove?.forEach((remove: any) => {
         const property = remove.property as keyof IGame;
         if (Array.isArray(game[property])) {
-          game[property] = game[property]?.filter((id) => id !== remove.id) as never;
+          game[property] = game[property]?.filter((id: any) => id !== remove.id) as never;
         }
       });
-      body.insert?.forEach((add) => {
+      body.insert?.forEach((add: any) => {
         const property = add.property as keyof IGame;
         if (Array.isArray(game[property])) {
-          game[property] = (game[property]?.filter((id) => id !== add.id) as never) || [];
+          game[property] = (game[property]?.filter((id: any) => id !== add.id) as never) || [];
           game[property] = [...game[property], add.id] as never;
         }
       });

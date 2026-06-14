@@ -1,13 +1,16 @@
-import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 
 interface MathChallengeProps {
   question: string;
   onSubmit: (answer: string) => void;
 }
 
-const MathChallenge: React.FC<MathChallengeProps> = ({ question, onSubmit }) => {
-  const [answer, setAnswer] = React.useState('');
+const MathChallenge: React.FC<MathChallengeProps> = ({
+  question,
+  onSubmit,
+}) => {
+  const [answer, setAnswer] = React.useState("");
 
   const handleChange = (text: string) => {
     setAnswer(text);
@@ -15,7 +18,7 @@ const MathChallenge: React.FC<MathChallengeProps> = ({ question, onSubmit }) => 
 
   const handleSubmit = () => {
     onSubmit(answer);
-    setAnswer('');
+    setAnswer("");
   };
 
   return (
@@ -37,20 +40,20 @@ const MathChallenge: React.FC<MathChallengeProps> = ({ question, onSubmit }) => 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   question: {
     fontSize: 24,
     marginBottom: 15,
   },
   input: {
-    width: '80%',
+    width: "80%",
     borderWidth: 1,
-    borderColor: '#4CAF50',
+    borderColor: "#4CAF50",
     borderRadius: 8,
     padding: 10,
     fontSize: 18,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 
