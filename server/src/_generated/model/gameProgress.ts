@@ -6,10 +6,19 @@
  * OpenAPI spec version: 0.0.1
  */
 import type { GameOperationProgress } from './gameOperationProgress';
+import type { MinigameProgress } from './minigameProgress';
 
 export type GameProgress = {
   level?: number;
   xp?: number;
   coins?: number;
   operations?: GameOperationProgress[];
+  purchasedCosmetics?: string[];
+  /** @nullable */
+  equippedCape?: string | null;
+  /** @nullable */
+  equippedSuit?: string | null;
+  /** @nullable */
+  equippedFlare?: string | null;
+  minigameProgress?: MinigameProgress[];
 };

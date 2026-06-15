@@ -14,4 +14,6 @@ export const OperationId = {
   subtraction: 'subtraction',
   multiplication: 'multiplication',
   division: 'division',
+  gauntlet: 'gauntlet',
+  daily_challenge: 'daily_challenge',
 } as const;

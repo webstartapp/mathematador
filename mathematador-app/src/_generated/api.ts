@@ -23,6 +23,9 @@ import type {
   Challenge,
   ChallengeRequest,
   ChallengeResultRequest,
+  Cosmetic,
+  CosmeticsBuyBody,
+  CosmeticsEquipBody,
   Credentials,
   CredentialsEmail,
   CredentialsPassword,
@@ -455,7 +458,7 @@ export type challengeStartNewResponseSuccess = (challengeStartNewResponse200) & 
 
 export type challengeStartNewResponse = (challengeStartNewResponseSuccess)
 
-export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',) => {
 
 
 
@@ -466,7 +469,7 @@ export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' 
 /**
  * @summary Create a new game
  */
-export const challengeStartNew = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const challengeStartNew = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     challengeRequest: ChallengeRequest, options?: RequestInit): Promise<challengeStartNewResponse> => {
 
   return customInstance<challengeStartNewResponse>(getChallengeStartNewUrl(operationId),
@@ -482,8 +485,8 @@ export const challengeStartNew = async (operationId: 'addition' | 'subtraction' 
 
 
 export const getChallengeStartNewMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';data: ChallengeRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';data: ChallengeRequest}, TContext> => {
 
 const mutationKey = ['challengeStartNew'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -495,7 +498,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof challengeStartNew>>, {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof challengeStartNew>>, {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';data: ChallengeRequest}> = (props) => {
           const {operationId,data} = props ?? {};
 
           return  challengeStartNew(operationId,data,requestOptions)
@@ -516,11 +519,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Create a new game
  */
 export const useChallengeStartNew = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeStartNew>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';data: ChallengeRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof challengeStartNew>>,
         TError,
-        {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';data: ChallengeRequest},
+        {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';data: ChallengeRequest},
         TContext
       > => {
       return useMutation(getChallengeStartNewMutationOptions(options));
@@ -538,7 +541,7 @@ export type challengeGetAllResponseSuccess = (challengeGetAllResponse200) & {
 
 export type challengeGetAllResponse = (challengeGetAllResponseSuccess)
 
-export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',) => {
 
 
 
@@ -549,7 +552,7 @@ export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 
 /**
  * @summary Get all user challenges
  */
-export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: RequestInit): Promise<challengeGetAllResponse> => {
+export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge', options?: RequestInit): Promise<challengeGetAllResponse> => {
 
   return customInstance<challengeGetAllResponse>(getChallengeGetAllUrl(operationId),
   {
@@ -564,14 +567,14 @@ export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 
 
 
 
-export const getChallengeGetAllQueryKey = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+export const getChallengeGetAllQueryKey = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',) => {
     return [
     `/challenges/${operationId}`
     ] as const;
     }
 
 
-export const getChallengeGetAllQueryOptions = <TData = Awaited<ReturnType<typeof challengeGetAll>>, TError = unknown>(operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+export const getChallengeGetAllQueryOptions = <TData = Awaited<ReturnType<typeof challengeGetAll>>, TError = unknown>(operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -598,7 +601,7 @@ export type ChallengeGetAllQueryError = unknown
  */
 
 export function useChallengeGetAll<TData = Awaited<ReturnType<typeof challengeGetAll>>, TError = unknown>(
- operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+ operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
@@ -627,7 +630,7 @@ export type challengeGetResponseSuccess = (challengeGetResponse200) & {
 
 export type challengeGetResponse = (challengeGetResponseSuccess)
 
-export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,) => {
 
 
@@ -639,7 +642,7 @@ export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'mu
 /**
  * @summary Get challenge by id
  */
-export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string, options?: RequestInit): Promise<challengeGetResponse> => {
 
   return customInstance<challengeGetResponse>(getChallengeGetUrl(operationId,id),
@@ -655,7 +658,7 @@ export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'mu
 
 
 
-export const getChallengeGetQueryKey = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const getChallengeGetQueryKey = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,) => {
     return [
     `/challenges/${operationId}/${id}`
@@ -663,7 +666,7 @@ export const getChallengeGetQueryKey = (operationId: 'addition' | 'subtraction' 
     }
 
 
-export const getChallengeGetQueryOptions = <TData = Awaited<ReturnType<typeof challengeGet>>, TError = unknown>(operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const getChallengeGetQueryOptions = <TData = Awaited<ReturnType<typeof challengeGet>>, TError = unknown>(operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGet>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
@@ -691,7 +694,7 @@ export type ChallengeGetQueryError = unknown
  */
 
 export function useChallengeGet<TData = Awaited<ReturnType<typeof challengeGet>>, TError = unknown>(
- operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+ operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof challengeGet>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
@@ -721,7 +724,7 @@ export type challengeUpdateResultResponseSuccess = (challengeUpdateResultRespons
 
 export type challengeUpdateResultResponse = (challengeUpdateResultResponseSuccess)
 
-export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,) => {
 
 
@@ -733,7 +736,7 @@ export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtracti
 /**
  * @summary Update challenge items
  */
-export const challengeUpdateResult = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const challengeUpdateResult = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,
     challengeResultRequest: ChallengeResultRequest, options?: RequestInit): Promise<challengeUpdateResultResponse> => {
 
@@ -750,8 +753,8 @@ export const challengeUpdateResult = async (operationId: 'addition' | 'subtracti
 
 
 export const getChallengeUpdateResultMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';id: string;data: ChallengeResultRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';id: string;data: ChallengeResultRequest}, TContext> => {
 
 const mutationKey = ['challengeUpdateResult'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -763,7 +766,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof challengeUpdateResult>>, {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof challengeUpdateResult>>, {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';id: string;data: ChallengeResultRequest}> = (props) => {
           const {operationId,id,data} = props ?? {};
 
           return  challengeUpdateResult(operationId,id,data,requestOptions)
@@ -784,11 +787,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update challenge items
  */
 export const useChallengeUpdateResult = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof challengeUpdateResult>>, TError,{operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';id: string;data: ChallengeResultRequest}, TContext>, request?: SecondParameter<typeof customInstance>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof challengeUpdateResult>>,
         TError,
-        {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division';id: string;data: ChallengeResultRequest},
+        {operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge';id: string;data: ChallengeResultRequest},
         TContext
       > => {
       return useMutation(getChallengeUpdateResultMutationOptions(options));
@@ -1046,4 +1049,257 @@ export function useGameProgress<TData = Awaited<ReturnType<typeof gameProgress>>
 
 
 
+
+export type cosmeticsGetAllResponse200 = {
+  data: Cosmetic[]
+  status: 200
+}
+
+export type cosmeticsGetAllResponseSuccess = (cosmeticsGetAllResponse200) & {
+  headers: Headers;
+};
+;
+
+export type cosmeticsGetAllResponse = (cosmeticsGetAllResponseSuccess)
+
+export const getCosmeticsGetAllUrl = () => {
+
+
+
+
+  return `/cosmetics`
+}
+
+/**
+ * @summary Retrieve all available cosmetics in the shop
+ */
+export const cosmeticsGetAll = async ( options?: RequestInit): Promise<cosmeticsGetAllResponse> => {
+
+  return customInstance<cosmeticsGetAllResponse>(getCosmeticsGetAllUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getCosmeticsGetAllQueryKey = () => {
+    return [
+    `/cosmetics`
+    ] as const;
+    }
+
+
+export const getCosmeticsGetAllQueryOptions = <TData = Awaited<ReturnType<typeof cosmeticsGetAll>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof cosmeticsGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCosmeticsGetAllQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof cosmeticsGetAll>>> = ({ signal }) => cosmeticsGetAll({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof cosmeticsGetAll>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type CosmeticsGetAllQueryResult = NonNullable<Awaited<ReturnType<typeof cosmeticsGetAll>>>
+export type CosmeticsGetAllQueryError = unknown
+
+
+/**
+ * @summary Retrieve all available cosmetics in the shop
+ */
+
+export function useCosmeticsGetAll<TData = Awaited<ReturnType<typeof cosmeticsGetAll>>, TError = unknown>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof cosmeticsGetAll>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getCosmeticsGetAllQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export type cosmeticsBuyResponse200 = {
+  data: GameProgress
+  status: 200
+}
+
+export type cosmeticsBuyResponseSuccess = (cosmeticsBuyResponse200) & {
+  headers: Headers;
+};
+;
+
+export type cosmeticsBuyResponse = (cosmeticsBuyResponseSuccess)
+
+export const getCosmeticsBuyUrl = () => {
+
+
+
+
+  return `/user/cosmetics/buy`
+}
+
+/**
+ * @summary Buy a cosmetic item
+ */
+export const cosmeticsBuy = async (cosmeticsBuyBody: CosmeticsBuyBody, options?: RequestInit): Promise<cosmeticsBuyResponse> => {
+
+  return customInstance<cosmeticsBuyResponse>(getCosmeticsBuyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(cosmeticsBuyBody)
+  }
+);}
+
+
+
+
+export const getCosmeticsBuyMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cosmeticsBuy>>, TError,{data: CosmeticsBuyBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof cosmeticsBuy>>, TError,{data: CosmeticsBuyBody}, TContext> => {
+
+const mutationKey = ['cosmeticsBuy'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cosmeticsBuy>>, {data: CosmeticsBuyBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  cosmeticsBuy(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CosmeticsBuyMutationResult = NonNullable<Awaited<ReturnType<typeof cosmeticsBuy>>>
+    export type CosmeticsBuyMutationBody = CosmeticsBuyBody
+    export type CosmeticsBuyMutationError = unknown
+
+    /**
+ * @summary Buy a cosmetic item
+ */
+export const useCosmeticsBuy = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cosmeticsBuy>>, TError,{data: CosmeticsBuyBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cosmeticsBuy>>,
+        TError,
+        {data: CosmeticsBuyBody},
+        TContext
+      > => {
+      return useMutation(getCosmeticsBuyMutationOptions(options));
+    }
+
+export type cosmeticsEquipResponse200 = {
+  data: GameProgress
+  status: 200
+}
+
+export type cosmeticsEquipResponseSuccess = (cosmeticsEquipResponse200) & {
+  headers: Headers;
+};
+;
+
+export type cosmeticsEquipResponse = (cosmeticsEquipResponseSuccess)
+
+export const getCosmeticsEquipUrl = () => {
+
+
+
+
+  return `/user/cosmetics/equip`
+}
+
+/**
+ * @summary Equip or unequip a cosmetic item
+ */
+export const cosmeticsEquip = async (cosmeticsEquipBody: CosmeticsEquipBody, options?: RequestInit): Promise<cosmeticsEquipResponse> => {
+
+  return customInstance<cosmeticsEquipResponse>(getCosmeticsEquipUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(cosmeticsEquipBody)
+  }
+);}
+
+
+
+
+export const getCosmeticsEquipMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cosmeticsEquip>>, TError,{data: CosmeticsEquipBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof cosmeticsEquip>>, TError,{data: CosmeticsEquipBody}, TContext> => {
+
+const mutationKey = ['cosmeticsEquip'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cosmeticsEquip>>, {data: CosmeticsEquipBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  cosmeticsEquip(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CosmeticsEquipMutationResult = NonNullable<Awaited<ReturnType<typeof cosmeticsEquip>>>
+    export type CosmeticsEquipMutationBody = CosmeticsEquipBody
+    export type CosmeticsEquipMutationError = unknown
+
+    /**
+ * @summary Equip or unequip a cosmetic item
+ */
+export const useCosmeticsEquip = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cosmeticsEquip>>, TError,{data: CosmeticsEquipBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cosmeticsEquip>>,
+        TError,
+        {data: CosmeticsEquipBody},
+        TContext
+      > => {
+      return useMutation(getCosmeticsEquipMutationOptions(options));
+    }
 

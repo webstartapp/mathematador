@@ -9,6 +9,9 @@ import type {
   Challenge,
   ChallengeRequest,
   ChallengeResultRequest,
+  Cosmetic,
+  CosmeticsBuyBody,
+  CosmeticsEquipBody,
   Credentials,
   CredentialsEmail,
   CredentialsPassword,
@@ -243,7 +246,7 @@ export type challengeStartNewResponseSuccess = (challengeStartNewResponse200) & 
 
 export type challengeStartNewResponse = (challengeStartNewResponseSuccess)
 
-export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',) => {
 
 
 
@@ -254,7 +257,7 @@ export const getChallengeStartNewUrl = (operationId: 'addition' | 'subtraction' 
 /**
  * @summary Create a new game
  */
-export const challengeStartNew = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const challengeStartNew = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     challengeRequest: ChallengeRequest, options?: RequestInit): Promise<challengeStartNewResponse> => {
 
   const res = await fetch(getChallengeStartNewUrl(operationId),
@@ -287,7 +290,7 @@ export type challengeGetAllResponseSuccess = (challengeGetAllResponse200) & {
 
 export type challengeGetAllResponse = (challengeGetAllResponseSuccess)
 
-export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',) => {
+export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',) => {
 
 
 
@@ -298,7 +301,7 @@ export const getChallengeGetAllUrl = (operationId: 'addition' | 'subtraction' | 
 /**
  * @summary Get all user challenges
  */
-export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division', options?: RequestInit): Promise<challengeGetAllResponse> => {
+export const challengeGetAll = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge', options?: RequestInit): Promise<challengeGetAllResponse> => {
 
   const res = await fetch(getChallengeGetAllUrl(operationId),
   {
@@ -330,7 +333,7 @@ export type challengeGetResponseSuccess = (challengeGetResponse200) & {
 
 export type challengeGetResponse = (challengeGetResponseSuccess)
 
-export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,) => {
 
 
@@ -342,7 +345,7 @@ export const getChallengeGetUrl = (operationId: 'addition' | 'subtraction' | 'mu
 /**
  * @summary Get challenge by id
  */
-export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const challengeGet = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string, options?: RequestInit): Promise<challengeGetResponse> => {
 
   const res = await fetch(getChallengeGetUrl(operationId,id),
@@ -375,7 +378,7 @@ export type challengeUpdateResultResponseSuccess = (challengeUpdateResultRespons
 
 export type challengeUpdateResultResponse = (challengeUpdateResultResponseSuccess)
 
-export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,) => {
 
 
@@ -387,7 +390,7 @@ export const getChallengeUpdateResultUrl = (operationId: 'addition' | 'subtracti
 /**
  * @summary Update challenge items
  */
-export const challengeUpdateResult = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division',
+export const challengeUpdateResult = async (operationId: 'addition' | 'subtraction' | 'multiplication' | 'division' | 'gauntlet' | 'daily_challenge',
     id: string,
     challengeResultRequest: ChallengeResultRequest, options?: RequestInit): Promise<challengeUpdateResultResponse> => {
 
@@ -534,6 +537,135 @@ export const gameProgress = async ( options?: RequestInit): Promise<gameProgress
 
   const data: gameProgressResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as gameProgressResponse
+}
+
+
+
+export type cosmeticsGetAllResponse200 = {
+  data: Cosmetic[]
+  status: 200
+}
+
+export type cosmeticsGetAllResponseSuccess = (cosmeticsGetAllResponse200) & {
+  headers: Headers;
+};
+;
+
+export type cosmeticsGetAllResponse = (cosmeticsGetAllResponseSuccess)
+
+export const getCosmeticsGetAllUrl = () => {
+
+
+
+
+  return `/cosmetics`
+}
+
+/**
+ * @summary Retrieve all available cosmetics in the shop
+ */
+export const cosmeticsGetAll = async ( options?: RequestInit): Promise<cosmeticsGetAllResponse> => {
+
+  const res = await fetch(getCosmeticsGetAllUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: cosmeticsGetAllResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as cosmeticsGetAllResponse
+}
+
+
+
+export type cosmeticsBuyResponse200 = {
+  data: GameProgress
+  status: 200
+}
+
+export type cosmeticsBuyResponseSuccess = (cosmeticsBuyResponse200) & {
+  headers: Headers;
+};
+;
+
+export type cosmeticsBuyResponse = (cosmeticsBuyResponseSuccess)
+
+export const getCosmeticsBuyUrl = () => {
+
+
+
+
+  return `/user/cosmetics/buy`
+}
+
+/**
+ * @summary Buy a cosmetic item
+ */
+export const cosmeticsBuy = async (cosmeticsBuyBody: CosmeticsBuyBody, options?: RequestInit): Promise<cosmeticsBuyResponse> => {
+
+  const res = await fetch(getCosmeticsBuyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(cosmeticsBuyBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: cosmeticsBuyResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as cosmeticsBuyResponse
+}
+
+
+
+export type cosmeticsEquipResponse200 = {
+  data: GameProgress
+  status: 200
+}
+
+export type cosmeticsEquipResponseSuccess = (cosmeticsEquipResponse200) & {
+  headers: Headers;
+};
+;
+
+export type cosmeticsEquipResponse = (cosmeticsEquipResponseSuccess)
+
+export const getCosmeticsEquipUrl = () => {
+
+
+
+
+  return `/user/cosmetics/equip`
+}
+
+/**
+ * @summary Equip or unequip a cosmetic item
+ */
+export const cosmeticsEquip = async (cosmeticsEquipBody: CosmeticsEquipBody, options?: RequestInit): Promise<cosmeticsEquipResponse> => {
+
+  const res = await fetch(getCosmeticsEquipUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(cosmeticsEquipBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: cosmeticsEquipResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as cosmeticsEquipResponse
 }
 
 
