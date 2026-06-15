@@ -4,7 +4,7 @@ import jwtLib from "expo-jwt";
 import { z } from "zod";
 
 const AXIOS_INSTANCE = axios.create({
-  baseURL: String(process.env.EXPO_PUBLIC_API_URL || "http://localhost:4071"),
+  baseURL: String(process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076"),
 });
 
 const PERSISTED_STATE_KEY = "persist:root";
