@@ -8,8 +8,8 @@ This document outlines the proposed game mechanics, story, monetization strategy
 In a world inspired by the theatrical showmanship of Spanish bullfighting, mathematics is not a classroom chore—it is the ultimate sport of bravery, rhythm, and prestige.
 
 *   **The Player**: A rookie Torero entering the grand *Plaza de Aritmética*.
-*   **The Threat**: **Toros Numéricos** (Numerical Bulls)—beasts constructed from charging equations, fractions, and logic puzzles.
-*   **The Passes (*Pases Matemáticos*)**: Instead of physical weapons, players tame the bulls using mathematical passes corresponding to the four core operations:
+*   **The Threat**: **Toros Numéricos** (Numerical Bulls). These are magical mathematical elementals—abstract beasts constructed purely from charging equations, neon arithmetic energy, and logic puzzles. No realistic animals are depicted, and they dissolve harmlessly back into numbers when tamed.
+*   **The Passes (*Pases Matemáticos*)**: Instead of physical weapons, players tame these numerical elementals using mathematical passes... corresponding to the four core operations:
     *   **Addition** (*Pase de Castigo*) – Steady defensive passes.
     *   **Subtraction** (*El Recorte*) – Dodging incoming values quickly.
     *   **Multiplication** (*La Chicuelina*) – A spinning, high-prestige pass.
@@ -100,3 +100,15 @@ We propose adding two new screens to the React Native/Expo app:
 *   **Statistics**: Displays player's personal high score (highest wave reached) and weekly leaderboard rank.
 *   **Equipped Loadout**: Displays the player's current Torero avatar wearing their equipped Cape and Suit.
 *   **Start Button**: Launches the Gauntlet game screen with the custom 45-second timer, mixed operations generator, and 2-mistake limit.
+
+---
+
+## 🛡️ 6. Theme Risk Mitigation & Universal Appeal
+While the dramatic showmanship of bullfighting provides an exciting aesthetic wrapper, the associated animal cruelty represents a potential risk for international audiences. To ensure universal appeal, the game positions its theme carefully:
+
+*   **Constructs over Creatures**: The Toros are clearly depicted as non-organic, magical elementals built of glowing numbers and matrix-like math code.
+*   **Taming, Not Harming**: There are no swords, blood, or physical violence. The core mechanic is "taming" or "solving" the equation to bring the elemental to rest.
+*   **Alternative Aesthetic Skin Sets**:
+    *   *Mechanical Bulls*: Futuristic steampunk or retro arcade robotic bulls.
+    *   *Abstract Math Beasts*: Polyhedral shapes and fractals that morph into bull-like silhouettes.
+    *   *Stone Golems*: Ancient monuments carved with roman numerals.
