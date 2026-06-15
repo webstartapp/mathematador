@@ -5,15 +5,16 @@ This document outlines the proposed game mechanics, story, monetization strategy
 ---
 
 ## 📖 1. The Story & Setting
-In a world inspired by the theatrical showmanship of Spanish bullfighting, mathematics is not a classroom chore—it is the ultimate sport of bravery, rhythm, and prestige.
+In a world inspired by the theatrical showmanship and rhythm of Spanish performances, mathematics is a grand dance of harmony, speed, and prestige. This is a family-friendly (0+) game with zero violence, conflict, or harm.
 
-*   **The Player**: A rookie Torero entering the grand *Plaza de Aritmética*.
-*   **The Threat**: **Toros Numéricos** (Numerical Bulls). These are magical mathematical elementals—abstract beasts constructed purely from charging equations, neon arithmetic energy, and logic puzzles. No realistic animals are depicted, and they dissolve harmlessly back into numbers when tamed.
-*   **The Passes (*Pases Matemáticos*)**: Instead of physical weapons, players tame these numerical elementals using mathematical passes... corresponding to the four core operations:
-    *   **Addition** (*Pase de Castigo*) – Steady defensive passes.
-    *   **Subtraction** (*El Recorte*) – Dodging incoming values quickly.
-    *   **Multiplication** (*La Chicuelina*) – A spinning, high-prestige pass.
-    *   **Division** (*El Derechazo*) – The ultimate finishing maneuver.
+*   **The Player**: A rookie Mathematador entering the grand *Plaza de Aritmética*.
+*   **The Partner**: The **Toro Numérico** (Numerical Bull) is your loyal, majestic companion, not an enemy. You and your Toro work together as a team to choreograph the numbers.
+*   **The Challenge**: Chaotic, unstructured numbers and equations drift into the arena.
+*   **The Passes (*Pases Matemáticos*)**: The Mathematador uses elegant cape passes to direct, structure, and solve the equations, creating a beautiful flow of numbers.
+    *   **Addition** (*Pase de Armonía*) – Blending numbers together smoothly.
+    *   **Subtraction** (*El Recorte*) – Splitting numbers with quick, graceful dodges.
+    *   **Multiplication** (*La Chicuelina*) – A spinning, high-prestige combination.
+    *   **Division** (*El Derechazo*) – A clean, elegant resolution.
 
 ---
 
@@ -103,12 +104,10 @@ We propose adding two new screens to the React Native/Expo app:
 
 ---
 
-## 🛡️ 6. Theme Risk Mitigation & Universal Appeal
-While the dramatic showmanship of bullfighting provides an exciting aesthetic wrapper, the associated animal cruelty represents a potential risk for international audiences. To ensure universal appeal, the game positions its theme carefully:
+## 🛡️ Theme & 0+ Rating Alignment
+To ensure a universally appealing, family-friendly (0+) rating, the game completely separates itself from the violent aspects of traditional bullfighting:
 
-*   **Constructs over Creatures**: The Toros are clearly depicted as non-organic, magical elementals built of glowing numbers and matrix-like math code.
-*   **Taming, Not Harming**: There are no swords, blood, or physical violence. The core mechanic is "taming" or "solving" the equation to bring the elemental to rest.
-*   **Alternative Aesthetic Skin Sets**:
-    *   *Mechanical Bulls*: Futuristic steampunk or retro arcade robotic bulls.
-    *   *Abstract Math Beasts*: Polyhedral shapes and fractals that morph into bull-like silhouettes.
-    *   *Stone Golems*: Ancient monuments carved with roman numerals.
+*   **No Harm or Conflict**: The Toro Numérico is your friendly partner and co-performer. There are no weapons, no physical contact, and no harm.
+*   **The "Fight" is Against the Math**: As a traditional torero dances with a bull, the Mathematador dances with numbers. The equations are the elements to be solved and structured.
+*   **Resolution, Not Dissolution**: Solving an equation completes a beautiful pattern, causing the numbers to turn into sparkles of light that feed the crowd's excitement.
+*   **Friendly Companions**: Capes and suits are cosmetic items for performance flair (flashing lights, color changes, and sparks).
