@@ -29,7 +29,14 @@ Mathematador drives user engagement and monetization through **Adrenaline, Rhyth
 ### B. The Toro Charge (Adrenaline)
 *   A visual timer shows the Toro getting closer to the screen. If the timer runs out, the Toro charges, causing the player to lose one "Allowed Mistake" (life). This adds real performance pressure.
 
-### C. Cosmetics Shop (Monetization & Loop)
+### C. Toro Cooperation Mechanics (Partnership Gameplay)
+The Toro Numérico is not just a passive visual companion—it is an active partner that supports you during the performance:
+
+*   **Toro Hint (Meter-Based Assist)**: As you submit correct answers, a **Cooperation Meter** fills up. When full, the Toro displays a helpful mental breakdown for complex questions (e.g., for `12 × 8`, it shows the suggestion `10 × 8 + 2 × 8`).
+*   **Toro Focus (Timer Freeze)**: Once per wave, the player can trigger their partner's focus, freezing the countdown timer for 3 seconds to let them compose their thoughts.
+*   **Toro Inspiration (XP Boost)**: Maintaining a high combo streak inspires your Toro. While inspired, your Toro glows with energy, making the next correct answer worth **2x XP**.
+
+### D. Cosmetics Shop (Monetization & Loop)
 Earned coins are used to buy and equip cosmetics in the shop:
 *   **Muletas (Capes)**: Capes featuring dynamic animations (e.g., a spinning Fibonacci spiral, a matrix rain, or a fiery golden pi symbol).
 *   **Trajes de Luces (Suits of Lights)**: Torero suits with glowing, matrix-like equation patterns.
