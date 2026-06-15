@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+import * as zod from "zod";
+
+import { ChallengeRequest, OperationId } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { generateExercises } from "@/utils/mathGenerator";
 import { restAPICall } from "@/utils/restAPI";
@@ -7,7 +9,7 @@ export const challengeStartNew = restAPICall(
   "mathematador",
   "challengeStartNew",
   async (request, response): Promise<void> => {
-    const operationId = String(request.params.operationId);
+    const operationId = OperationId.parse(request.params.operationId);
     const { minigame = "singleLine" } = request.body;
     const userId = request.userId;
 
@@ -51,8 +53,8 @@ export const challengeStartNew = restAPICall(
     response.status(200).json({
       id: challengeRecord.id,
       userId: challengeRecord.user_id,
-      operationId: challengeRecord.operation_id as any,
-      minigame: challengeRecord.minigame as any,
+      operationId: challengeRecord.operation_id,
+      minigame: challengeRecord.minigame,
       exercises,
       result: undefined,
       maxTime: 60,
@@ -63,5 +65,9 @@ export const challengeStartNew = restAPICall(
       coins: 0,
       allowedMistakes: 3
     });
+  },
+  {
+    params: zod.object({ operationId: OperationId }),
+    body: ChallengeRequest
   }
 );

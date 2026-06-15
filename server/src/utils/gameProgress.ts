@@ -1,76 +1,34 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+import * as zod from "zod";
+
+import { ChallengeResultRequest, Exercise } from "@/_generated/be_fe.zod";
+import { GameProgress, Challenge } from "@/_generated/model";
 import knex from "@/knexWrapper";
 
-export interface ChallengeItem {
-  id: string;
-  userId: string;
-  operationId: string;
-  minigame: string;
-  exercises: any;
-  result?: {
-    time: number;
-    results: any;
-    correctAnswers: number;
-    coins: number;
-    xp: number;
-  };
-  maxTime: number;
-  xpOnSuccess: number;
-  xpOnFailure: number;
-  coinsOnSuccess: number;
-  coinsOnFailure: number;
-  coins: number;
-  allowedMistakes: number;
-}
-
-export interface GameProgress {
-  level: number;
-  xp: number;
-  coins: number;
-  operations: {
-    level: number;
-    xp: number;
-    challenges: ChallengeItem[];
-  }[];
-}
-
-interface ProgressRow {
-  id: string;
-  user_id: string;
-  operation_id: string;
-  level: number;
-  xp: number;
-}
-
-interface ChallengeRow {
-  id: string;
-  user_id: string;
-  operation_id: string;
-  minigame: string;
-  exercises: any;
-  result: any;
-  completed: boolean;
-}
+const ExercisesSchema = zod.array(Exercise);
 
 export const getUserProgress = async (userId: string): Promise<GameProgress> => {
   // 1. Get all operation progress
-  const progressRows = (await knex("operation_progress").where("user_id", userId)) as any as ProgressRow[];
+  const progressRows = await knex("operation_progress").where("user_id", userId);
 
   // Make sure we have rows for all 4 operations
   const operationsList = ["addition", "subtraction", "multiplication", "division"];
-  const progressMap = new Map<string, ProgressRow>(progressRows.map((rowItem) => [rowItem.operation_id, rowItem]));
+  const progressMap = new Map<string, (typeof progressRows)[number]>(
+    progressRows.map((rowItem) => [rowItem.operation_id, rowItem])
+  );
 
   for (const operationIdItem of operationsList) {
     if (!progressMap.has(operationIdItem)) {
-      const [newOp] = (await knex("operation_progress")
+      const [newOp] = await knex("operation_progress")
         .insert({
           user_id: userId,
           operation_id: operationIdItem,
           level: 1,
           xp: 0
         })
-        .returning("*")) as any as ProgressRow[];
-      progressMap.set(operationIdItem, newOp);
+        .returning("*");
+      if (newOp) {
+        progressMap.set(operationIdItem, newOp);
+      }
     }
   }
 
@@ -78,19 +36,14 @@ export const getUserProgress = async (userId: string): Promise<GameProgress> => 
   const allProgress = Array.from(progressMap.values());
 
   // 2. Fetch all user challenges
-  const challengeRows = (await knex("challenges")
-    .where("user_id", userId)
-    .orderBy("created", "desc")) as any as ChallengeRow[];
+  const challengeRows = await knex("challenges").where("user_id", userId).orderBy("created", "desc");
 
   // 3. Compute total coins
   let totalCoins = 0;
   challengeRows.forEach((rowItem) => {
     if (rowItem.result) {
-      const resultData = (typeof rowItem.result === "string" ? JSON.parse(rowItem.result) : rowItem.result) as Record<
-        string,
-        any
-      >;
-      totalCoins += (resultData?.coins as number) || 0;
+      const parsedResult = ChallengeResultRequest.parse(JSON.parse(rowItem.result));
+      totalCoins += parsedResult.coins || 0;
     }
   });
 
@@ -103,29 +56,18 @@ export const getUserProgress = async (userId: string): Promise<GameProgress> => 
     const opChallenges = challengeRows
       .filter((challengeItem) => challengeItem.operation_id === progressItem.operation_id)
       .map((rowItem) => {
-        const parsedExercises =
-          typeof rowItem.exercises === "string" ? JSON.parse(rowItem.exercises) : rowItem.exercises;
-        const parsedResult = rowItem.result
-          ? ((typeof rowItem.result === "string" ? JSON.parse(rowItem.result) : rowItem.result) as Record<string, any>)
-          : null;
+        const parsedExercises = ExercisesSchema.parse(JSON.parse(rowItem.exercises));
+        const parsedResult = rowItem.result ? ChallengeResultRequest.parse(JSON.parse(rowItem.result)) : undefined;
 
-        const coinsValue = parsedResult ? (parsedResult.coins as number) || 0 : 0;
+        const coinsValue = parsedResult?.coins || 0;
 
-        const resultObj: ChallengeItem = {
+        const resultObj: Challenge = {
           id: rowItem.id,
           userId: rowItem.user_id,
           operationId: rowItem.operation_id,
           minigame: rowItem.minigame,
           exercises: parsedExercises,
-          result: parsedResult
-            ? {
-                time: (parsedResult.time as number) || 0,
-                results: parsedResult.results,
-                correctAnswers: (parsedResult.correctAnswers as number) || 0,
-                coins: coinsValue,
-                xp: (parsedResult.xp as number) || 0
-              }
-            : undefined,
+          result: parsedResult,
           maxTime: 60,
           xpOnSuccess: 20,
           xpOnFailure: 5,

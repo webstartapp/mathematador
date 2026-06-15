@@ -1,3 +1,12 @@
+import {
+  readdirSync,
+  writeFileSync,
+  readFileSync,
+  rmSync,
+  existsSync,
+} from "fs";
+import { join } from "path";
+
 import { defineConfig, OptionsExport } from "orval";
 
 type SchemaConfig = {
@@ -34,17 +43,53 @@ const configApp = Object.fromEntries(
   ]),
 );
 
-const configServerZod = Object.fromEntries(
+const configServerZodModels = Object.fromEntries(
   schemaConfigs.map<[string, OptionsExport]>((schemaConfig) => [
-    `${schemaConfig.name}_ServerZod`,
+    `${schemaConfig.name}_ServerZodModels`,
     {
       input: schemaConfig.input,
+      hooks: {
+        afterAllFilesWrite: () => {
+          const zodsDir = `./server/src/_generated/${schemaConfig.name}_tmp`;
+          if (!existsSync(zodsDir)) return;
+          const zods = readdirSync(zodsDir);
+          const content: string[] = [];
+          zods.forEach((zodFile, index) => {
+            const zodContent = readFileSync(join(zodsDir, zodFile), "utf-8");
+            if (index !== 0) {
+              const removedZodImport = zodContent.replace(/import.*/g, "");
+              content.push(removedZodImport);
+              return;
+            }
+            content.push(zodContent);
+          });
+          const schema = content.join("\n");
+          const cleanExports = schema.replace(/export \*.*/g, "");
+          const removeTypeExports = cleanExports
+            .replace(/export type /g, "type ")
+            .replace(/zod\.email\(\)/g, "zod.string().email()")
+            .replace(/zod\.uuid\(\)/g, "zod.string().uuid()");
+          rmSync(zodsDir, { recursive: true, force: true });
+          writeFileSync(
+            `./server/src/_generated/${schemaConfig.name}.zod.ts`,
+            removeTypeExports,
+          );
+          writeFileSync(
+            `./mathematador-app/src/_generated/${schemaConfig.name}.zod.ts`,
+            removeTypeExports,
+          );
+        },
+      },
       output: {
-        mode: "split",
-        target: `./server/src/_generated/api.ts`,
-        schemas: `./server/src/_generated/model`,
-        client: "zod",
+        mode: "single",
+        target: `./server/src/_generated/${schemaConfig.name}.zod.ts`,
+        client: "fetch",
         prettier: true,
+        clean: false,
+        schemas: {
+          type: "zod",
+          path: `./server/src/_generated/${schemaConfig.name}_tmp`,
+        },
       },
     },
   ]),
@@ -71,7 +116,7 @@ const configServerAPI = Object.fromEntries(
 
 const config = defineConfig({
   ...configApp,
-  ...configServerZod,
+  ...configServerZodModels,
   ...configServerAPI,
 });
 

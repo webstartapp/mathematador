@@ -1,14 +1,21 @@
-/* eslint-disable no-console, @typescript-eslint/no-explicit-any */
+/* eslint-disable no-console */
 import { Request, Response } from "express";
+import * as zod from "zod";
 
 import type { IRestAPI, RestResponse } from "@/utils/apiProxy";
 
-type ExtractBody<T extends any[]> = T extends [infer First, ...infer Rest]
+type TopType = {} | null | undefined;
+
+type GetParameters<T> = T extends (...args: infer Args) => infer _R ? (Args extends TopType[] ? Args : []) : [];
+
+type ExtractBody<T extends TopType[]> = T extends [infer First, ...infer Rest]
   ? First extends RequestInit | undefined
     ? void // Found options, no body found before it
     : First extends object
       ? First // Found a data object (Body or Query!)
-      : ExtractBody<Rest> // Skip strings/numbers (which are path params)
+      : Rest extends TopType[]
+        ? ExtractBody<Rest>
+        : void
   : void;
 
 export type ApiErrorResponse = { message: string };
@@ -16,8 +23,8 @@ export type ApiErrorResponse = { message: string };
 type ApiRequest<API extends keyof IRestAPI, PATH extends keyof IRestAPI[API]> = Request<
   Record<string, string>, // Route params
   RestResponse<API, PATH> | ApiErrorResponse, // Response type
-  ExtractBody<Parameters<IRestAPI[API][PATH] extends (...args: infer _A) => infer _R ? IRestAPI[API][PATH] : never>>, // Body Type
-  Record<string, any> // Query
+  ExtractBody<GetParameters<IRestAPI[API][PATH]>>, // Body Type
+  Record<string, string | string[]> // Query
 >;
 
 export const restAPICall = <API extends keyof IRestAPI, PATH extends keyof IRestAPI[API]>(
@@ -26,10 +33,36 @@ export const restAPICall = <API extends keyof IRestAPI, PATH extends keyof IRest
   resolver: (
     request: ApiRequest<API, PATH>,
     response: Response<RestResponse<API, PATH> | ApiErrorResponse>
-  ) => Promise<void> | void
+  ) => Promise<void> | void,
+  config?: {
+    params?: zod.ZodType<Record<string, string>, zod.ZodTypeDef, Record<string, string>>;
+    body?: zod.ZodType<
+      ExtractBody<GetParameters<IRestAPI[API][PATH]>>,
+      zod.ZodTypeDef,
+      ExtractBody<GetParameters<IRestAPI[API][PATH]>>
+    >;
+  }
 ) => {
   return async (request: ApiRequest<API, PATH>, response: Response<RestResponse<API, PATH> | ApiErrorResponse>) => {
     try {
+      if (config) {
+        if (config.params) {
+          const parsedParams = config.params.safeParse(request.params);
+          if (!parsedParams.success) {
+            response.status(400).json({ message: `Invalid parameters: ${parsedParams.error.message}` });
+            return;
+          }
+          request.params = parsedParams.data;
+        }
+        if (config.body) {
+          const parsedBody = config.body.safeParse(request.body);
+          if (!parsedBody.success) {
+            response.status(400).json({ message: `Invalid request body: ${parsedBody.error.message}` });
+            return;
+          }
+          request.body = parsedBody.data;
+        }
+      }
       await resolver(request, response);
     } catch (caughtError) {
       const error = caughtError instanceof Error ? caughtError : new Error(String(caughtError));

@@ -8,12 +8,13 @@ export interface UserRow {
   password: string;
   role: string;
 }
+import { OperationId, Minigame, SubscriptionType } from "@/_generated/model";
 
 export interface SubscriptionRow {
   id: string;
   created: Date;
   user_id: string;
-  type: string;
+  type: SubscriptionType;
   auto_renew: boolean;
 }
 
@@ -21,8 +22,8 @@ export interface ChallengeRow {
   id: string;
   created: Date;
   user_id: string;
-  operation_id: string;
-  minigame: string;
+  operation_id: OperationId;
+  minigame: Minigame;
   exercises: string;
   result: string | null;
   completed: boolean;

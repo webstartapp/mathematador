@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 import { getUserProgress } from "@/utils/gameProgress";
 import { restAPICall } from "@/utils/restAPI";
 
@@ -11,5 +10,5 @@ export const gameProgress = restAPICall("mathematador", "gameProgress", async (r
   }
 
   const progress = await getUserProgress(userId);
-  response.status(200).json(progress as any);
+  response.status(200).json(progress);
 });

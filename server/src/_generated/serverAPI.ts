@@ -276,7 +276,7 @@ export const challengeStartNew = async (operationId: 'addition' | 'subtraction' 
 
 
 export type challengeGetAllResponse200 = {
-  data: Challenge
+  data: Challenge[]
   status: 200
 }
 

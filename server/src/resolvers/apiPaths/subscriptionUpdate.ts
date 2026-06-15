@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+import { SubscriptionUpdateBody } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { restAPICall } from "@/utils/restAPI";
 
@@ -42,8 +42,11 @@ export const subscriptionUpdate = restAPICall(
 
     response.status(200).json({
       id: subscriptionRecord.id,
-      type: subscriptionRecord.type as any,
+      type: subscriptionRecord.type,
       autoRenew: subscriptionRecord.auto_renew
     });
+  },
+  {
+    body: SubscriptionUpdateBody
   }
 );

@@ -110,7 +110,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Challenge'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Challenge'
   /challenges/{operationId}/{id}:
     parameters:
       - $ref: '#/components/parameters/OperationId'

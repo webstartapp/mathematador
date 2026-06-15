@@ -1,14 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-argument */
+import * as zod from "zod";
+
+import { Exercise, ChallengeResultRequest, OperationId, Id } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { getUserProgress } from "@/utils/gameProgress";
 import { restAPICall } from "@/utils/restAPI";
+
+const ExercisesSchema = zod.array(Exercise);
 
 export const challengeUpdateResult = restAPICall(
   "mathematador",
   "challengeUpdateResult",
   async (request, response): Promise<void> => {
-    const operationId = String(request.params.operationId);
-    const id = String(request.params.id);
+    const operationId = request.params.operationId;
+    const id = request.params.id;
     const { results, time } = request.body;
     const userId = request.userId;
 
@@ -32,11 +36,12 @@ export const challengeUpdateResult = restAPICall(
 
     // Calculate correct answers
     let correctCount = 0;
-    const parsedExercises =
-      typeof challengeRecord.exercises === "string" ? JSON.parse(challengeRecord.exercises) : challengeRecord.exercises;
+    const parsedExercises = ExercisesSchema.parse(
+      typeof challengeRecord.exercises === "string" ? JSON.parse(challengeRecord.exercises) : challengeRecord.exercises
+    );
 
     // Map results to exercises for verification
-    const exercisesWithAnswers = parsedExercises.map((exercise: any, index: number) => {
+    const exercisesWithAnswers = parsedExercises.map((exercise, index) => {
       const submittedAnswer = results?.[index]?.userInput ?? "";
       const isCorrect = Number(submittedAnswer) === exercise.result;
       if (isCorrect) {
@@ -106,6 +111,10 @@ export const challengeUpdateResult = restAPICall(
     // Get compiled updated user progress
     const updatedProgress = await getUserProgress(userId);
 
-    response.status(200).json(updatedProgress as any);
+    response.status(200).json(updatedProgress);
+  },
+  {
+    params: zod.object({ operationId: OperationId, id: Id }),
+    body: ChallengeResultRequest
   }
 );

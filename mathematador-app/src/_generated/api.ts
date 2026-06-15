@@ -527,7 +527,7 @@ export const useChallengeStartNew = <TError = unknown,
     }
 
 export type challengeGetAllResponse200 = {
-  data: Challenge
+  data: Challenge[]
   status: 200
 }
 

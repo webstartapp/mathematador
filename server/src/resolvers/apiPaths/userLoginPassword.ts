@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
+import { CredentialsPassword } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { hashPassword } from "@/utils/password";
 import { restAPICall } from "@/utils/restAPI";
@@ -12,9 +12,7 @@ export const userLoginPassword = restAPICall(
 
     let userRecord;
     if (userId) {
-      userRecord = await knex("users")
-        .where("id", userId as string)
-        .first();
+      userRecord = await knex("users").where("id", userId).first();
     } else {
       // Fallback to first user in database
       userRecord = await knex("users").first();
@@ -25,8 +23,10 @@ export const userLoginPassword = restAPICall(
       return;
     }
 
-    const hashedPassword = await hashPassword(password as string);
-    await knex("users").where("id", userRecord.id).update({ password: hashedPassword });
+    if (password) {
+      const hashedPassword = await hashPassword(password);
+      await knex("users").where("id", userRecord.id).update({ password: hashedPassword });
+    }
 
     // Get user's subscription
     const subscriptionRecord = await knex("subscriptions").where("user_id", userRecord.id).first();
@@ -37,10 +37,13 @@ export const userLoginPassword = restAPICall(
       subscription: subscriptionRecord
         ? {
             id: subscriptionRecord.id,
-            type: subscriptionRecord.type as any,
+            type: subscriptionRecord.type,
             autoRenew: subscriptionRecord.auto_renew
           }
         : undefined
     });
+  },
+  {
+    body: CredentialsPassword
   }
 );

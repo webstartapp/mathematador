@@ -1,12 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument */
+import * as zod from "zod";
+
+import { Exercise, ChallengeResultRequest, OperationId } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { restAPICall } from "@/utils/restAPI";
+
+const ExercisesSchema = zod.array(Exercise);
 
 export const challengeGetAll = restAPICall(
   "mathematador",
   "challengeGetAll",
   async (request, response): Promise<void> => {
-    const operationId = String(request.params.operationId);
+    const operationId = request.params.operationId;
     const userId = request.userId;
 
     if (!userId) {
@@ -19,14 +23,18 @@ export const challengeGetAll = restAPICall(
       .orderBy("created", "desc");
 
     const challenges = challengeRows.map((row) => {
-      const parsedExercises = typeof row.exercises === "string" ? JSON.parse(row.exercises) : row.exercises;
-      const parsedResult = row.result ? (typeof row.result === "string" ? JSON.parse(row.result) : row.result) : null;
+      const parsedExercises = ExercisesSchema.parse(
+        typeof row.exercises === "string" ? JSON.parse(row.exercises) : row.exercises
+      );
+      const parsedResult = row.result
+        ? ChallengeResultRequest.parse(typeof row.result === "string" ? JSON.parse(row.result) : row.result)
+        : null;
 
       return {
         id: row.id,
         userId: row.user_id,
-        operationId: row.operation_id as any,
-        minigame: row.minigame as any,
+        operationId: row.operation_id,
+        minigame: row.minigame,
         exercises: parsedExercises,
         result: parsedResult || undefined,
         maxTime: 60,
@@ -34,11 +42,14 @@ export const challengeGetAll = restAPICall(
         xpOnFailure: 5,
         coinsOnSuccess: 10,
         coinsOnFailure: 2,
-        coins: row.result ? parsedResult?.coins || 0 : 0,
+        coins: parsedResult?.coins || 0,
         allowedMistakes: 3
       };
     });
 
-    response.status(200).json(challenges as any);
+    response.status(200).json(challenges);
+  },
+  {
+    params: zod.object({ operationId: OperationId })
   }
 );
