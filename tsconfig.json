@@ -12,6 +12,5 @@
     "allowJs": true,
     "incremental": true,
     "noEmit": true
-  },
-  "extends": "expo/tsconfig.base"
+  }
 }
