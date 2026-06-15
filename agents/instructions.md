@@ -33,6 +33,11 @@ To keep development clean and prevent code bloat or scope creep, agents must ali
 *   **Offline Gameplay**: Game configuration and progress data should be cached on phone memory. Prefer live API data when online, but if the network drops, the game must remain fully playable using the offline cached state.
 *   **Online-Only Features**: Gated features such as registration, payments, and ads must fail gracefully with appropriate error UI when offline, without crashing the application.
 
+### 0+ Rating & Thematic Alignment (El Coliseo de los Números)
+*   **No Violence or Conflict**: The game must adhere to a strict 0+ age rating. There should be no weapons, no representation of harm or physical injury to bulls, animals, or characters.
+*   **The Toro Numérico as a Partner**: The Toro is a friendly co-performer. Any gameplay featuring the Toro must position it as an assist companion (providing hints, freezing time, multiplying experience points), never as an enemy to defeat.
+*   **Mathematical Showmanship**: The challenge must always be focused on structuring and solving mathematical formulas, styled as elegant cape passes (e.g. Addition, Subtraction, Multiplication, Division) and theatrical synchronization with the crowd.
+
 ---
 
 ## 3. Git Branching & Pull Request Policy
