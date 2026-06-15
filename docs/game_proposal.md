@@ -76,7 +76,7 @@ erDiagram
     cosmetics {
         uuid id PK
         string name
-        string type "cape | suit"
+        string type "cape | suit | flare"
         int price
         string asset_id
         int required_level
@@ -93,6 +93,9 @@ erDiagram
 ### Dynamic Balance Calculation
 To prevent synchronization issues and transaction errors, the user's available balance is calculated dynamically:
 $$\text{Current Coin Balance} = \text{Total Earned Coins (from completed challenges)} - \text{Total Spent Coins (prices of purchased cosmetics)}$$
+
+> [!NOTE]
+> While dynamic calculation guarantees that a user's balance is always derived directly from their audit history, concurrent double-spend attacks or race conditions are prevented during API purchase execution by executing the balance check and purchase entry inside a database transaction (`SERIALIZABLE` isolation or explicit row locks). Additionally, a unique constraint on `(user_id, cosmetic_id)` in the `user_cosmetics` table ensures that a cosmetic item can never be purchased twice by the same user.
 
 ---
 
