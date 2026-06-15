@@ -403,12 +403,12 @@ export const GameProgress = zod.object({
   "allowedMistakes": zod.number().optional()
 }))).optional()
 })).optional(),
-  "purchasedCosmetics": zod.array(zod.string()).optional(),
-  "equippedCape": zod.string().nullish(),
-  "equippedSuit": zod.string().nullish(),
-  "equippedFlare": zod.string().nullish(),
+  "purchasedCosmetics": zod.array(zod.string().uuid()).optional(),
+  "equippedCape": zod.string().uuid().nullish(),
+  "equippedSuit": zod.string().uuid().nullish(),
+  "equippedFlare": zod.string().uuid().nullish(),
   "minigameProgress": zod.array(zod.object({
-  "minigameId": zod.string().optional(),
+  "minigameId": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
   "level": zod.number().optional(),
   "xp": zod.number().optional()
 })).optional()
@@ -495,7 +495,7 @@ type MinigameOutput = zod.output<typeof Minigame>;
 
 
 export const MinigameProgress = zod.object({
-  "minigameId": zod.string().optional(),
+  "minigameId": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
   "level": zod.number().optional(),
   "xp": zod.number().optional()
 })

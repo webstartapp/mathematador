@@ -19,10 +19,15 @@ export const up = async (knex: Knex): Promise<void> => {
     table.timestamp("created").defaultTo(knex.fn.now());
     table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable();
     table.uuid("cosmetic_id").references("id").inTable("cosmetics").onDelete("CASCADE").notNullable();
+    table.string("cosmetic_type").notNullable(); // "cape" | "suit" | "flare"
     table.boolean("equipped").notNullable().defaultTo(false);
     table.unique(["user_id", "cosmetic_id"]);
   });
-  console.log("User cosmetics table created");
+  // Create a partial unique index so that a user can only have one cosmetic of each type equipped at a time
+  await knex.raw(
+    "CREATE UNIQUE INDEX user_cosmetics_equipped_unique ON user_cosmetics(user_id, cosmetic_type) WHERE equipped = true"
+  );
+  console.log("User cosmetics table created with partial unique index for equipped status");
 
   // 3. Create minigame_progress table
   await knex.schema.createTable("minigame_progress", (table) => {
