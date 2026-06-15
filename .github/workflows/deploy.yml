@@ -58,7 +58,6 @@ jobs:
           # Copy Server build & runtime config
           cp -r server/build/. stage/server/build/
           cp server/package.json stage/server/
-          cp server/package-lock.json stage/server/
           cp server/knexfile.ts stage/server/
           cp -r server/src stage/server/src
 
