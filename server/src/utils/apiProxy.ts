@@ -1,5 +1,4 @@
-/* eslint-disable-next-line no-restricted-imports */
-import * as serverAPI from "../_generated/serverAPI";
+import * as serverAPI from "@/_generated/serverAPI";
 
 const allRestAPIs = {
   mathematador: serverAPI

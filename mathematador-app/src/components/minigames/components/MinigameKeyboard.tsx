@@ -1,4 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import { FC, useCallback } from "react";
 import { GestureResponderEvent, PanResponderGestureState } from "react-native";
 
@@ -35,7 +34,7 @@ const MinigameKeyboard: FC<MinigameKeyboardProps> = ({
   const handleDrag: (
     event: GestureResponderEvent,
     gestureState: PanResponderGestureState,
-  ) => void = useCallback((event, gestureState) => {
+  ) => void = useCallback((_event, _gestureState) => {
     // console.log('drag', gestureState.moveX, gestureState.moveY);
   }, []);
   return (

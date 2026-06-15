@@ -130,6 +130,10 @@ module.exports = [
             "xml",
             "key",
             "jwt",
+            "min",
+            "max",
+            "x",
+            "y",
           ],
           properties: "never",
         },
@@ -254,10 +258,48 @@ module.exports = [
             "xml",
             "key",
             "jwt",
+            "min",
+            "max",
+            "x",
+            "y",
           ],
           properties: "never",
         },
       ],
+    },
+  },
+
+  // Workspace-specific parser root directories to resolve extends/dependencies correctly
+  {
+    files: ["mathematador-app/**/*.ts", "mathematador-app/**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: require("path").join(__dirname, "mathematador-app"),
+      },
+    },
+  },
+  {
+    files: ["server/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: require("path").join(__dirname, "server"),
+      },
+    },
+  },
+
+  // Migrations Configuration (allow console)
+  {
+    files: ["server/src/migrations/**/*.ts"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+
+  // Config Files Configuration (disable max-lines)
+  {
+    files: ["mathematador-app/src/configs/**/*.ts"],
+    rules: {
+      "max-lines": "off",
     },
   },
 

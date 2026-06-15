@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { operations } from "@/src/configs/operations";
@@ -72,7 +71,6 @@ const userSlice = createSlice({
       }
     },
     completeChalange(state, action: PayloadAction<ChalengeResult>) {
-      console.log(50, action.payload);
       state.xp += action.payload.xp;
       state.coins += action.payload.coins;
       const operationProgress = state.operationProgress.find(

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /**
  * Learn more about light and dark modes:
  * https://docs.expo.dev/guides/color-schemes/
@@ -11,7 +10,7 @@ import { Colors } from "@/constants/Colors";
 export const useThemeColor = (
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark,
-) => {
+): string => {
   const theme = useColorScheme() === "dark" ? "dark" : "light";
   const colorFromProps = props[theme];
 

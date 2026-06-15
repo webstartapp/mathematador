@@ -7,6 +7,6 @@ import { configKnex } from "@/knexWrapper";
 
 dotenv.config({ path: ".env" });
 
-module.exports = configKnex;
+const config = configKnex();
 
-export {};
+export = config;

@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type, unused-imports/no-unused-vars */
 import { ReactNode } from "react";
 import { StyleSheet, Text, TextProps } from "react-native";
 
 const applyStylesFN = <T extends string>(
   styles: StyleSheet.NamedStyles<Record<T, string>>,
-) => styles;
+): StyleSheet.NamedStyles<Record<T, string>> => styles;
 
 const themedStyles = applyStylesFN({
   title: {
@@ -54,6 +53,10 @@ const ThemedText = <T extends Variant>({
   ...props
 }: TextProps & {
   variant: T;
-}): ReactNode => <Text style={[variants[variant], style]}>{children}</Text>;
+}): ReactNode => (
+  <Text style={[variants[variant], style]} {...props}>
+    {children}
+  </Text>
+);
 
 export default ThemedText;

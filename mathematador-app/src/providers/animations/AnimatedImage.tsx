@@ -1,4 +1,3 @@
-/* eslint-disable max-lines, @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
 import {
   createContext,
   FC,
@@ -8,11 +7,10 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { ImageSourcePropType, StyleSheet, View } from "react-native";
-import { Animated } from "react-native";
+import { ImageSourcePropType, StyleSheet, View, Animated } from "react-native";
 
 type AnimatedImageProps = {
-  image: any;
+  image: ImageSourcePropType | undefined;
 };
 
 export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
@@ -21,61 +19,39 @@ export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
   const translateYAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.1,
-          duration: 11000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 13000,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
+    const startAnimLoop = (
+      anim: Animated.Value,
+      sequence: { toValue: number; duration: number }[],
+    ): void => {
+      Animated.loop(
+        Animated.sequence(
+          sequence.map((step) =>
+            Animated.timing(anim, { ...step, useNativeDriver: true }),
+          ),
+        ),
+      ).start();
+    };
 
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(translateXAnim, {
-          toValue: -30,
-          duration: 17000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateXAnim, {
-          toValue: 30,
-          duration: 19000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateXAnim, {
-          toValue: 0,
-          duration: 21000,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
-
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(translateYAnim, {
-          toValue: -30,
-          duration: 23000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateYAnim, {
-          toValue: 30,
-          duration: 33000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateYAnim, {
-          toValue: 0,
-          duration: 29000,
-          useNativeDriver: true,
-        }),
-      ]),
-    ).start();
+    startAnimLoop(scaleAnim, [
+      { toValue: 1.1, duration: 11000 },
+      { toValue: 1, duration: 13000 },
+    ]);
+    startAnimLoop(translateXAnim, [
+      { toValue: -30, duration: 17000 },
+      { toValue: 30, duration: 19000 },
+      { toValue: 0, duration: 21000 },
+    ]);
+    startAnimLoop(translateYAnim, [
+      { toValue: -30, duration: 23000 },
+      { toValue: 30, duration: 33000 },
+      { toValue: 0, duration: 29000 },
+    ]);
   }, [scaleAnim, translateXAnim, translateYAnim]);
+
+  if (!image) {
+    return null;
+  }
+
   return (
     <Animated.Image
       source={image}
@@ -93,14 +69,18 @@ export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
   );
 };
 
-const AnimatedImageContext = createContext<{
+export interface AnimatedImageContextType {
   bgImage?: ImageSourcePropType;
   setBgImage: (image: ImageSourcePropType) => void;
-}>({
+}
+
+const AnimatedImageContext = createContext<AnimatedImageContextType>({
   setBgImage: () => {},
 });
 
-export const useAnimatedBackground = (image: ImageSourcePropType) => {
+export const useAnimatedBackground = (
+  image: ImageSourcePropType,
+): AnimatedImageContextType => {
   const context = useContext(AnimatedImageContext);
   if (!context) {
     throw new Error(

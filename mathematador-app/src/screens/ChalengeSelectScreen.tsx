@@ -1,7 +1,6 @@
-/* eslint-disable no-console, no-restricted-syntax, @typescript-eslint/explicit-function-return-type */
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation, RouteProp } from "expo-router/react-navigation";
-import React from "react";
+import { JSX } from "react";
 import { View, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
 
@@ -26,7 +25,7 @@ interface Props {
   route: ChalengeSelectScreenRouteProp;
 }
 
-const ChalengeSelect: React.FC<Props> = ({ route }) => {
+const ChalengeSelect = ({ route }: Props): JSX.Element => {
   const { operationId } = route.params;
   const navigation = useNavigation<ChalengeSelectScreenNavigationProp>();
 
@@ -42,10 +41,11 @@ const ChalengeSelect: React.FC<Props> = ({ route }) => {
   const currentChallenge = operationStatistics?.currentChallenge;
   const completedChallenges = operationStatistics?.completedChallenges;
 
+  // eslint-disable-next-line no-console
   console.log(34, operationStatistics);
 
   // Start button handler
-  const handleStartChallenge = (challenge?: Challenge) => {
+  const handleStartChallenge = (challenge?: Challenge): void => {
     if (challenge) {
       navigation.navigate("Challenge", challenge);
     }

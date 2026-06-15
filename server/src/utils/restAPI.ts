@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Request, Response } from "express";
 import * as zod from "zod";
 
@@ -66,6 +65,7 @@ export const restAPICall = <API extends keyof IRestAPI, PATH extends keyof IRest
       await resolver(request, response);
     } catch (caughtError) {
       const error = caughtError instanceof Error ? caughtError : new Error(String(caughtError));
+      // eslint-disable-next-line no-console
       console.error(`[REST API Error] ${apiName}.${String(path)}`, error);
       response.status(500).json({ message: error.message });
     }

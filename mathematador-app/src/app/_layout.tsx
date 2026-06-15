@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -13,6 +12,7 @@ import "react-native-reanimated";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
+import spaceMonoFont from "@/assets/fonts/SpaceMono-Regular.ttf";
 import { store, persistor } from "@/redux/store";
 
 const queryClient = new QueryClient();
@@ -22,8 +22,7 @@ SplashScreen.preventAutoHideAsync();
 
 const RootLayout = (): JSX.Element | null => {
   const [loaded] = useFonts({
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: spaceMonoFont,
   });
 
   useEffect(() => {

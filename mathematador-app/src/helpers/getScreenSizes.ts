@@ -1,10 +1,22 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Dimensions } from "react-native";
+
+export interface ScreenSizes {
+  readonly primarySize: {
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly secondarySize: {
+    readonly width: number;
+    readonly height: number;
+  };
+  readonly orientation: "landscape" | "portrait";
+  readonly size: number;
+}
 
 export const getScreenSizes = (
   primaryPercentage: number = 50,
   headerHeight: number = 0,
-) => {
+): ScreenSizes => {
   const { width, height } = Dimensions.get("window");
   const reducedHeight = height - headerHeight;
   const orientation = width > reducedHeight ? "landscape" : "portrait";

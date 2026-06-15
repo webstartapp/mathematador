@@ -1,16 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument */
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import jwtLib from "expo-jwt";
+import { z } from "zod";
 
 const AXIOS_INSTANCE = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || "http://localhost:4071",
+  baseURL: String(process.env.EXPO_PUBLIC_API_URL || "http://localhost:4071"),
 });
 
 const PERSISTED_STATE_KEY = "persistedStateRestApi";
 
+const PersistedStateSchema = z.object({
+  viewer: z
+    .object({
+      id: z.number().optional(),
+    })
+    .optional(),
+});
+
+type PersistedState = z.infer<typeof PersistedStateSchema>;
+
 const getAuthToken = (viewerId?: number): string | null => {
-  const secret = process.env.EXPO_PUBLIC_JWT_SECRET;
+  const secret = String(process.env.EXPO_PUBLIC_JWT_SECRET || "");
   if (!secret || !viewerId) {
     return null;
   }
@@ -23,20 +33,54 @@ const getAuthToken = (viewerId?: number): string | null => {
   return jwtLib.encode(tokenBody, secret);
 };
 
+export type CustomRequestConfig = AxiosRequestConfig & {
+  body?: string | object | number | boolean | null;
+};
+
+const JsonValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.record(z.any()),
+  z.array(z.any()),
+  z.null(),
+]);
+
+const HeadersSchema = z.record(z.union([z.string(), z.number(), z.boolean()]));
+
+const parseJSON = (
+  jsonString: string,
+): string | object | number | boolean | null => {
+  const parsed = JsonValueSchema.safeParse(JSON.parse(jsonString));
+  if (parsed.success) {
+    return parsed.data;
+  }
+  return null;
+};
+
 export const customInstance = async <T>(
   requestUrl: string,
-  config: any,
+  config: CustomRequestConfig,
 ): Promise<T> => {
   const storage = await AsyncStorage.getItem(PERSISTED_STATE_KEY);
-  const parsedStorage = JSON.parse(storage || "{}");
-  const viewerId = parsedStorage?.viewer?.id;
+  const parsedStorage: PersistedState = PersistedStateSchema.parse(
+    JSON.parse(storage || "{}"),
+  );
+  const viewerId = parsedStorage.viewer?.id;
 
   const headers: Record<string, string> = {};
 
-  if (config?.headers) {
-    Object.keys(config.headers).forEach((key) => {
-      headers[key] = String(config.headers[key]);
-    });
+  const configHeaders = config.headers;
+  if (configHeaders) {
+    const parsedHeaders = HeadersSchema.safeParse(configHeaders);
+    if (parsedHeaders.success) {
+      Object.keys(parsedHeaders.data).forEach((key) => {
+        const value = parsedHeaders.data[key];
+        if (value !== undefined) {
+          headers[key] = String(value);
+        }
+      });
+    }
   }
 
   const token = getAuthToken(viewerId);
@@ -44,17 +88,17 @@ export const customInstance = async <T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const { body, ...rest } = config || {};
+  const { body, ...rest } = config;
   let requestData = body;
   if (typeof body === "string") {
     try {
-      requestData = JSON.parse(body);
+      requestData = parseJSON(body);
     } catch {
       requestData = body;
     }
   }
 
-  const response = await AXIOS_INSTANCE({
+  const response = await AXIOS_INSTANCE<T>({
     url: requestUrl,
     data: requestData,
     ...rest,
