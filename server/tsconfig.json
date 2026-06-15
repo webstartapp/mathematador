@@ -26,6 +26,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src/**/*", "declaration.d.ts", "knexfile.ts"],
+  "include": ["src/**/*", "declaration.d.ts"],
   "exclude": ["node_modules", "build"]
 }
