@@ -62,7 +62,10 @@ export const customInstance = async <T>(
   requestUrl: string,
   config: CustomRequestConfig,
 ): Promise<T> => {
-  const storage = await AsyncStorage.getItem(PERSISTED_STATE_KEY);
+  const storage =
+    typeof window !== "undefined"
+      ? await AsyncStorage.getItem(PERSISTED_STATE_KEY)
+      : null;
   const parsedStorage: PersistedState = PersistedStateSchema.parse(
     JSON.parse(storage || "{}"),
   );

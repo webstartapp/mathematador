@@ -15,9 +15,30 @@ import gameReducer from "@/redux/slices/gameSlice";
 import navigationReducer from "@/redux/slices/navigationSlice";
 import userReducer from "@/redux/slices/userSlice";
 // Import other reducers as needed
+const createNoopStorage = (): {
+  getItem: (key: string) => Promise<string | null>;
+  setItem: (key: string, value: string) => Promise<string>;
+  removeItem: (key: string) => Promise<void>;
+} => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    setItem(_key: string, value: string) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key: string) {
+      return Promise.resolve();
+    },
+  };
+};
+
+const storage =
+  typeof window !== "undefined" ? AsyncStorage : createNoopStorage();
+
 const persistConfig = {
   key: "root",
-  storage: AsyncStorage,
+  storage,
   whitelist: ["user", "game", "navigation"], // Only these reducers will be persisted
 };
 const rootReducer = combineReducers({
