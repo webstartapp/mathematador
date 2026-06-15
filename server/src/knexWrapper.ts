@@ -21,7 +21,8 @@ export const configKnex = (): Knex.Config => ({
           }
   },
   migrations: {
-    directory: __dirname.includes("build") ? "./build/migrations" : "./src/migrations"
+    directory: __dirname.includes("build") ? "./build/migrations" : "./src/migrations",
+    loadExtensions: __dirname.includes("build") ? [".js"] : [".ts"]
   },
   pool: {
     min: 0,
