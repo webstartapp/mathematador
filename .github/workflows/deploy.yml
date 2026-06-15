@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - issue-20-ci-cd-pr-workflow
   workflow_dispatch:
 
 jobs:
