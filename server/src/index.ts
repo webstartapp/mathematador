@@ -6,7 +6,11 @@ import express from "express";
 import router from "@/routes";
 
 const appServer = express();
-appServer.use(cors());
+appServer.use(
+  cors({
+    exposedHeaders: ["Authorization"]
+  })
+);
 appServer.use(bodyParser.urlencoded({ extended: true }));
 appServer.use(bodyParser.json({ limit: "100mb" }));
 

@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosRequestConfig } from "axios";
-import jwtLib from "expo-jwt";
 import { z } from "zod";
 
 const AXIOS_INSTANCE = axios.create({
@@ -22,22 +21,21 @@ const UserStateSchema = z.object({
     .optional(),
 });
 
-const getAuthToken = (viewerId?: string | number): string | null => {
-  const secret = String(process.env.EXPO_PUBLIC_JWT_SECRET || "");
-  if (!secret || !viewerId) {
+const PERSISTED_TOKEN_KEY = "auth_token";
+
+const getAuthToken = async (
+  viewerId?: string | number,
+): Promise<string | null> => {
+  if (!viewerId) {
+    await AsyncStorage.removeItem(PERSISTED_TOKEN_KEY);
     return null;
   }
-  const currentTime = Math.floor(Date.now() / 1000);
-  const tokenBody = {
-    userId: viewerId,
-    exp: currentTime + 3600,
-    iat: currentTime,
-  };
-  return jwtLib.encode(tokenBody, secret);
+  return AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
 };
 
 export type CustomRequestConfig = AxiosRequestConfig & {
   body?: string | object | number | boolean | null;
+  headers?: Record<string, string | number | boolean | undefined>;
 };
 
 const JsonValueSchema = z.union([
@@ -87,15 +85,16 @@ const getPersistedViewerId = async (): Promise<string | number | undefined> => {
   return undefined;
 };
 
-export const customInstance = async <T>(
-  requestUrl: string,
-  config: CustomRequestConfig,
-): Promise<T> => {
-  const viewerId = await getPersistedViewerId();
+const ResponseHeadersSchema = z.record(z.string());
 
+const buildHeaders = (
+  configHeaders:
+    | Record<string, string | number | boolean | undefined>
+    | undefined,
+  token: string | null,
+): Record<string, string> => {
   const headers: Record<string, string> = {};
 
-  const configHeaders = config.headers;
   if (configHeaders) {
     const parsedHeaders = HeadersSchema.safeParse(configHeaders);
     if (parsedHeaders.success) {
@@ -108,10 +107,20 @@ export const customInstance = async <T>(
     }
   }
 
-  const token = getAuthToken(viewerId);
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
+
+  return headers;
+};
+
+export const customInstance = async <T>(
+  requestUrl: string,
+  config: CustomRequestConfig,
+): Promise<T> => {
+  const viewerId = await getPersistedViewerId();
+  const token = await getAuthToken(viewerId);
+  const headers = buildHeaders(config.headers, token);
 
   const { body, ...rest } = config;
   let requestData = body;
@@ -129,5 +138,27 @@ export const customInstance = async <T>(
     ...rest,
     headers,
   });
+
+  // Extract and persist the authorization token if returned from login/register
+  if (
+    requestUrl.includes("/user/login") ||
+    requestUrl.includes("/user/register")
+  ) {
+    const parsedHeaders = ResponseHeadersSchema.safeParse(response.headers);
+    if (parsedHeaders.success) {
+      const authHeader =
+        parsedHeaders.data["authorization"] ??
+        parsedHeaders.data["Authorization"];
+
+      if (authHeader) {
+        const parts = authHeader.split(" ");
+        const tokenVal = parts.length === 2 ? parts[1] : parts[0];
+        if (tokenVal) {
+          await AsyncStorage.setItem(PERSISTED_TOKEN_KEY, tokenVal);
+        }
+      }
+    }
+  }
+
   return response.data;
 };
