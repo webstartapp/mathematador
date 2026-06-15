@@ -57,6 +57,7 @@ module.exports = [
       "**/dist/**",
       "**/.expo/**",
       "mathematador-app/web-build/**",
+      "mathematador-app/expo-env.d.ts",
       "agents/**",
       "**/build/**",
       "server/build/**",

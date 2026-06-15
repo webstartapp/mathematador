@@ -1,8 +1,6 @@
-import type { Knex } from "knex";
+const bcrypt = require("bcryptjs");
 
-import { hashPassword } from "@/utils/password";
-
-export const up = async (knex: Knex): Promise<void> => {
+exports.up = async function (knex) {
   // Enable UUID extension if not exists
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
 
@@ -54,7 +52,8 @@ export const up = async (knex: Knex): Promise<void> => {
   console.log("Operation progress table created");
 
   // Create a default root admin user
-  const rootPasswordHash = await hashPassword("cestapoznani");
+  const salt = await bcrypt.genSalt(10);
+  const rootPasswordHash = await bcrypt.hash("cestapoznani", salt);
   await knex("users").insert({
     username: "root",
     password: rootPasswordHash,
@@ -64,7 +63,7 @@ export const up = async (knex: Knex): Promise<void> => {
   console.log("Root user created");
 };
 
-export const down = async (knex: Knex): Promise<void> => {
+exports.down = async function (knex) {
   await knex.schema.dropTableIfExists("operation_progress");
   await knex.schema.dropTableIfExists("challenges");
   await knex.schema.dropTableIfExists("subscriptions");

@@ -21,8 +21,8 @@ if (fs.existsSync(envPath)) {
   });
 }
 
-const port = loadedEnv.PORT || "4071";
-const expoPort = loadedEnv.EXPO_PORT || "4070";
+const port = loadedEnv.PORT || "4076";
+const expoPort = loadedEnv.EXPO_PORT || "4075";
 
 // Set environment variables for subprojects
 process.env.PORT = port;

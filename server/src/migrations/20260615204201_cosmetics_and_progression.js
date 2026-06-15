@@ -1,6 +1,4 @@
-import type { Knex } from "knex";
-
-export const up = async (knex: Knex): Promise<void> => {
+exports.up = async function (knex) {
   // 1. Create cosmetics table
   await knex.schema.createTable("cosmetics", (table) => {
     table.uuid("id").primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
@@ -89,7 +87,7 @@ export const up = async (knex: Knex): Promise<void> => {
   console.log("Default cosmetics seeded");
 };
 
-export const down = async (knex: Knex): Promise<void> => {
+exports.down = async function (knex) {
   await knex.schema.dropTableIfExists("minigame_progress");
   await knex.schema.dropTableIfExists("user_cosmetics");
   await knex.schema.dropTableIfExists("cosmetics");
