@@ -47,10 +47,12 @@ Earned coins are used to buy and equip cosmetics in the shop:
 
 ---
 
-## 🎮 3. Game Mode: *La Gran Corrida* (Endless Gauntlet)
-This is an intense, endless survival mode where players test their limits and compete on weekly leaderboards.
+## 🎮 3. Arena Game Modes
 
-### Mechanics:
+Mathematador features two high-stakes arena game modes under the *Coliseo de los Números* expansion:
+
+### A. *La Gran Corrida* (Endless Gauntlet)
+This is an intense, endless survival mode where players test their limits and compete on weekly leaderboards.
 *   **Mixed Operations**: Equations are generated randomly, mixing addition, subtraction, multiplication, and division.
 *   **Increased Difficulty**:
     *   **Timer**: Reduced from 60 seconds to 45 seconds per wave.
@@ -59,15 +61,29 @@ This is an intense, endless survival mode where players test their limits and co
 *   **High Rewards**: Successful waves yield higher XP (35) and Coins (25).
 *   **High Scores & Leaderboards**: Weekly global leaderboards track the highest wave reached, awarding top players exclusive cosmetics or badges.
 
+### B. *La Corrida Diaria* (Daily Challenge)
+A single, fixed-preset challenge generated every calendar day to drive daily user retention.
+*   **Daily Presets**: Every player globally receives the exact same set of equations for that day.
+*   **High-Stakes Rules**:
+    *   **Timer**: 90 seconds.
+    *   **Allowed Mistakes**: 0 (1 life total). A single mistake ends the run.
+    *   **Target**: Solve exactly 20 equations.
+*   **Unique Rewards**:
+    *   Completing the challenge awards a massive bonus of **50 coins**.
+    *   A small percentage chance (e.g., 5%) to drop an exclusive, daily-themed cosmetic item (e.g., a special Cape or Suit) that cannot be bought in the shop.
+*   **Daily Leaderboards**: Tracks execution speed for all players who successfully complete the daily challenge.
+
 ---
 
 ## 💾 4. Proposed Database Schema
-To support the cosmetics shop and purchase tracking, we propose the following schema additions.
+To support the cosmetics shop, purchase tracking, and multi-dimensional progression, we propose the following schema additions.
 
 ```mermaid
 erDiagram
     users ||--o{ user_cosmetics : owns
     cosmetics ||--o{ user_cosmetics : "part of"
+    users ||--o{ operation_progress : tracks
+    users ||--o{ minigame_progress : tracks
     users {
         uuid id PK
         string username
@@ -87,6 +103,20 @@ erDiagram
         uuid cosmetic_id FK
         boolean equipped
         timestamp created
+    }
+    operation_progress {
+        uuid id PK
+        uuid user_id FK
+        string operation_id
+        int level
+        int xp
+    }
+    minigame_progress {
+        uuid id PK
+        uuid user_id FK
+        string minigame_id
+        int level
+        int xp
     }
 ```
 

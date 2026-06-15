@@ -58,6 +58,13 @@ graph TD
     - Leveling up increases formula complexity and speeds up the countdown timer.
     - High rewards: 35 XP and 25 Coins per wave.
 
+### C. *La Corrida Diaria* (Daily Challenge) – *NEW*
+*   **Description**: A fixed-preset daily challenge with high stakes to drive engagement and retention.
+*   **Structure**:
+    - Operation type is `daily_challenge`.
+    - 20 equations, 90-second limit, and 0 allowed mistakes (1 life).
+    - Features global daily leaderboards and rewards a 50-coin completion bonus plus a 5% chance of exclusive daily cosmetic drops.
+
 ---
 
 ## 🧩 3. Minigames (Layout Templates)
@@ -94,12 +101,15 @@ classDiagram
 
 The proposed **El Coliseo de los Números** features (Endless Gauntlet, Cosmetics Store, and Toro Assists) fit cleanly into this existing design:
 
-1. **Gauntlet Integration**:
-   - The Endless Gauntlet uses `operationId: "gauntlet"` and maps to `minigame: "SingleLineMinigame"`.
-   - This allows it to reuse the existing `SingleLine` input and logic while introducing custom backend timers, mistakes limits, and mixed operator equations.
+1. **Gauntlet & Daily Challenge Integration**:
+   - The Endless Gauntlet uses `operationId: "gauntlet"` and the Daily Challenge uses `operationId: "daily_challenge"`.
+   - Both reuse the existing `SingleLineMinigame` layouts, allowing rapid development by wrapping standard minigame components.
 2. **Toro Assists Integration**:
    - Add the Toro companion panel as a wrapper component inside `ChallengeGameScreen.tsx`.
    - The panel captures correct/incorrect responses to fill the cooperation meter, manages the Toro Focus (timer freeze), and renders Toro Hints based on the current equation.
 3. **Cosmetics & Store**:
    - Store inventory and purchases are managed via the new database tables (`cosmetics`, `user_cosmetics`).
    - The client fetches cosmetics and displays them in a dedicated navigation screen (`TiendaScreen.tsx`), updating Redux state and storing equipped items to style the game screens.
+4. **Multi-Dimensional Progression**:
+   - The system tracks progression along two distinct dimensions: mathematical operations (`operation_progress`) and interaction minigames (`minigame_progress`).
+   - This lets a player level up their arithmetic (addition, division) and their input dexterity (speed sprinting, drag-and-drop) independently.
