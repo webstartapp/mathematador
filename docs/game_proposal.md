@@ -9,6 +9,9 @@ In a world inspired by the theatrical showmanship and rhythm of Spanish performa
 
 *   **The Player**: A rookie Mathematador entering the grand *Plaza de Aritmética*.
 *   **The Partner**: The **Toro Numérico** (Numerical Bull) is your loyal, majestic companion, not an enemy. You and your Toro work together as a team to choreograph the numbers.
+
+    ![Toro Numérico Concept](./toro_numerico_concept.png)
+
 *   **The Challenge**: Chaotic, unstructured numbers and equations drift into the arena.
 *   **The Passes (*Pases Matemáticos*)**: The Mathematador uses elegant cape passes to direct, structure, and solve the equations, creating a beautiful flow of numbers.
     *   **Addition** (*Pase de Armonía*) – Blending numbers together smoothly.
@@ -97,6 +100,9 @@ $$\text{Current Coin Balance} = \text{Total Earned Coins (from completed challen
 We propose adding two new screens to the React Native/Expo app:
 
 ### Screen A: *Tienda de Torero* (Cosmetics Store)
+
+![Tienda de Torero UI Mockup](./tienda_torero_ui.png)
+
 *   **Header**: Displays current coin balance and player level.
 *   **Tabs**: "Capes" and "Suits".
 *   **Item Cards**:
