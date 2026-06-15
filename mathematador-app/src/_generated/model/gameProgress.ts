@@ -6,10 +6,17 @@
  * OpenAPI spec version: 0.0.1
  */
 import type { GameOperationProgress } from './gameOperationProgress';
+import type { Id } from './id';
+import type { MinigameProgress } from './minigameProgress';
 
 export interface GameProgress {
   level?: number;
   xp?: number;
   coins?: number;
   operations?: GameOperationProgress[];
+  purchasedCosmetics?: Id[];
+  equippedCape?: Id | null;
+  equippedSuit?: Id | null;
+  equippedFlare?: Id | null;
+  minigameProgress?: MinigameProgress[];
 }

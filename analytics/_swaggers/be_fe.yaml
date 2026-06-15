@@ -177,6 +177,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameProgress'
+  /cosmetics:
+    get:
+      operationId: cosmetics_get_all
+      summary: Retrieve all available cosmetics in the shop
+      responses:
+        '200':
+          description: List of cosmetics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cosmetic'
+  /user/cosmetics/buy:
+    post:
+      operationId: cosmetics_buy
+      summary: Buy a cosmetic item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cosmeticId:
+                  $ref: '#/components/schemas/Id'
+              required:
+                - cosmeticId
+      responses:
+        '200':
+          description: Purchase successful, returns updated progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProgress'
+  /user/cosmetics/equip:
+    post:
+      operationId: cosmetics_equip
+      summary: Equip or unequip a cosmetic item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cosmeticId:
+                  $ref: '#/components/schemas/Id'
+                equipped:
+                  type: boolean
+              required:
+                - cosmeticId
+                - equipped
+      responses:
+        '200':
+          description: Equip status updated, returns updated progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameProgress'
 components:
   parameters:
     OperationId:
@@ -191,6 +251,8 @@ components:
           - subtraction
           - multiplication
           - division
+          - gauntlet
+          - daily_challenge
     Id:
       name: id
       in: path
@@ -210,6 +272,8 @@ components:
         - subtraction
         - multiplication
         - division
+        - gauntlet
+        - daily_challenge
     ChallengeRequest:
       type: object
       properties:
@@ -296,6 +360,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/GameOperationProgress'
+        purchasedCosmetics:
+          type: array
+          items:
+            $ref: '#/components/schemas/Id'
+        equippedCape:
+          $ref: '#/components/schemas/Id'
+          nullable: true
+        equippedSuit:
+          $ref: '#/components/schemas/Id'
+          nullable: true
+        equippedFlare:
+          $ref: '#/components/schemas/Id'
+          nullable: true
+        minigameProgress:
+          type: array
+          items:
+            $ref: '#/components/schemas/MinigameProgress'
     GameOperationProgress: 
       type: object
       properties:
@@ -379,3 +460,31 @@ components:
           type: string
         subscription:
           $ref: '#/components/schemas/Subscription'
+    Cosmetic:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - cape
+            - suit
+            - flare
+        price:
+          type: number
+        assetId:
+          type: string
+        requiredLevel:
+          type: number
+    MinigameProgress:
+      type: object
+      properties:
+        minigameId:
+          $ref: '#/components/schemas/Minigame'
+        level:
+          type: number
+        xp:
+          type: number
