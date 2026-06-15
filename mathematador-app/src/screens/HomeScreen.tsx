@@ -1,7 +1,6 @@
-/* eslint-disable no-restricted-syntax, @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-unsafe-argument */
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
-import React from "react";
+import { JSX } from "react";
 import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
@@ -14,12 +13,12 @@ import { RootStackParamList } from "@/types/Navigation";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 
-const HomeScreen: React.FC = () => {
+const HomeScreen = (): JSX.Element => {
   useAnimatedBackground(imageBG);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const user = useSelector((state: RootState) => state.user);
 
-  const handleStartGame = () => {
+  const handleStartGame = (): void => {
     navigation.navigate("SelectOperation");
   };
 

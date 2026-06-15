@@ -1,8 +1,7 @@
-/* eslint-disable no-console, no-restricted-syntax */
 import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp, useRoute } from "expo-router/react-navigation";
-import React from "react";
+import { JSX } from "react";
 import { View, StyleSheet } from "react-native";
 import { useDispatch } from "react-redux";
 
@@ -17,7 +16,7 @@ type ChallengeScreenNavigationProps = StackNavigationProp<
   "Challenge"
 >;
 
-const ChallengeScreen: React.FC = () => {
+const ChallengeScreen = (): JSX.Element => {
   const route = useRoute<ChallengeScreenRouteProp>();
   const navigator = useNavigation<ChallengeScreenNavigationProps>();
   const challenge = route.params;
@@ -36,6 +35,7 @@ const ChallengeScreen: React.FC = () => {
           <MinigameComponent
             challenge={challenge}
             submitResults={(result) => {
+              // eslint-disable-next-line no-console
               console.log(37, result);
               dispatch(completeChalange(result));
               navigator.navigate("ChallengeResult", result);

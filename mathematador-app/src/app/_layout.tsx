@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import {
@@ -12,15 +12,17 @@ import "react-native-reanimated";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
+import spaceMonoFont from "@/assets/fonts/SpaceMono-Regular.ttf";
 import { store, persistor } from "@/redux/store";
+
+const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = (): JSX.Element | null => {
   const [loaded] = useFonts({
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: spaceMonoFont,
   });
 
   useEffect(() => {
@@ -45,20 +47,22 @@ const RootLayout = (): JSX.Element | null => {
     <ThemeProvider value={theme}>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <Stack
-            initialRouteName="index"
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen
-              name="index"
-              options={{
+          <QueryClientProvider client={queryClient}>
+            <Stack
+              initialRouteName="index"
+              screenOptions={{
                 headerShown: false,
               }}
-            />
-            <Stack.Screen name="+not-found" />
-          </Stack>
+            >
+              <Stack.Screen
+                name="index"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </QueryClientProvider>
         </PersistGate>
       </Provider>
     </ThemeProvider>

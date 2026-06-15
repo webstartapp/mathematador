@@ -1,5 +1,3 @@
-/* eslint-disable max-lines, @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument */
-// components/common/GameHeader.tsx
 import Icon from "@expo/vector-icons/FontAwesome";
 import {
   StackHeaderProps,
@@ -7,49 +5,26 @@ import {
 } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, useMemo, useRef, FC, JSX } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  NativeModules,
-  NativeEventEmitter,
-  findNodeHandle,
-} from "react-native";
-import { ProgressBar } from "react-native-paper"; // Example of a simple progress bar component
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
+import { HeaderEvents } from "@/components/common/HeaderEvents";
 import { RootState } from "@/redux/store";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
 import { setHeaderRef } from "@/src/hooks/RefManager";
 import { levelOperationUp, levelUserUp } from "@/src/redux/slices/userSlice";
 import { RootStackParamList } from "@/types/Navigation";
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList>;
-
 type HeaderProps = {
   backTo?: keyof RootStackParamList;
   showOperation?: boolean;
   props: StackHeaderProps;
 };
-const { HeaderModule } = NativeModules;
 
-const eventEmitter = new NativeEventEmitter(HeaderModule);
-
-export const HeaderEvents = {
-  onHeaderHeightChange: (callback: (height: number) => void) => {
-    const subscription = eventEmitter.addListener(
-      "headerHeightChange",
-      callback,
-    );
-    return () => {
-      subscription.remove();
-    };
-  },
-  emitHeaderHeightChange: (height: number) => {
-    eventEmitter.emit("headerHeightChange", height);
-  },
-};
+type LooseNavigationProp = StackNavigationProp<
+  Record<string, Record<string, string | number | undefined>>
+>;
 
 const GameHeader: FC<HeaderProps> = ({
   backTo,
@@ -60,29 +35,33 @@ const GameHeader: FC<HeaderProps> = ({
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setHeaderRef(headerRef.current); // Set the header reference
+    setHeaderRef(headerRef.current);
     const handleMeasurement = (): void => {
-      const node = findNodeHandle(headerRef.current);
-      if (node) {
-        // Measure the header
-        headerRef.current?.measure((offsetX, offsetY, _width, height) => {
-          HeaderEvents.emitHeaderHeightChange(height);
-        });
+      if (headerRef.current) {
+        headerRef.current.measure(
+          (_unusedOffsetX, _unusedOffsetY, _unusedWidth, height) => {
+            HeaderEvents.emitHeaderHeightChange(height);
+          },
+        );
       }
     };
-
     handleMeasurement();
   }, []);
-  const navigation = useNavigation<HomeScreenNavigationProp>();
 
+  const navigation = useNavigation<LooseNavigationProp>();
   const { backToParams } = useSelector((state: RootState) => state.navigation);
 
-  // Accessing user stats from Redux
   const { level, xp, xpToNextLevel, operationProgress } = useSelector(
     (state: RootState) => state.user,
   );
 
-  const operationIdParam = (props.route.params as any)?.operationId;
+  const routeParams = props.route.params;
+  const operationIdParam =
+    routeParams &&
+    typeof routeParams === "object" &&
+    "operationId" in routeParams
+      ? String(routeParams.operationId)
+      : undefined;
 
   const userStats = useMemo(() => {
     if (!operationIdParam) {
@@ -103,7 +82,6 @@ const GameHeader: FC<HeaderProps> = ({
     };
   }, [level, xp, xpToNextLevel, operationProgress, operationIdParam]);
 
-  // Calculate XP progress percentage
   const xpProgress = xp / xpToNextLevel;
 
   return (
@@ -111,7 +89,7 @@ const GameHeader: FC<HeaderProps> = ({
       {backTo && (
         <View style={styles.iconContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate(backTo, backToParams as any)}
+            onPress={() => navigation.navigate(backTo, backToParams)}
           >
             <Icon name="arrow-left" size={24} color="#333" />
           </TouchableOpacity>
@@ -119,16 +97,13 @@ const GameHeader: FC<HeaderProps> = ({
       )}
       <View style={styles.statsContainer}>
         <Text style={styles.level}>
-          {(props.route.params as any)?.operationId ? "Dificulty:" : "Level:"}{" "}
-          {userStats.level}
+          {operationIdParam ? "Difficulty:" : "Level:"} {userStats.level}
         </Text>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity
             onPress={() => {
-              if ((props.route.params as any)?.operationId) {
-                dispatch(
-                  levelOperationUp((props.route.params as any)?.operationId),
-                );
+              if (operationIdParam) {
+                dispatch(levelOperationUp(operationIdParam));
                 return;
               }
               dispatch(levelUserUp());
@@ -154,6 +129,8 @@ const GameHeader: FC<HeaderProps> = ({
   );
 };
 
+export default GameHeader;
+
 const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
@@ -164,29 +141,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  statsContainer: {
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  level: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  progressBar: {
-    height: 6,
-    borderRadius: 3,
-    marginVertical: 5,
-  },
-  xpText: {
-    fontSize: 12,
-    color: "#666",
-  },
+  statsContainer: { flex: 1, paddingHorizontal: 10 },
+  level: { fontSize: 16, fontWeight: "bold", color: "#333" },
+  progressBar: { height: 6, borderRadius: 3, marginVertical: 5 },
+  xpText: { fontSize: 12, color: "#666" },
   iconContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: 60,
   },
 });
-
-export default GameHeader;

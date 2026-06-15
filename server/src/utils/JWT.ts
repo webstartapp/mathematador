@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import jwtLib from "jsonwebtoken";
 
 export interface ITokenBody {
@@ -11,11 +10,14 @@ export const tokenContext = (token: string): ITokenBody => {
   if (!validToken) {
     throw new Error("Invalid token");
   }
-  const tokenData = jwtLib.decode(token);
-  if (!tokenData) {
+  if (typeof validToken === "string") {
     throw new Error("Invalid token");
   }
-  return tokenData as ITokenBody;
+  const { userId, role } = validToken;
+  if (typeof userId === "string" && typeof role === "string") {
+    return { userId, role };
+  }
+  throw new Error("Invalid token structure");
 };
 
 export const verifyToken = (token: string): string | jwtLib.JwtPayload => {

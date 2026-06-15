@@ -1,8 +1,7 @@
-import { Request, Response } from "express";
-
 import { getUserProgress } from "@/utils/gameProgress";
+import { restAPICall } from "@/utils/restAPI";
 
-export const gameProgress = async (request: Request, response: Response): Promise<void> => {
+export const gameProgress = restAPICall("mathematador", "gameProgress", async (request, response): Promise<void> => {
   const userId = request.userId;
 
   if (!userId) {
@@ -12,4 +11,4 @@ export const gameProgress = async (request: Request, response: Response): Promis
 
   const progress = await getUserProgress(userId);
   response.status(200).json(progress);
-};
+});

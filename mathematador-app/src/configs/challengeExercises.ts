@@ -1,4 +1,3 @@
-/* eslint-disable max-lines, @typescript-eslint/explicit-function-return-type, @typescript-eslint/consistent-type-assertions, id-length */
 import { Challenge, Exercise } from "@/types/Chalenge";
 
 const generateChalenge = (challengeId: number): Partial<Challenge> => {
@@ -8,12 +7,17 @@ const generateChalenge = (challengeId: number): Partial<Challenge> => {
   const challenge = challengeId % 20;
   const chalengeComplexity = challengeId / 20;
 
-  for (let j = 0; j < numberOfExercises; j++) {
+  for (
+    let exerciseIndex = 0;
+    exerciseIndex < numberOfExercises;
+    exerciseIndex++
+  ) {
     let exercise: Exercise = [];
 
     // Calculate number of digits for each position in the exercise array based on the chalenge rules
-    for (let k = 0; k < 11; k++) {
-      const digitIncreaseRule = challenge % 4 >= 2 ? (k > 0 ? 1 : 0) : 0; // Increase digit for positions 2-5 every 3rd chalenge
+    for (let positionIndex = 0; positionIndex < 11; positionIndex++) {
+      const digitIncreaseRule =
+        challenge % 4 >= 2 ? (positionIndex > 0 ? 1 : 0) : 0; // Increase digit for positions 2-5 every 3rd chalenge
       const firstPositionIncreaseRule = Math.floor(challenge / 4); // Increase digit for 1st position every 6th chalenge
       const numberOfDigits = 1 + digitIncreaseRule + firstPositionIncreaseRule;
 
@@ -42,8 +46,12 @@ export const generateChallenges = (
 ): Partial<Challenge>[] => {
   const challenges: Partial<Challenge>[] = [];
 
-  for (let i = 0; i < numberOfChallenges; i++) {
-    challenges.push(generateChalenge(i));
+  for (
+    let challengeIndex = 0;
+    challengeIndex < numberOfChallenges;
+    challengeIndex++
+  ) {
+    challenges.push(generateChalenge(challengeIndex));
   }
 
   return challenges;
@@ -51,18 +59,20 @@ export const generateChallenges = (
 
 const enhanceChallenges = (challenges: Partial<Challenge>[]): Challenge[] => {
   return challenges.map((challenge) => {
-    const exercises = challenge.exercises as Exercise[];
-    const numberOfExercises = exercises?.length;
+    const exercises = challenge.exercises ?? [];
+    const numberOfExercises = exercises.length;
 
     // Calculate average number of digits per exercise in this challenge
     const averageDigits =
-      exercises.reduce((acc, exercise) => {
-        const totalDigits = exercise.reduce(
-          (sum, num) => sum + num.toString().length,
-          0,
-        );
-        return acc + totalDigits / exercise.length;
-      }, 0) / numberOfExercises;
+      numberOfExercises > 0
+        ? exercises.reduce((accTotalDigits, exercise) => {
+            const totalDigits = exercise.reduce(
+              (runningSum, digitVal) => runningSum + digitVal.toString().length,
+              0,
+            );
+            return accTotalDigits + totalDigits / exercise.length;
+          }, 0) / numberOfExercises
+        : 0;
 
     // Set maximum time based on the complexity: longer time for higher average digits and more exercises
     const maxTime = Math.floor(numberOfExercises * 20 + averageDigits * 10);
@@ -77,12 +87,18 @@ const enhanceChallenges = (challenges: Partial<Challenge>[]): Challenge[] => {
     const coinsOnFailure = Math.floor(coinsOnSuccess * 0.5); // Half of success coins for a failed attempt
 
     return {
-      ...challenge,
+      challengeId: challenge.challengeId ?? 0,
+      challengeOrderId:
+        challenge.challengeOrderId ?? challenge.challengeId ?? 0,
+      exercises,
       maxTime,
       experiencePoints,
       coinsOnSuccess,
       coinsOnFailure,
-    } as Challenge;
+      operationId: challenge.operationId ?? "",
+      level: challenge.level ?? 1,
+      minigame: challenge.minigame ?? "",
+    };
   });
 };
 
@@ -1534,7 +1550,7 @@ export const challengeByOperationAndMinigame = (
     xpCoeficient = 1,
     coinCoeficient = 1,
   }: ChallengeCoeficients,
-) => {
+): (Challenge & { coins: number }) | null => {
   const challengeItem = challenges.find(
     (challenge) => challenge.challengeId === chalengeId,
   );

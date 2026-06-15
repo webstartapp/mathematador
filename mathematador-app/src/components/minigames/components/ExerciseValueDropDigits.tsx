@@ -30,7 +30,6 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
 
   const { primarySize } = useScreenSizes(75);
 
-  const resultValuesStr = Object.values(result || {}).join("");
   const partialResult = useMemo(() => {
     return String(value)
       .split("")
@@ -38,8 +37,7 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
         result && result[index] !== undefined ? result[index] : "?",
       )
       .join("");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, resultValuesStr]);
+  }, [value, result]);
   return (
     <View style={styles.resultValue}>
       <ExerciseValuePreview

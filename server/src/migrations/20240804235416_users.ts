@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { Knex } from "knex";
 
 import { hashPassword } from "@/utils/password";

@@ -1,4 +1,3 @@
-/* eslint-disable max-params */
 import { FC, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -30,6 +29,7 @@ const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
           const position = await new Promise<ExerciseInputPosition>(
             (resolve) => {
               refItem.measure(
+                // eslint-disable-next-line max-params
                 (_unusedX, _unusedY, width, height, pageX, pageY) => {
                   resolve({
                     x: pageX + width / 2,

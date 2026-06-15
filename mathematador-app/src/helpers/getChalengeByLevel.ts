@@ -1,7 +1,29 @@
-/* eslint-disable complexity */
 import { minigames } from "@/configs/minigames";
 import { operations } from "@/configs/operations";
 import { Challenge, Exercise } from "@/types/Chalenge";
+
+const generateExercises = (
+  numbersPerExercise: number,
+  minNumber: number,
+  maxNumber: number,
+  count: number,
+): Exercise[] => {
+  const exercises: Exercise[] = [];
+  let tryedLike = 0;
+  while (exercises.length < count) {
+    const exercise = Array.from({ length: numbersPerExercise }, () =>
+      Math.floor(Math.random() * (maxNumber - minNumber) + minNumber),
+    );
+    tryedLike++;
+    const isUnique = !exercises.some(
+      (exerciseItem) => exerciseItem.join("_") === exercise.join("_"),
+    );
+    if (isUnique || exercises.length < tryedLike / 10) {
+      exercises.push(exercise);
+    }
+  }
+  return exercises;
+};
 
 export const getChallengeByLevel = (
   level: number,
@@ -13,67 +35,40 @@ export const getChallengeByLevel = (
   const operation = operations.find(
     (opItem) => opItem.operationId === operationId,
   );
-  const exerciseCount = 10; // Fixed count of 10 exercises
-
   if (!operation) {
     throw new Error(`Operation with id ${operationId} not found`);
   }
-  const exercises: Exercise[] = [];
 
+  const exerciseCount = 10;
   const levelComplexity = level / 2.3 + challengeOrderId / 20;
   const baseNumbersPerExercise = 2;
-
-  const levelScalingFactor = Math.floor(level / 10); // Increase by 1 every 5 levels
+  const levelScalingFactor = Math.floor(level / 10);
   const numbersPerExercise = baseNumbersPerExercise + levelScalingFactor;
-
   const complexity = levelComplexity / (numbersPerExercise - 1);
 
-  // Parameters for scaling difficulty
   const minNumber = Math.pow(10, (complexity - 1) / 2);
   const maxNumber = Math.pow(10, complexity);
 
-  let tryedLike = 0;
-
-  while (exercises.length < exerciseCount) {
-    // Generate an exercise with random numbers
-    const exercise = Array.from({ length: numbersPerExercise }, () =>
-      Math.floor(Math.random() * (maxNumber - minNumber) + minNumber),
-    );
-    tryedLike++;
-
-    // Check for uniqueness before adding
-    const isUnique = !exercises.some(
-      (exerciseItem) => exerciseItem.join("_") === exercise.join("_"),
-    );
-
-    if (isUnique || exercises.length < tryedLike / 10) {
-      exercises.push(exercise);
-    }
-  }
-
-  const _averageDigits =
-    exercises.reduce((accumulator, curr) => {
-      const nestedAvverage = curr.reduce(
-        (innerAccumulator, innerCurr) => innerAccumulator + innerCurr,
-        0,
-      );
-      return accumulator + nestedAvverage;
-    }, 0) / exercises.length;
-
-  // Challenge attributes that scale with level
-  const maxTime = Math.floor(
-    (level * 30 + challengeOrderId) * (operation?.timeCoeficient || 1),
+  const exercises = generateExercises(
+    numbersPerExercise,
+    minNumber,
+    maxNumber,
+    exerciseCount,
   );
+
+  const timeCoef = operation.timeCoeficient ?? 1;
+  const xpCoef = operation.xpCoeficient ?? 1;
+  const minigameXpCoef = minigame.xpCoeficient ?? 1;
+  const minigameCoinsCoef = minigame.coinsCoeficient ?? 1;
+
+  const maxTime = Math.floor((level * 30 + challengeOrderId) * timeCoef);
   const experiencePoints = Math.floor(
     (numbersPerExercise * 12 + complexity * 26 + challengeOrderId) *
-      (operation?.xpCoeficient || 1) *
-      (minigame.xpCoeficient || 1),
+      xpCoef *
+      minigameXpCoef,
   );
   const coinsOnSuccess = Math.floor(
-    experiencePoints *
-      1.2 *
-      (operation?.xpCoeficient || 1) *
-      (minigame.coinsCoeficient || 1),
+    experiencePoints * 1.2 * xpCoef * minigameCoinsCoef,
   );
   const coinsOnFailure = Math.floor(coinsOnSuccess * 0.4);
 

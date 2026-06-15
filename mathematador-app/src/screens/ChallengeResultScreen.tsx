@@ -1,8 +1,7 @@
-/* eslint-disable max-lines, no-restricted-syntax, @typescript-eslint/explicit-function-return-type, unused-imports/no-unused-vars */
 import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp } from "expo-router/react-navigation";
-import React, { FC } from "react";
+import { JSX } from "react";
 import { View, StyleSheet } from "react-native";
 
 import Button from "@/components/common/Button";
@@ -22,7 +21,9 @@ type ChallengeResultScreenProps = {
   route: LevelScreenRouteProp;
 };
 
-const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
+const ChallengeResultScreen = ({
+  route,
+}: ChallengeResultScreenProps): JSX.Element => {
   const {
     challengeOrderId,
     operationId,
@@ -39,7 +40,7 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
     (operationItem) => operationItem.operationId === operationId,
   );
 
-  const handleReturn = () => {
+  const handleReturn = (): void => {
     navigation.navigate("ChalengeSelect", { operationId });
   };
 
@@ -90,7 +91,7 @@ const ChallengeResultScreen: FC<ChallengeResultScreenProps> = ({ route }) => {
                 result.expectedResult,
               )
                 .split("")
-                .map((charItem) => "?")
+                .map(() => "?")
                 .join("")}`,
               `Status: ${result.expectedResult === result.userResult ? "Correct" : "Incorrect"}`,
             ]}
@@ -108,60 +109,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  summaryContainer: {
-    padding: 20,
-    marginBottom: 20,
-    backgroundColor: "#E6E6FA",
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  summaryTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  summaryText: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  statusText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 10,
-    color: "#008080",
-  },
-  exerciseContainer: {
-    padding: 15,
-    marginBottom: 10,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  exerciseTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  exerciseText: {
-    fontSize: 16,
-  },
-  resultStatus: {
-    fontSize: 16,
-    marginTop: 5,
-    fontWeight: "bold",
-    textAlign: "right",
-  },
-  correct: {
-    color: "green",
-  },
-  incorrect: {
-    color: "red",
-  },
-  buttonContainer: {
-    marginTop: 20,
   },
 });

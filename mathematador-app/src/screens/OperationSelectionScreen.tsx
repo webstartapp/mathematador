@@ -1,11 +1,9 @@
-/* eslint-disable no-console, no-restricted-syntax, @typescript-eslint/explicit-function-return-type, unused-imports/no-unused-vars */
 // screens/OperationSelectionScreen.tsx
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
-import React from "react";
+import { JSX } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
 
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
@@ -24,7 +22,7 @@ const OperationprogressItem = ({
 }: {
   operation: Operation;
   handleOperationPress: (operationId: string) => void;
-}) => {
+}): JSX.Element => {
   const operationProgress = useSelector((state: RootState) =>
     state.user.operationProgress.find(
       (progress) => progress.operationId === operation.operationId,
@@ -57,12 +55,10 @@ const OperationprogressItem = ({
   );
 };
 
-const OperationSelectionScreen: React.FC = () => {
+const OperationSelectionScreen = (): JSX.Element => {
   const navigation = useNavigation<OperationSelectionScreenNavigationProp>();
-  const dispatch = useDispatch();
-  console.log(31);
 
-  const handleOperationPress = (operationId: string) => {
+  const handleOperationPress = (operationId: string): void => {
     navigation.navigate("ChalengeSelect", { operationId });
   };
 

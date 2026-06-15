@@ -5,10 +5,10 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { ChallengeRequest } from "./challengeRequest";
-import type { ChallengeResultRequest } from "./challengeResultRequest";
-import type { Exercise } from "./exercise";
-import type { Id } from "./id";
+import type { ChallengeRequest } from './challengeRequest';
+import type { ChallengeResultRequest } from './challengeResultRequest';
+import type { Exercise } from './exercise';
+import type { Id } from './id';
 
 export type Challenge = ChallengeRequest & {
   result?: ChallengeResultRequest;

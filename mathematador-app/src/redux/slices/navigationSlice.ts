@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface NavigationParams {
-  operation: string;
-  challengeId: number;
-  levelId: number;
+  operation?: string;
+  challengeId?: number;
+  levelId?: number;
 }
 
 type NavigationState = {
@@ -12,7 +11,7 @@ type NavigationState = {
 };
 
 const initialState: NavigationState = {
-  backToParams: {} as NavigationParams,
+  backToParams: {},
 };
 
 const navigationSlice = createSlice({
@@ -21,7 +20,7 @@ const navigationSlice = createSlice({
   reducers: {
     setBackToRoute: (
       state,
-      action: PayloadAction<{ params?: NavigationState }>,
+      action: PayloadAction<{ params?: NavigationParams }>,
     ) => {
       state.backToParams = {
         ...state.backToParams,
@@ -29,7 +28,7 @@ const navigationSlice = createSlice({
       };
     },
     clearBackToRoute: (state) => {
-      state.backToParams = {} as NavigationParams;
+      state.backToParams = {};
     },
   },
 });

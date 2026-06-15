@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-syntax, react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, JSX } from "react";
 import { Animated, View, StyleSheet } from "react-native";
 
 type AnimatedNumberProps = {
@@ -8,11 +7,11 @@ type AnimatedNumberProps = {
   duration?: number; // Optional: duration of the animation in milliseconds
 };
 
-const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
+const AnimatedNumber = ({
   startValue,
   targetValue,
   duration = 1000,
-}) => {
+}: AnimatedNumberProps): JSX.Element => {
   const animatedValue = useRef(new Animated.Value(startValue)).current;
   const [displayValue, setDisplayValue] = useState(startValue);
 
@@ -34,7 +33,7 @@ const AnimatedNumber: React.FC<AnimatedNumberProps> = ({
     return () => {
       animatedValue.removeListener(listenerId);
     };
-  }, [startValue, targetValue]);
+  }, [startValue, targetValue, duration, animatedValue]);
 
   return (
     <View>

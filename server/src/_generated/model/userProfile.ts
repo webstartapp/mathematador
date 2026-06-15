@@ -5,11 +5,11 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { Id } from "./id";
-import type { Subscription } from "./subscription";
+import type { Id } from './id';
+import type { Subscription } from './subscription';
 
-export interface UserProfile {
+export type UserProfile = {
   id?: Id;
   name?: string;
   subscription?: Subscription;
-}
+};

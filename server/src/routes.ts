@@ -1,21 +1,6 @@
 import { Router } from "express";
 
-import {
-  ChallengeGetAllParams,
-  ChallengeGetParams,
-  ChallengeStartNewBody,
-  ChallengeStartNewParams,
-  ChallengeUpdateResultBody,
-  ChallengeUpdateResultParams,
-  SubscriptionUpdateBody,
-  UserForgottenBody,
-  UserForgottenPasswordBody,
-  UserLoginBody,
-  UserLoginPasswordBody,
-  UserRegisterBody
-} from "@/_generated/api";
 import { requireAuth } from "@/middlewares/auth";
-import { validate } from "@/middlewares/validation";
 import { challengeGet } from "@/resolvers/apiPaths/challengeGet";
 import { challengeGetAll } from "@/resolvers/apiPaths/challengeGetAll";
 import { challengeStartNew } from "@/resolvers/apiPaths/challengeStartNew";
@@ -32,37 +17,27 @@ import { userRegister } from "@/resolvers/apiPaths/userRegister";
 const router = Router();
 
 // --- Unauthenticated Auth Routes ---
-router.post("/user/forgotten", validate({ body: UserForgottenBody }), userForgotten);
+router.post("/user/forgotten", userForgotten);
 
-router.post("/user/login", validate({ body: UserLoginBody }), userLogin);
+router.post("/user/login", userLogin);
 
-router.put("/user/login", validate({ body: UserLoginPasswordBody }), userLoginPassword);
+router.put("/user/login", userLoginPassword);
 
-router.post("/user/register", validate({ body: UserRegisterBody }), userRegister);
+router.post("/user/register", userRegister);
 
-router.post("/user/forgotten-password", validate({ body: UserForgottenPasswordBody }), userForgottenPassword);
+router.post("/user/forgotten-password", userForgottenPassword);
 
 // --- Authenticated Challenge Routes ---
-router.post(
-  "/challenges/:operationId",
-  requireAuth,
-  validate({ params: ChallengeStartNewParams, body: ChallengeStartNewBody }),
-  challengeStartNew
-);
+router.post("/challenges/:operationId", requireAuth, challengeStartNew);
 
-router.get("/challenges/:operationId", requireAuth, validate({ params: ChallengeGetAllParams }), challengeGetAll);
+router.get("/challenges/:operationId", requireAuth, challengeGetAll);
 
-router.get("/challenges/:operationId/:id", requireAuth, validate({ params: ChallengeGetParams }), challengeGet);
+router.get("/challenges/:operationId/:id", requireAuth, challengeGet);
 
-router.put(
-  "/challenges/:operationId/:id",
-  requireAuth,
-  validate({ params: ChallengeUpdateResultParams, body: ChallengeUpdateResultBody }),
-  challengeUpdateResult
-);
+router.put("/challenges/:operationId/:id", requireAuth, challengeUpdateResult);
 
 // --- Authenticated Subscription Routes ---
-router.post("/subscriptions", requireAuth, validate({ body: SubscriptionUpdateBody }), subscriptionUpdate);
+router.post("/subscriptions", requireAuth, subscriptionUpdate);
 
 router.delete("/subscriptions", requireAuth, subscriptionCancelImmediately);
 

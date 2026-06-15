@@ -6,11 +6,12 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type Minigame = (typeof Minigame)[keyof typeof Minigame];
+export type Minigame = typeof Minigame[keyof typeof Minigame];
+
 
 export const Minigame = {
-  singleLine: "singleLine",
-  dragAndDrop: "dragAndDrop",
-  crossNumbers: "crossNumbers",
-  memory: "memory",
+  singleLine: 'singleLine',
+  dragAndDrop: 'dragAndDrop',
+  crossNumbers: 'crossNumbers',
+  memory: 'memory',
 } as const;

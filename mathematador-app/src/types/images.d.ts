@@ -1,25 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module "*.jpeg" {
-  const value: any;
+  const value: number;
   export default value;
 }
 declare module "*.jpg" {
-  const value: any;
+  const value: number;
   export default value;
 }
 declare module "*.png" {
-  const value: any;
+  const value: number;
   export default value;
 }
 declare module "*.mp3" {
-  const value: any;
+  const value: number;
   export default value;
 }
 declare module "*.mp4" {
-  const value: any;
+  const value: number;
   export default value;
 }
 declare module "*.svg" {
-  const value: any;
+  const value: number;
   export default value;
 }
+declare module "*.ttf" {
+  const value: number;
+  export default value;
+}
+
+declare const process: {
+  env: {
+    EXPO_PUBLIC_API_URL?: string;
+    EXPO_PUBLIC_JWT_SECRET?: string;
+  };
+};

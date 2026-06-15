@@ -14,7 +14,7 @@
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "rootDir": "src",
+    "rootDir": "./",
     "module": "node16",
     "moduleResolution": "node16",
     "isolatedModules": true,

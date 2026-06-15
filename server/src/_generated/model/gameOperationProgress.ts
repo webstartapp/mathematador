@@ -5,10 +5,10 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { Challenge } from "./challenge";
+import type { Challenge } from './challenge';
 
-export interface GameOperationProgress {
+export type GameOperationProgress = {
   level?: number;
   xp?: number;
   challenges?: Challenge[];
-}
+};

@@ -5,9 +5,9 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { SubscriptionType } from "./subscriptionType";
+import type { SubscriptionType } from './subscriptionType';
 
-export interface SubscriptionCreate {
+export type SubscriptionCreate = {
   type?: SubscriptionType;
   autoRenew?: boolean;
-}
+};
