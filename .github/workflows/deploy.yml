@@ -3,7 +3,7 @@ name: Deploy Production
 on:
   push:
     branches:
-      - develop
+      - main
   workflow_dispatch:
 
 jobs:
@@ -19,6 +19,20 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Validate server secrets
+        run: |
+          [ -n "${{ secrets.DEPLOY_PATH }}" ]        || { echo "ERROR: DEPLOY_PATH is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_USER }}" ]         || { echo "ERROR: SERVER_USER is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_HOST }}" ]         || { echo "ERROR: SERVER_HOST is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_PASSWORD }}" ]     || { echo "ERROR: SERVER_PASSWORD is not set"; exit 1; }
+          [ -n "${{ secrets.SERVER_ENV_FILE }}" ]     || { echo "ERROR: SERVER_ENV_FILE is not set"; exit 1; }
+          [ -n "${{ secrets.GUI_ENV_FILE }}" ]        || { echo "ERROR: GUI_ENV_FILE is not set"; exit 1; }
+          [ -n "${{ secrets.PM2_APP_NAME }}" ]        || { echo "ERROR: PM2_APP_NAME is not set"; exit 1; }
+          echo "All required secrets are set"
+
+      - name: Install zip and sshpass
+        run: sudo apt-get update && sudo apt-get install -y zip sshpass
+
       - name: Install dependencies
         run: npm ci
 
@@ -28,11 +42,9 @@ jobs:
       - name: Build server
         run: npm run build --workspace=server
 
+
       - name: Build app (Expo Web)
         run: npm run build --workspace=mathematador-app
-
-      - name: Install zip and sshpass
-        run: sudo apt-get update && sudo apt-get install -y zip sshpass
 
       - name: Prepare stage folder
         run: |
@@ -51,16 +63,6 @@ jobs:
 
       - name: Zip stage folder
         run: cd stage && zip -r ../deploy.zip .
-
-      - name: Validate server secrets
-        run: |
-          [ -n "${{ secrets.DEPLOY_PATH }}" ]        || { echo "ERROR: DEPLOY_PATH is not set"; exit 1; }
-          [ -n "${{ secrets.SERVER_USER }}" ]         || { echo "ERROR: SERVER_USER is not set"; exit 1; }
-          [ -n "${{ secrets.SERVER_HOST }}" ]         || { echo "ERROR: SERVER_HOST is not set"; exit 1; }
-          [ -n "${{ secrets.SERVER_PASSWORD }}" ]     || { echo "ERROR: SERVER_PASSWORD is not set"; exit 1; }
-          [ -n "${{ secrets.SERVER_ENV_FILE }}" ]     || { echo "ERROR: SERVER_ENV_FILE is not set"; exit 1; }
-          [ -n "${{ secrets.PM2_APP_NAME }}" ]        || { echo "ERROR: PM2_APP_NAME is not set"; exit 1; }
-          echo "All required secrets are set"
 
       - name: Prepare remote folders
         env:
@@ -90,14 +92,15 @@ jobs:
             rm deploy.zip
           ENDSSH
 
-      - name: Copy backend environment file
+      - name: Copy environment files on server
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
             set -e
             cp "${{ secrets.SERVER_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/server/.env"
-            echo "Server .env copied"
+            cp "${{ secrets.GUI_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/web/.env"
+            echo "Server and GUI .env files copied"
           ENDSSH
 
       - name: Install server production dependencies
