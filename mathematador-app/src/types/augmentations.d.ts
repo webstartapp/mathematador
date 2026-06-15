@@ -2,7 +2,7 @@ import "react-native";
 
 declare module "expo-jwt" {
   export function encode(
-    payload: { userId: number; exp: number; iat: number },
+    payload: { userId: number | string; exp: number; iat: number },
     secret: string,
   ): string;
 }

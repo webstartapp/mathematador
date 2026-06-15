@@ -10,11 +10,10 @@ export const tokenContext = (token: string): ITokenBody => {
   if (!validToken) {
     throw new Error("Invalid token");
   }
-  const tokenData = jwtLib.decode(token);
-  if (typeof tokenData === "string" || !tokenData) {
+  if (typeof validToken === "string") {
     throw new Error("Invalid token");
   }
-  const { userId, role } = tokenData;
+  const { userId, role } = validToken;
   if (typeof userId === "string" && typeof role === "string") {
     return { userId, role };
   }

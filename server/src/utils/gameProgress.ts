@@ -42,7 +42,9 @@ export const getUserProgress = async (userId: string): Promise<GameProgress> => 
   let totalCoins = 0;
   challengeRows.forEach((rowItem) => {
     if (rowItem.result) {
-      const parsedResult = ChallengeResultRequest.parse(JSON.parse(rowItem.result));
+      const parsedResult = ChallengeResultRequest.parse(
+        typeof rowItem.result === "string" ? JSON.parse(rowItem.result) : rowItem.result
+      );
       totalCoins += parsedResult.coins || 0;
     }
   });
@@ -56,8 +58,14 @@ export const getUserProgress = async (userId: string): Promise<GameProgress> => 
     const opChallenges = challengeRows
       .filter((challengeItem) => challengeItem.operation_id === progressItem.operation_id)
       .map((rowItem) => {
-        const parsedExercises = ExercisesSchema.parse(JSON.parse(rowItem.exercises));
-        const parsedResult = rowItem.result ? ChallengeResultRequest.parse(JSON.parse(rowItem.result)) : undefined;
+        const parsedExercises = ExercisesSchema.parse(
+          typeof rowItem.exercises === "string" ? JSON.parse(rowItem.exercises) : rowItem.exercises
+        );
+        const parsedResult = rowItem.result
+          ? ChallengeResultRequest.parse(
+              typeof rowItem.result === "string" ? JSON.parse(rowItem.result) : rowItem.result
+            )
+          : undefined;
 
         const coinsValue = parsedResult?.coins || 0;
 

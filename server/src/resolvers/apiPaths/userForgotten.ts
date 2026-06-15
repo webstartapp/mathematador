@@ -14,7 +14,7 @@ export const userForgotten = restAPICall(
       return;
     }
 
-    response.status(201).json({ message: "User found" });
+    response.status(200).json({ message: "User found" });
   },
   {
     body: CredentialsEmail

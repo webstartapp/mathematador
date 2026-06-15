@@ -33,22 +33,11 @@ dirs.forEach((directoryPath) => {
   const files = walk(directoryPath);
   files.forEach((file) => {
     const content = fs.readFileSync(file, "utf-8");
-    let modified = false;
-    const lines = content.split("\n");
-    const newLines = lines.map((line) => {
-      if (line.includes("eslint-disable")) {
-        modified = true;
-        // Replace the whole comment block or clean the line
-        return line
-          .replace(/\/\*[\s\S]*?eslint-disable[\s\S]*?\*\//g, "")
-          .replace(/\/\/[\s]*eslint-disable-next-line.*/g, "");
-      }
-      return line;
-    });
+    if (content.includes("eslint-disable")) {
+      const cleaned = content
+        .replace(/\/\*[\s\S]*?eslint-disable[\s\S]*?\*\/\r?\n?/g, "")
+        .replace(/\/\/[^\n]*eslint-disable[^\n]*\r?\n?/g, "");
 
-    if (modified) {
-      // Reassemble and write back, filtering out empty lines if they were just comments
-      const cleaned = newLines.join("\n");
       fs.writeFileSync(file, cleaned, "utf-8");
       console.log(
         `Stripped eslint-disable from ${path.relative(path.join(__dirname, ".."), file)}`,

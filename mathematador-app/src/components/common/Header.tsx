@@ -97,7 +97,7 @@ const GameHeader: FC<HeaderProps> = ({
       )}
       <View style={styles.statsContainer}>
         <Text style={styles.level}>
-          {operationIdParam ? "Dificulty:" : "Level:"} {userStats.level}
+          {operationIdParam ? "Difficulty:" : "Level:"} {userStats.level}
         </Text>
         <View style={{ flexDirection: "row" }}>
           <TouchableOpacity

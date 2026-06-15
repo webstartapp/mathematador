@@ -1,10 +1,13 @@
 import { NativeEventEmitter, NativeModules } from "react-native";
 
 const { HeaderModule } = NativeModules;
-const eventEmitter = new NativeEventEmitter(HeaderModule);
+const eventEmitter = HeaderModule ? new NativeEventEmitter(HeaderModule) : null;
 
 export const HeaderEvents = {
   onHeaderHeightChange: (callback: (height: number) => void): (() => void) => {
+    if (!eventEmitter) {
+      return (): void => {};
+    }
     const subscription = eventEmitter.addListener(
       "headerHeightChange",
       callback,
@@ -14,6 +17,8 @@ export const HeaderEvents = {
     };
   },
   emitHeaderHeightChange: (height: number): void => {
-    eventEmitter.emit("headerHeightChange", height);
+    if (eventEmitter) {
+      eventEmitter.emit("headerHeightChange", height);
+    }
   },
 };

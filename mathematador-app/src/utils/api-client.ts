@@ -7,19 +7,22 @@ const AXIOS_INSTANCE = axios.create({
   baseURL: String(process.env.EXPO_PUBLIC_API_URL || "http://localhost:4071"),
 });
 
-const PERSISTED_STATE_KEY = "persistedStateRestApi";
+const PERSISTED_STATE_KEY = "persist:root";
 
 const PersistedStateSchema = z.object({
+  user: z.string().optional(),
+});
+
+const UserStateSchema = z.object({
+  id: z.union([z.string(), z.number()]).optional(),
   viewer: z
     .object({
-      id: z.number().optional(),
+      id: z.union([z.string(), z.number()]).optional(),
     })
     .optional(),
 });
 
-type PersistedState = z.infer<typeof PersistedStateSchema>;
-
-const getAuthToken = (viewerId?: number): string | null => {
+const getAuthToken = (viewerId?: string | number): string | null => {
   const secret = String(process.env.EXPO_PUBLIC_JWT_SECRET || "");
   if (!secret || !viewerId) {
     return null;
@@ -58,18 +61,37 @@ const parseJSON = (
   return null;
 };
 
+const getPersistedViewerId = async (): Promise<string | number | undefined> => {
+  try {
+    const storage =
+      typeof window !== "undefined"
+        ? await AsyncStorage.getItem(PERSISTED_STATE_KEY)
+        : null;
+
+    if (storage) {
+      const rootParsedSafe = PersistedStateSchema.safeParse(
+        JSON.parse(storage),
+      );
+      if (rootParsedSafe.success && rootParsedSafe.data.user) {
+        const userParsedSafe = UserStateSchema.safeParse(
+          JSON.parse(rootParsedSafe.data.user),
+        );
+        if (userParsedSafe.success) {
+          return userParsedSafe.data.id ?? userParsedSafe.data.viewer?.id;
+        }
+      }
+    }
+  } catch {
+    // Ignore parsing errors to prevent app crash
+  }
+  return undefined;
+};
+
 export const customInstance = async <T>(
   requestUrl: string,
   config: CustomRequestConfig,
 ): Promise<T> => {
-  const storage =
-    typeof window !== "undefined"
-      ? await AsyncStorage.getItem(PERSISTED_STATE_KEY)
-      : null;
-  const parsedStorage: PersistedState = PersistedStateSchema.parse(
-    JSON.parse(storage || "{}"),
-  );
-  const viewerId = parsedStorage.viewer?.id;
+  const viewerId = await getPersistedViewerId();
 
   const headers: Record<string, string> = {};
 

@@ -52,7 +52,7 @@ const configServerZodModels = Object.fromEntries(
         afterAllFilesWrite: () => {
           const zodsDir = `./server/src/_generated/${schemaConfig.name}_tmp`;
           if (!existsSync(zodsDir)) return;
-          const zods = readdirSync(zodsDir);
+          const zods = readdirSync(zodsDir).sort();
           const content: string[] = [];
           zods.forEach((zodFile, index) => {
             const zodContent = readFileSync(join(zodsDir, zodFile), "utf-8");
