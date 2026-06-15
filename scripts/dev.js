@@ -1,4 +1,4 @@
-const concurrently = require("concurrently");
+const { concurrently } = require("concurrently");
 const fs = require("fs");
 const path = require("path");
 
@@ -39,7 +39,7 @@ const { result } = concurrently(
       prefixColor: "blue",
     },
     {
-      command: `npx expo start --port ${expoPort}`,
+      command: `npm run start --workspace=mathematador -- --port ${expoPort}`,
       name: "app",
       env: { ...process.env, PORT: expoPort },
       prefixColor: "green",

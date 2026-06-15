@@ -5,13 +5,7 @@ import {
 } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, useMemo, useRef, FC, JSX } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  findNodeHandle,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -43,9 +37,8 @@ const GameHeader: FC<HeaderProps> = ({
   useEffect(() => {
     setHeaderRef(headerRef.current);
     const handleMeasurement = (): void => {
-      const node = findNodeHandle(headerRef.current);
-      if (node) {
-        headerRef.current?.measure(
+      if (headerRef.current) {
+        headerRef.current.measure(
           (_unusedOffsetX, _unusedOffsetY, _unusedWidth, height) => {
             HeaderEvents.emitHeaderHeightChange(height);
           },
