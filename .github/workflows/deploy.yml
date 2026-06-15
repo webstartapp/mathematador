@@ -138,3 +138,20 @@ jobs:
               pm2 start build/index.js --name ${{ secrets.PM2_APP_NAME }}
             fi
           ENDSSH
+
+      - name: Restart or Start GUI under PM2
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
+            set -e
+            cd "${{ secrets.DEPLOY_PATH }}"
+            GUI_APP_NAME="${{ secrets.PM2_APP_NAME }}-gui"
+            if pm2 describe "$GUI_APP_NAME" > /dev/null 2>&1; then
+              echo "PM2 GUI process is running, restarting..."
+              pm2 restart "$GUI_APP_NAME" --update-env
+            else
+              echo "PM2 GUI process is not running, starting..."
+              pm2 start "npx --yes serve -s web -l 4075" --name "$GUI_APP_NAME"
+            fi
+          ENDSSH
