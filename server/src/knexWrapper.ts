@@ -29,10 +29,10 @@ export const configKnex = (): Knex.Config => ({
   }
 });
 
-const knexWrapper = knexHandler(configKnex());
+export const rawKnex = knexHandler(configKnex());
 
 const knex = <T extends keyof IDBType>(dbName: T): Knex.QueryBuilder<IDBType[T], IDBType[T][]> => {
-  return knexWrapper<IDBType[T], IDBType[T][]>(dbName);
+  return rawKnex<IDBType[T], IDBType[T][]>(dbName);
 };
 
 export default knex;

@@ -38,11 +38,42 @@ export interface OperationProgressRow {
   xp: number;
 }
 
+export interface CosmeticRow {
+  id: string;
+  created: Date;
+  name: string;
+  type: string;
+  price: number;
+  asset_id: string;
+  required_level: number;
+}
+
+export interface UserCosmeticRow {
+  id: string;
+  created: Date;
+  user_id: string;
+  cosmetic_id: string;
+  cosmetic_type: string;
+  equipped: boolean;
+}
+
+export interface MinigameProgressRow {
+  id: string;
+  created: Date;
+  user_id: string;
+  minigame_id: Minigame;
+  level: number;
+  xp: number;
+}
+
 export type IDBType = {
   users: UserRow;
   subscriptions: SubscriptionRow;
   challenges: ChallengeRow;
   operation_progress: OperationProgressRow;
+  cosmetics: CosmeticRow;
+  user_cosmetics: UserCosmeticRow;
+  minigame_progress: MinigameProgressRow;
 };
 
 // Minimal DBConfig placeholder for legacy expressTypeResolver.ts to compile

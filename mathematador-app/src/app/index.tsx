@@ -10,8 +10,10 @@ import AnimatedBackgroundProvider from "@/providers/animations/AnimatedImage";
 import ChalengeSelectScreen from "@/screens/ChalengeSelectScreen";
 import ChallengeScreen from "@/screens/ChallengeGameScreen";
 import ChallengeResultScreen from "@/screens/ChallengeResultScreen";
+import GauntletScreen from "@/screens/GauntletScreen";
 import HomeScreen from "@/screens/HomeScreen";
 import OperationSelectionScreen from "@/screens/OperationSelectionScreen";
+import TiendaScreen from "@/screens/TiendaScreen";
 import { RootStackParamList } from "@/types/Navigation";
 // Import other screens as needed
 
@@ -75,6 +77,20 @@ const IndexPage = (): JSX.Element => (
             header: (props: StackHeaderProps) => (
               <GameHeader backTo="Home" showOperation props={props} />
             ),
+          }}
+        />
+        <Stack.Screen
+          name="Tienda"
+          component={TiendaScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Gauntlet"
+          component={GauntletScreen}
+          options={{
+            headerShown: false,
           }}
         />
         {/* Add other screens here */}

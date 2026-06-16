@@ -8,7 +8,15 @@ import { computePositionKey } from "@/components/minigames/helpers/computePositi
 import { getChallengeResult } from "@/components/minigames/helpers/getChallengeResult";
 import { operations } from "@/configs/operations";
 import { MinigameComponentProps } from "@/src/configs/minigames";
-import { ExerciseInputPosition } from "@/src/types/Chalenge";
+import {
+  Exercise as ExerciseType,
+  ExerciseInputPosition,
+} from "@/src/types/Chalenge";
+
+const toExerciseType = (numbers: number[]): ExerciseType => {
+  const exerciseObj: ExerciseType = Object.assign(numbers, {});
+  return exerciseObj;
+};
 
 const SingleLine: FC<MinigameComponentProps> = ({
   challenge,
@@ -48,9 +56,30 @@ const SingleLine: FC<MinigameComponentProps> = ({
   const exercises = challenge.exercises;
 
   const handleAnswer = (): void => {
+    // 1. Evaluate correctness for real-time widgets (combo streak, Toro Cooperation)
+    const exerciseItem: ExerciseType = exercises[currentExerciseIndex];
+    const expected =
+      exerciseItem.result !== undefined
+        ? exerciseItem.result
+        : getResult(toExerciseType(exerciseItem.slice(0, 2)));
+    const userAns = Number(
+      Object.values(exerciseResults[currentExerciseIndex] || {}).join(""),
+    );
+    const isCorrect = userAns === expected;
+
+    if (challenge.onAnswerSubmit) {
+      challenge.onAnswerSubmit(isCorrect, expected);
+    }
+
+    // 2. Advance exercise index or complete challenge
     if (currentExerciseIndex === exercises.length - 1) {
-      const expectedResults = exercises.map((exercise) =>
-        getResult(exercise.slice(0, 2)),
+      const expectedResults: number[] = exercises.map(
+        (item: ExerciseType): number => {
+          if (item.result !== undefined) {
+            return item.result;
+          }
+          return getResult(toExerciseType(item.slice(0, 2)));
+        },
       );
       const results = getChallengeResult(
         challenge,
@@ -61,7 +90,11 @@ const SingleLine: FC<MinigameComponentProps> = ({
       submitResults(results, challenge);
     } else {
       setExercisePositions([]);
-      setCurrentExerciseIndex(currentExerciseIndex + 1);
+      const nextIdx = currentExerciseIndex + 1;
+      setCurrentExerciseIndex(nextIdx);
+      if (challenge.onIndexChange) {
+        challenge.onIndexChange(nextIdx);
+      }
     }
   };
 

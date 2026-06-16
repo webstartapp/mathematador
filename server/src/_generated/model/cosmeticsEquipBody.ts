@@ -5,7 +5,7 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { Id } from './id';
+import type { Id } from "./id";
 
 export type CosmeticsEquipBody = {
   cosmeticId: Id;

@@ -5,8 +5,8 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { CosmeticType } from './cosmeticType';
-import type { Id } from './id';
+import type { CosmeticType } from "./cosmeticType";
+import type { Id } from "./id";
 
 export type Cosmetic = {
   id?: Id;

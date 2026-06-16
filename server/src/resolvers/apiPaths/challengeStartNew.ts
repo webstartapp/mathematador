@@ -2,6 +2,7 @@ import * as zod from "zod";
 
 import { ChallengeRequest, OperationId } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
+import { getChallengeConfig } from "@/utils/challengeConfig";
 import { generateExercises } from "@/utils/mathGenerator";
 import { restAPICall } from "@/utils/restAPI";
 
@@ -17,6 +18,8 @@ export const challengeStartNew = restAPICall(
       response.status(401).json({ message: "Unauthorized" });
       return;
     }
+
+    const config = getChallengeConfig(operationId);
 
     // Get user's level for this operation, default to 1
     let progressRecord = await knex("operation_progress").where({ user_id: userId, operation_id: operationId }).first();
@@ -34,8 +37,8 @@ export const challengeStartNew = restAPICall(
       progressRecord = newProgress;
     }
 
-    // Generate 10 exercises for this level
-    const exercises = generateExercises(operationId, progressRecord.level, 10);
+    // Generate exercises for this level
+    const exercises = generateExercises(operationId, progressRecord.level, config.count);
 
     // Create challenge
     const [challengeRecord] = await knex("challenges")
@@ -57,13 +60,13 @@ export const challengeStartNew = restAPICall(
       minigame: challengeRecord.minigame,
       exercises,
       result: undefined,
-      maxTime: 60,
-      xpOnSuccess: 20,
-      xpOnFailure: 5,
-      coinsOnSuccess: 10,
-      coinsOnFailure: 2,
+      maxTime: config.maxTime,
+      xpOnSuccess: config.xpOnSuccess,
+      xpOnFailure: config.xpOnFailure,
+      coinsOnSuccess: config.coinsOnSuccess,
+      coinsOnFailure: config.coinsOnFailure,
       coins: 0,
-      allowedMistakes: 3
+      allowedMistakes: config.allowedMistakes
     });
   },
   {

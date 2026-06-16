@@ -1,4 +1,7 @@
-export type Exercise = number[];
+export type Exercise = number[] & {
+  separator?: string;
+  result?: number;
+};
 
 export type Challenge = {
   challengeId: number;
@@ -11,6 +14,8 @@ export type Challenge = {
   operationId: string;
   level: number;
   minigame: string;
+  onAnswerSubmit?: (isCorrect: boolean, expectedResult: number) => void;
+  onIndexChange?: (index: number) => void;
 };
 
 export type ExerciseResult = {

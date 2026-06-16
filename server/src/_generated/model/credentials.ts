@@ -5,7 +5,9 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { CredentialsEmail } from './credentialsEmail';
-import type { CredentialsPassword } from './credentialsPassword';
+import type { CredentialsEmail } from "./credentialsEmail";
+import type { CredentialsPassword } from "./credentialsPassword";
 
-export type Credentials = CredentialsEmail & CredentialsPassword & Required<Pick<CredentialsEmail & CredentialsPassword, 'email' | 'password'>>;
+export type Credentials = CredentialsEmail &
+  CredentialsPassword &
+  Required<Pick<CredentialsEmail & CredentialsPassword, "email" | "password">>;

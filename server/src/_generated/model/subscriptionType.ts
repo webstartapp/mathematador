@@ -6,10 +6,9 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type SubscriptionType = typeof SubscriptionType[keyof typeof SubscriptionType];
-
+export type SubscriptionType = (typeof SubscriptionType)[keyof typeof SubscriptionType];
 
 export const SubscriptionType = {
-  addsFree: 'addsFree',
-  full: 'full',
+  addsFree: "addsFree",
+  full: "full"
 } as const;

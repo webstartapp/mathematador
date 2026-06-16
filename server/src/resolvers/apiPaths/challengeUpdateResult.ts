@@ -1,11 +1,88 @@
 import * as zod from "zod";
 
-import { Exercise, ChallengeResultRequest, OperationId, Id } from "@/_generated/be_fe.zod";
+import { ChallengeResultRequest, Exercise as ExerciseSchema, Id, OperationId } from "@/_generated/be_fe.zod";
+import { Exercise } from "@/_generated/model";
 import knex from "@/knexWrapper";
+import { getChallengeConfig } from "@/utils/challengeConfig";
 import { getUserProgress } from "@/utils/gameProgress";
 import { restAPICall } from "@/utils/restAPI";
 
-const ExercisesSchema = zod.array(Exercise);
+const ExercisesSchema = zod.array(ExerciseSchema);
+
+const calculateCorrectCount = (
+  parsedExercises: Exercise[],
+  results: { userInput?: string }[] | undefined
+): { correctCount: number; exercisesWithAnswers: Exercise[] } => {
+  let correctCount = 0;
+  const exercisesWithAnswers = parsedExercises.map((exercise, index) => {
+    const submittedAnswer = results?.[index]?.userInput ?? "";
+    const isCorrect = Number(submittedAnswer) === exercise.result;
+    if (isCorrect) {
+      correctCount++;
+    }
+    return {
+      ...exercise,
+      userInput: submittedAnswer
+    };
+  });
+  return { correctCount, exercisesWithAnswers };
+};
+
+const updateProgress = async (
+  table: "operation_progress" | "minigame_progress",
+  whereClause: Record<string, string>,
+  insertData: Record<string, number>,
+  xpAwarded: number
+): Promise<void> => {
+  let record = await knex(table).where(whereClause).first();
+
+  if (!record) {
+    const [newRecord] = await knex(table)
+      .insert({ ...whereClause, ...insertData })
+      .returning("*");
+    record = newRecord;
+  }
+
+  if (!record) {
+    return;
+  }
+
+  let currentXp = record.xp + xpAwarded;
+  let currentLevel = record.level;
+
+  while (currentXp >= currentLevel * 100) {
+    currentXp -= currentLevel * 100;
+    currentLevel += 1;
+  }
+
+  await knex(table).where({ id: record.id }).update({
+    xp: currentXp,
+    level: currentLevel
+  });
+};
+
+const handleCosmeticDrop = async (userId: string, operationId: string, isSuccess: boolean): Promise<void> => {
+  if (operationId !== "daily_challenge" || !isSuccess) {
+    return;
+  }
+
+  if (Math.random() < 0.05) {
+    const allCosmetics = await knex("cosmetics").select("*");
+    const ownedCosmetics = await knex("user_cosmetics").where("user_id", userId).select("cosmetic_id");
+    const ownedIds = new Set(ownedCosmetics.map((row) => row.cosmetic_id));
+
+    const unowned = allCosmetics.filter((cosmeticItem) => !ownedIds.has(cosmeticItem.id));
+    if (unowned.length > 0) {
+      const luckyCosmetic = unowned[Math.floor(Math.random() * unowned.length)];
+      await knex("user_cosmetics").insert({
+        user_id: userId,
+        cosmetic_id: luckyCosmetic.id,
+        cosmetic_type: luckyCosmetic.type,
+        equipped: false
+      });
+    }
+  }
+};
 
 export const challengeUpdateResult = restAPICall(
   "mathematador",
@@ -21,7 +98,6 @@ export const challengeUpdateResult = restAPICall(
       return;
     }
 
-    // Find the challenge
     const challengeRecord = await knex("challenges").where({ id, user_id: userId, operation_id: operationId }).first();
 
     if (!challengeRecord) {
@@ -34,64 +110,35 @@ export const challengeUpdateResult = restAPICall(
       return;
     }
 
-    // Calculate correct answers
-    let correctCount = 0;
     const parsedExercises = ExercisesSchema.parse(
       typeof challengeRecord.exercises === "string" ? JSON.parse(challengeRecord.exercises) : challengeRecord.exercises
     );
 
-    // Map results to exercises for verification
-    const exercisesWithAnswers = parsedExercises.map((exercise, index) => {
-      const submittedAnswer = results?.[index]?.userInput ?? "";
-      const isCorrect = Number(submittedAnswer) === exercise.result;
-      if (isCorrect) {
-        correctCount++;
-      }
-      return {
-        ...exercise,
-        userInput: submittedAnswer
-      };
-    });
+    const { correctCount, exercisesWithAnswers } = calculateCorrectCount(parsedExercises, results);
 
     const totalQuestions = parsedExercises.length || 10;
     const wrongCount = totalQuestions - correctCount;
 
-    // allowedMistakes is 3, so success is if wrongCount <= 3
-    const isSuccess = wrongCount <= 3;
-    const xpAwarded = isSuccess ? 20 : 5;
-    const coinsAwarded = isSuccess ? 10 : 2;
+    const config = getChallengeConfig(operationId);
 
-    // Retrieve user progress
-    let progressRecord = await knex("operation_progress").where({ user_id: userId, operation_id: operationId }).first();
+    const isSuccess = wrongCount <= config.allowedMistakes;
+    const xpAwarded = isSuccess ? config.xpOnSuccess : config.xpOnFailure;
+    const coinsAwarded = isSuccess ? config.coinsOnSuccess : config.coinsOnFailure;
 
-    if (!progressRecord) {
-      const [newProgress] = await knex("operation_progress")
-        .insert({
-          user_id: userId,
-          operation_id: operationId,
-          level: 1,
-          xp: 0
-        })
-        .returning("*");
-      progressRecord = newProgress;
-    }
+    await updateProgress(
+      "operation_progress",
+      { user_id: userId, operation_id: operationId },
+      { level: 1, xp: 0 },
+      xpAwarded
+    );
+    await updateProgress(
+      "minigame_progress",
+      { user_id: userId, minigame_id: challengeRecord.minigame },
+      { level: 1, xp: 0 },
+      xpAwarded
+    );
+    await handleCosmeticDrop(userId, operationId, isSuccess);
 
-    let currentXp = progressRecord.xp + xpAwarded;
-    let currentLevel = progressRecord.level;
-
-    // Level up logic: next level requires level * 100 XP
-    while (currentXp >= currentLevel * 100) {
-      currentXp -= currentLevel * 100;
-      currentLevel += 1;
-    }
-
-    // Update user progress in DB
-    await knex("operation_progress").where({ id: progressRecord.id }).update({
-      xp: currentXp,
-      level: currentLevel
-    });
-
-    // Update challenge
     const finalResult = {
       time,
       results: exercisesWithAnswers,
@@ -108,7 +155,6 @@ export const challengeUpdateResult = restAPICall(
         exercises: JSON.stringify(exercisesWithAnswers)
       });
 
-    // Get compiled updated user progress
     const updatedProgress = await getUserProgress(userId);
 
     response.status(200).json(updatedProgress);
