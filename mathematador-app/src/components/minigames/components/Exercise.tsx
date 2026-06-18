@@ -50,18 +50,26 @@ export const Exercise: FC<ExerciseProps> = ({
   const resultIsFirst = operation?.resultIsFirst || false;
 
   const exerciseItems = useMemo<number[]>(() => {
+    if (exerciseItem.result !== undefined) {
+      return exerciseItem;
+    }
     if (result === undefined) return [];
-    const exerciseList = [
-      ...(resultIsFirst ? [result] : exerciseItem),
-      ...(!resultIsFirst ? exerciseItem : [result]),
-    ];
-    return exerciseList.slice(0, exerciseList.length - 2);
+    if (resultIsFirst) {
+      return [result, ...exerciseItem.slice(0, exerciseItem.length - 1)];
+    }
+    return exerciseItem;
   }, [exerciseItem, resultIsFirst, result]);
 
   const resultItem = useMemo<number | undefined>(() => {
+    if (exerciseItem.result !== undefined) {
+      return exerciseItem.result;
+    }
     if (result === undefined) return undefined;
-    return resultIsFirst ? exerciseItems[exerciseItems.length - 1] : result;
-  }, [exerciseItems, result, resultIsFirst]);
+    if (resultIsFirst) {
+      return exerciseItem[exerciseItem.length - 1];
+    }
+    return result;
+  }, [exerciseItem, resultIsFirst, result]);
 
   useEffect(() => {
     if (resultItem === undefined) return;

@@ -13,11 +13,6 @@ import {
   ExerciseInputPosition,
 } from "@/src/types/Chalenge";
 
-const toExerciseType = (numbers: number[]): ExerciseType => {
-  const exerciseObj: ExerciseType = Object.assign(numbers, {});
-  return exerciseObj;
-};
-
 const SingleLine: FC<MinigameComponentProps> = ({
   challenge,
   submitResults,
@@ -61,7 +56,9 @@ const SingleLine: FC<MinigameComponentProps> = ({
     const expected =
       exerciseItem.result !== undefined
         ? exerciseItem.result
-        : getResult(toExerciseType(exerciseItem.slice(0, 2)));
+        : operationConfig.resultIsFirst
+          ? exerciseItem[exerciseItem.length - 1]
+          : getResult(exerciseItem);
     const userAns = Number(
       Object.values(exerciseResults[currentExerciseIndex] || {}).join(""),
     );
@@ -78,7 +75,9 @@ const SingleLine: FC<MinigameComponentProps> = ({
           if (item.result !== undefined) {
             return item.result;
           }
-          return getResult(toExerciseType(item.slice(0, 2)));
+          return operationConfig.resultIsFirst
+            ? item[item.length - 1]
+            : getResult(item);
         },
       );
       const results = getChallengeResult(
