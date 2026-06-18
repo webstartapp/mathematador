@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import * as zod from "zod";
 
 import { ChallengeResultRequest, Exercise as ExerciseSchema, Id, OperationId } from "@/_generated/be_fe.zod";
@@ -122,7 +123,26 @@ export const challengeUpdateResult = restAPICall(
     const config = getChallengeConfig(operationId);
 
     const isSuccess = wrongCount <= config.allowedMistakes;
-    const xpAwarded = isSuccess ? config.xpOnSuccess : config.xpOnFailure;
+
+    let currentStreak = 0;
+    let inspiredAnswersCount = 0;
+    parsedExercises.forEach((_exercise, index) => {
+      const submittedAnswer = results?.[index]?.userInput ?? "";
+      const expectedAnswer = parsedExercises[index].result;
+      const isCorrect = Number(submittedAnswer) === expectedAnswer;
+      if (isCorrect) {
+        if (currentStreak >= 3) {
+          inspiredAnswersCount++;
+        }
+        currentStreak++;
+      } else {
+        currentStreak = 0;
+      }
+    });
+
+    const inspiredBonus = isSuccess ? Math.floor(inspiredAnswersCount * (config.xpOnSuccess / totalQuestions)) : 0;
+
+    const xpAwarded = isSuccess ? config.xpOnSuccess + inspiredBonus : config.xpOnFailure;
     const coinsAwarded = isSuccess ? config.coinsOnSuccess : config.coinsOnFailure;
 
     await updateProgress(
