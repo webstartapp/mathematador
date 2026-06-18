@@ -12,7 +12,8 @@
     "test": "npm test --workspace=server -- --watchAll=false && npm test --workspace=mathematador-app -- --watchAll=false",
     "lint": "eslint .",
     "generate": "orval",
-    "verify": "node agents/verify.js"
+    "verify": "node agents/verify.js",
+    "push": "git push"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
