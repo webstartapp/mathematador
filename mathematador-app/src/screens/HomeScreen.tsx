@@ -29,6 +29,17 @@ const HomeScreen = (): JSX.Element => {
         subtitles={[`Level ${user.level}`, `XP: ${user.xp}`]}
       >
         <Button title="Start Game" onPress={handleStartGame} />
+        <Button
+          title="Coliseo (Gauntlet & Daily)"
+          onPress={() => navigation.navigate("Gauntlet")}
+          style={{ backgroundColor: "#E6007A" }}
+        />
+        <Button
+          title="Tienda de Torero"
+          onPress={() => navigation.navigate("Tienda")}
+          style={{ backgroundColor: "#FFD700" }}
+          textStyle={{ color: "#1a1a1a" }}
+        />
       </CenteredDesk>
     </Layout>
   );

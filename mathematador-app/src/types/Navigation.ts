@@ -9,4 +9,7 @@ export type RootStackParamList = {
   Statistics?: {};
   Profile?: {};
   ChalengeSelect: { operationId: string };
+  Tienda?: {};
+  Gauntlet?: {};
+  DailyCorrida?: {};
 };

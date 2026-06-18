@@ -4,7 +4,11 @@ import { StyleSheet, View } from "react-native";
 import ExerciseValueDropDigits from "@/components/minigames/components/ExerciseValueDropDigits";
 import ExerciseValuePreview from "@/components/minigames/components/ExerciseValuePreview";
 import { operations } from "@/src/configs/operations";
-import { Challenge, ExerciseInputPosition } from "@/src/types/Chalenge";
+import {
+  Challenge,
+  Exercise as ExerciseType,
+  ExerciseInputPosition,
+} from "@/src/types/Chalenge";
 
 interface ExerciseProps {
   exerciseId: number;
@@ -28,33 +32,47 @@ export const Exercise: FC<ExerciseProps> = ({
 }) => {
   const exerciseIdRef = useRef(exerciseId);
   const operation = operations.find(
-    (operation) => operation.operationId === challenge.operationId,
+    (opItem) => opItem.operationId === challenge.operationId,
   );
-  const exercise = challenge.exercises[exerciseId];
+  const exerciseItem: ExerciseType = challenge.exercises[exerciseId];
   useEffect(() => {
     exerciseIdRef.current = exerciseId;
   }, [exerciseId]);
 
-  const result = useMemo(
-    () => operation?.getResult(exercise),
-    [exercise, operation],
-  );
+  const separator = exerciseItem.separator || operation?.symbol;
+  const result = useMemo<number | undefined>(() => {
+    if (exerciseItem.result !== undefined) {
+      return exerciseItem.result;
+    }
+    return operation?.getResult(exerciseItem);
+  }, [exerciseItem, operation]);
 
-  const exerciseItems = useMemo(() => {
-    const exerciseList = [
-      ...(operation?.resultIsFirst ? [result] : exercise),
-      ...(!operation?.resultIsFirst ? exercise : [result]),
-    ];
-    return exerciseList.slice(0, exerciseList.length - 2);
-  }, [exercise, operation, result]);
+  const resultIsFirst = operation?.resultIsFirst || false;
 
-  const resultItem = useMemo(() => {
-    return operation?.resultIsFirst
-      ? exerciseItems[exerciseItems.length - 1]
-      : result;
-  }, [exerciseItems, result, operation]);
+  const exerciseItems = useMemo<number[]>(() => {
+    if (exerciseItem.result !== undefined) {
+      return exerciseItem;
+    }
+    if (result === undefined) return [];
+    if (resultIsFirst) {
+      return [result, ...exerciseItem.slice(0, exerciseItem.length - 1)];
+    }
+    return exerciseItem;
+  }, [exerciseItem, resultIsFirst, result]);
+
+  const resultItem = useMemo<number | undefined>(() => {
+    if (exerciseItem.result !== undefined) {
+      return exerciseItem.result;
+    }
+    if (result === undefined) return undefined;
+    if (resultIsFirst) {
+      return exerciseItem[exerciseItem.length - 1];
+    }
+    return result;
+  }, [exerciseItem, resultIsFirst, result]);
 
   useEffect(() => {
+    if (resultItem === undefined) return;
     const answer = Object.values(exerciseResult || {});
     if (answer.length === String(resultItem).length) {
       onAnswer(Number(answer.join("")));
@@ -69,7 +87,7 @@ export const Exercise: FC<ExerciseProps> = ({
             <View key={index} style={styles.exerciseValue}>
               {index !== 0 && (
                 <ExerciseValuePreview
-                  value={operation?.symbol}
+                  value={separator}
                   exerciseId={exerciseId}
                 />
               )}
