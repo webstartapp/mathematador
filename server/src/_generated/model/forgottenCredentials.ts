@@ -5,7 +5,9 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { CredentialsPassword } from './credentialsPassword';
-import type { ForgottenToken } from './forgottenToken';
+import type { CredentialsPassword } from "./credentialsPassword";
+import type { ForgottenToken } from "./forgottenToken";
 
-export type ForgottenCredentials = CredentialsPassword & ForgottenToken & Required<Pick<CredentialsPassword & ForgottenToken, 'password' | 'tokenForgotten'>>;
+export type ForgottenCredentials = CredentialsPassword &
+  ForgottenToken &
+  Required<Pick<CredentialsPassword & ForgottenToken, "password" | "tokenForgotten">>;

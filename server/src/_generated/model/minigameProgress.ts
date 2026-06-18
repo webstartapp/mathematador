@@ -5,7 +5,7 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { Minigame } from './minigame';
+import type { Minigame } from "./minigame";
 
 export type MinigameProgress = {
   minigameId?: Minigame;

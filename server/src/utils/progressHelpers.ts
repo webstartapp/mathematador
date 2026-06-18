@@ -1,86 +1,80 @@
 import { Minigame, OperationId } from "@/_generated/model";
 import knex from "@/knexWrapper";
-import { OperationProgressRow, MinigameProgressRow, CosmeticRow, UserCosmeticRow } from "@/types/KnexDBType";
+import { IDBType, OperationProgressRow, MinigameProgressRow, CosmeticRow, UserCosmeticRow } from "@/types/KnexDBType";
 
 export const getMinigame = (value: string | null | undefined): Minigame | undefined => {
-  if (value === "singleLine" || value === "dragAndDrop" || value === "crossNumbers" || value === "memory") {
-    return value;
-  }
-  return undefined;
+  const minigames: Minigame[] = ["singleLine", "dragAndDrop", "crossNumbers", "memory"];
+  return minigames.find((minigameItem) => minigameItem === value);
 };
 
 export const getOperationId = (value: string): OperationId => {
-  if (
-    value === "addition" ||
-    value === "subtraction" ||
-    value === "multiplication" ||
-    value === "division" ||
-    value === "gauntlet" ||
-    value === "daily_challenge"
-  ) {
-    return value;
-  }
-  return "addition";
+  const operations: OperationId[] = [
+    "addition",
+    "subtraction",
+    "multiplication",
+    "division",
+    "gauntlet",
+    "daily_challenge"
+  ];
+  const found = operations.find((operationItem) => operationItem === value);
+  return found || "addition";
 };
 
-export const ensureOperationProgress = async (
-  userId: string,
-  progressRows: OperationProgressRow[]
-): Promise<OperationProgressRow[]> => {
-  const operationsList = ["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"];
-  const progressMap = new Map<string, OperationProgressRow>(
-    progressRows.map((rowItem) => [rowItem.operation_id, rowItem])
-  );
+interface EnsureProgressOptions<TableName extends keyof IDBType> {
+  table: TableName;
+  keyField: keyof IDBType[TableName] & string;
+  userId: string;
+  keysList: string[];
+  existingRows: IDBType[TableName][];
+}
 
-  for (const operationIdItem of operationsList) {
-    if (!progressMap.has(operationIdItem)) {
-      const [newOp] = await knex("operation_progress")
-        .insert({
-          user_id: userId,
-          operation_id: operationIdItem,
-          level: 1,
-          xp: 0
-        })
+const ensureProgress = async <TableName extends keyof IDBType>(
+  options: EnsureProgressOptions<TableName>
+): Promise<IDBType[TableName][]> => {
+  const { table, keyField, userId, keysList, existingRows } = options;
+  const progressMap = new Map<string, IDBType[TableName]>();
+  existingRows.forEach((rowItem) => {
+    const keyValue = rowItem[keyField];
+    if (typeof keyValue === "string") {
+      progressMap.set(keyValue, rowItem);
+    }
+  });
+  for (const key of keysList) {
+    if (!progressMap.has(key)) {
+      const [newRecord] = await knex(table)
+        .insert({ user_id: userId, [keyField]: key, level: 1, xp: 0 })
         .returning("*");
-      if (newOp) {
-        progressMap.set(operationIdItem, newOp);
+      if (newRecord) {
+        progressMap.set(key, newRecord);
       }
     }
   }
   return Array.from(progressMap.values());
 };
 
+export const ensureOperationProgress = async (
+  userId: string,
+  progressRows: OperationProgressRow[]
+): Promise<OperationProgressRow[]> =>
+  ensureProgress({
+    table: "operation_progress",
+    keyField: "operation_id",
+    userId,
+    keysList: ["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"],
+    existingRows: progressRows
+  });
+
 export const ensureMinigameProgress = async (
   userId: string,
   minigameProgressRows: MinigameProgressRow[]
-): Promise<MinigameProgressRow[]> => {
-  const minigamesList: Minigame[] = ["singleLine", "dragAndDrop", "crossNumbers", "memory"];
-  const minigameProgressMap = new Map<Minigame, MinigameProgressRow>();
-  minigameProgressRows.forEach((rowItem) => {
-    const minigameId = getMinigame(rowItem.minigame_id);
-    if (minigameId) {
-      minigameProgressMap.set(minigameId, rowItem);
-    }
+): Promise<MinigameProgressRow[]> =>
+  ensureProgress({
+    table: "minigame_progress",
+    keyField: "minigame_id",
+    userId,
+    keysList: ["singleLine", "dragAndDrop", "crossNumbers", "memory"],
+    existingRows: minigameProgressRows
   });
-
-  for (const minigameIdItem of minigamesList) {
-    if (!minigameProgressMap.has(minigameIdItem)) {
-      const [newMg] = await knex("minigame_progress")
-        .insert({
-          user_id: userId,
-          minigame_id: minigameIdItem,
-          level: 1,
-          xp: 0
-        })
-        .returning("*");
-      if (newMg) {
-        minigameProgressMap.set(minigameIdItem, newMg);
-      }
-    }
-  }
-
-  return Array.from(minigameProgressMap.values());
-};
 
 export interface CosmeticsLoadout {
   purchasedCosmetics: string[];
@@ -94,15 +88,12 @@ export const getCosmeticsLoadout = async (userId: string, totalCoins: number): P
   const userCosmetics: UserCosmeticRow[] = await knex("user_cosmetics").where("user_id", userId);
   const purchasedCosmetics = userCosmetics.map((cosmeticItem) => cosmeticItem.cosmetic_id);
 
-  const equippedCape =
-    userCosmetics.find((cosmeticItem) => cosmeticItem.equipped && cosmeticItem.cosmetic_type === "cape")?.cosmetic_id ||
+  const findEquipped = (type: string): string | null =>
+    userCosmetics.find((cosmeticItem) => cosmeticItem.equipped && cosmeticItem.cosmetic_type === type)?.cosmetic_id ||
     null;
-  const equippedSuit =
-    userCosmetics.find((cosmeticItem) => cosmeticItem.equipped && cosmeticItem.cosmetic_type === "suit")?.cosmetic_id ||
-    null;
-  const equippedFlare =
-    userCosmetics.find((cosmeticItem) => cosmeticItem.equipped && cosmeticItem.cosmetic_type === "flare")
-      ?.cosmetic_id || null;
+  const equippedCape = findEquipped("cape");
+  const equippedSuit = findEquipped("suit");
+  const equippedFlare = findEquipped("flare");
 
   let spentCoins = 0;
   if (purchasedCosmetics.length > 0) {
@@ -118,4 +109,60 @@ export const getCosmeticsLoadout = async (userId: string, totalCoins: number): P
     equippedFlare,
     coinsBalance
   };
+};
+
+export const updateProgress = async (
+  table: "operation_progress" | "minigame_progress",
+  whereClause: Record<string, string>,
+  insertData: Record<string, number>,
+  xpAwarded: number
+): Promise<void> => {
+  let record = await knex(table).where(whereClause).first();
+
+  if (!record) {
+    const [newRecord] = await knex(table)
+      .insert({ ...whereClause, ...insertData })
+      .returning("*");
+    record = newRecord;
+  }
+
+  if (!record) {
+    return;
+  }
+
+  let currentXp = record.xp + xpAwarded;
+  let currentLevel = record.level;
+
+  while (currentXp >= currentLevel * 100) {
+    currentXp -= currentLevel * 100;
+    currentLevel += 1;
+  }
+
+  await knex(table).where({ id: record.id }).update({
+    xp: currentXp,
+    level: currentLevel
+  });
+};
+
+export const handleCosmeticDrop = async (userId: string, operationId: string, isSuccess: boolean): Promise<void> => {
+  if (operationId !== "daily_challenge" || !isSuccess) {
+    return;
+  }
+
+  if (Math.random() < 0.05) {
+    const allCosmetics = await knex("cosmetics").select("*");
+    const ownedCosmetics = await knex("user_cosmetics").where("user_id", userId).select("cosmetic_id");
+    const ownedIds = new Set(ownedCosmetics.map((row) => row.cosmetic_id));
+
+    const unowned = allCosmetics.filter((cosmeticItem) => !ownedIds.has(cosmeticItem.id));
+    if (unowned.length > 0) {
+      const luckyCosmetic = unowned[Math.floor(Math.random() * unowned.length)];
+      await knex("user_cosmetics").insert({
+        user_id: userId,
+        cosmetic_id: luckyCosmetic.id,
+        cosmetic_type: luckyCosmetic.type,
+        equipped: false
+      });
+    }
+  }
 };
