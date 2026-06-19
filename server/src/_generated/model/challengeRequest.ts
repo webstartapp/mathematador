@@ -5,9 +5,9 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import type { Id } from "./id";
-import type { Minigame } from "./minigame";
-import type { OperationId } from "./operationId";
+import type { Id } from './id';
+import type { Minigame } from './minigame';
+import type { OperationId } from './operationId';
 
 export type ChallengeRequest = {
   operationId?: OperationId;

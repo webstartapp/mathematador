@@ -5,57 +5,41 @@
  * Hybrid game api to access databases
  * OpenAPI spec version: 0.0.1
  */
-import { z as zod } from "zod";
+import { z as zod } from 'zod';
 
-export const Challenge = zod
-  .object({
-    operationId: zod
-      .enum(["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"])
-      .optional(),
-    minigame: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-    userId: zod.string().uuid().optional(),
-    challengeId: zod.string().uuid().optional()
-  })
-  .and(
-    zod.object({
-      result: zod
-        .object({
-          time: zod.number().optional(),
-          results: zod
-            .array(
-              zod.object({
-                values: zod.array(zod.number()).optional(),
-                result: zod.number().optional(),
-                separator: zod.string().optional(),
-                userInput: zod.string().optional()
-              })
-            )
-            .optional(),
-          correctAnswers: zod.number().optional(),
-          coins: zod.number().optional(),
-          xp: zod.number().optional()
-        })
-        .optional(),
-      id: zod.string().uuid().optional(),
-      exercises: zod
-        .array(
-          zod.object({
-            values: zod.array(zod.number()).optional(),
-            result: zod.number().optional(),
-            separator: zod.string().optional(),
-            userInput: zod.string().optional()
-          })
-        )
-        .optional(),
-      maxTime: zod.number().optional(),
-      xpOnSuccess: zod.number().optional(),
-      xpOnFailure: zod.number().optional(),
-      coinsOnSuccess: zod.number().optional(),
-      coinsOnFailure: zod.number().optional(),
-      coins: zod.number().optional(),
-      allowedMistakes: zod.number().optional()
-    })
-  );
+export const Challenge = zod.object({
+  "operationId": zod.enum(['addition', 'subtraction', 'multiplication', 'division', 'gauntlet', 'daily_challenge']).optional(),
+  "minigame": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "userId": zod.string().uuid().optional(),
+  "challengeId": zod.string().uuid().optional()
+}).and(zod.object({
+  "result": zod.object({
+  "time": zod.number().optional(),
+  "results": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "correctAnswers": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "xp": zod.number().optional()
+}).optional(),
+  "id": zod.string().uuid().optional(),
+  "exercises": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "maxTime": zod.number().optional(),
+  "xpOnSuccess": zod.number().optional(),
+  "xpOnFailure": zod.number().optional(),
+  "coinsOnSuccess": zod.number().optional(),
+  "coinsOnFailure": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "allowedMistakes": zod.number().optional()
+}))
 
 type Challenge = zod.input<typeof Challenge>;
 type ChallengeOutput = zod.output<typeof Challenge>;
@@ -68,14 +52,13 @@ type ChallengeOutput = zod.output<typeof Challenge>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const ChallengeRequest = zod.object({
-  operationId: zod
-    .enum(["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"])
-    .optional(),
-  minigame: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-  userId: zod.string().uuid().optional(),
-  challengeId: zod.string().uuid().optional()
-});
+  "operationId": zod.enum(['addition', 'subtraction', 'multiplication', 'division', 'gauntlet', 'daily_challenge']).optional(),
+  "minigame": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "userId": zod.string().uuid().optional(),
+  "challengeId": zod.string().uuid().optional()
+})
 
 type ChallengeRequest = zod.input<typeof ChallengeRequest>;
 type ChallengeRequestOutput = zod.output<typeof ChallengeRequest>;
@@ -88,22 +71,19 @@ type ChallengeRequestOutput = zod.output<typeof ChallengeRequest>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const ChallengeResultRequest = zod.object({
-  time: zod.number().optional(),
-  results: zod
-    .array(
-      zod.object({
-        values: zod.array(zod.number()).optional(),
-        result: zod.number().optional(),
-        separator: zod.string().optional(),
-        userInput: zod.string().optional()
-      })
-    )
-    .optional(),
-  correctAnswers: zod.number().optional(),
-  coins: zod.number().optional(),
-  xp: zod.number().optional()
-});
+  "time": zod.number().optional(),
+  "results": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "correctAnswers": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "xp": zod.number().optional()
+})
 
 type ChallengeResultRequest = zod.input<typeof ChallengeResultRequest>;
 type ChallengeResultRequestOutput = zod.output<typeof ChallengeResultRequest>;
@@ -116,14 +96,13 @@ type ChallengeResultRequestOutput = zod.output<typeof ChallengeResultRequest>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const ChallengeStartNewBody = zod.object({
-  operationId: zod
-    .enum(["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"])
-    .optional(),
-  minigame: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-  userId: zod.string().uuid().optional(),
-  challengeId: zod.string().uuid().optional()
-});
+  "operationId": zod.enum(['addition', 'subtraction', 'multiplication', 'division', 'gauntlet', 'daily_challenge']).optional(),
+  "minigame": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "userId": zod.string().uuid().optional(),
+  "challengeId": zod.string().uuid().optional()
+})
 
 type ChallengeStartNewBody = zod.input<typeof ChallengeStartNewBody>;
 type ChallengeStartNewBodyOutput = zod.output<typeof ChallengeStartNewBody>;
@@ -136,22 +115,19 @@ type ChallengeStartNewBodyOutput = zod.output<typeof ChallengeStartNewBody>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const ChallengeUpdateResultBody = zod.object({
-  time: zod.number().optional(),
-  results: zod
-    .array(
-      zod.object({
-        values: zod.array(zod.number()).optional(),
-        result: zod.number().optional(),
-        separator: zod.string().optional(),
-        userInput: zod.string().optional()
-      })
-    )
-    .optional(),
-  correctAnswers: zod.number().optional(),
-  coins: zod.number().optional(),
-  xp: zod.number().optional()
-});
+  "time": zod.number().optional(),
+  "results": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "correctAnswers": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "xp": zod.number().optional()
+})
 
 type ChallengeUpdateResultBody = zod.input<typeof ChallengeUpdateResultBody>;
 type ChallengeUpdateResultBodyOutput = zod.output<typeof ChallengeUpdateResultBody>;
@@ -164,14 +140,15 @@ type ChallengeUpdateResultBodyOutput = zod.output<typeof ChallengeUpdateResultBo
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const Cosmetic = zod.object({
-  id: zod.string().uuid().optional(),
-  name: zod.string().optional(),
-  type: zod.enum(["cape", "suit", "flare"]).optional(),
-  price: zod.number().optional(),
-  assetId: zod.string().optional(),
-  requiredLevel: zod.number().optional()
-});
+  "id": zod.string().uuid().optional(),
+  "name": zod.string().optional(),
+  "type": zod.enum(['cape', 'suit', 'flare']).optional(),
+  "price": zod.number().optional(),
+  "assetId": zod.string().optional(),
+  "requiredLevel": zod.number().optional()
+})
 
 type Cosmetic = zod.input<typeof Cosmetic>;
 type CosmeticOutput = zod.output<typeof Cosmetic>;
@@ -184,9 +161,10 @@ type CosmeticOutput = zod.output<typeof Cosmetic>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const CosmeticsBuyBody = zod.object({
-  cosmeticId: zod.string().uuid()
-});
+  "cosmeticId": zod.string().uuid()
+})
 
 type CosmeticsBuyBody = zod.input<typeof CosmeticsBuyBody>;
 type CosmeticsBuyBodyOutput = zod.output<typeof CosmeticsBuyBody>;
@@ -199,10 +177,11 @@ type CosmeticsBuyBodyOutput = zod.output<typeof CosmeticsBuyBody>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const CosmeticsEquipBody = zod.object({
-  cosmeticId: zod.string().uuid(),
-  equipped: zod.boolean()
-});
+  "cosmeticId": zod.string().uuid(),
+  "equipped": zod.boolean()
+})
 
 type CosmeticsEquipBody = zod.input<typeof CosmeticsEquipBody>;
 type CosmeticsEquipBodyOutput = zod.output<typeof CosmeticsEquipBody>;
@@ -215,15 +194,12 @@ type CosmeticsEquipBodyOutput = zod.output<typeof CosmeticsEquipBody>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const Credentials = zod
-  .object({
-    email: zod.string().email()
-  })
-  .and(
-    zod.object({
-      password: zod.string()
-    })
-  );
+
+export const Credentials = zod.object({
+  "email": zod.string().email()
+}).and(zod.object({
+  "password": zod.string()
+}))
 
 type Credentials = zod.input<typeof Credentials>;
 type CredentialsOutput = zod.output<typeof Credentials>;
@@ -236,9 +212,10 @@ type CredentialsOutput = zod.output<typeof Credentials>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const CredentialsEmail = zod.object({
-  email: zod.string().email().optional()
-});
+  "email": zod.string().email().optional()
+})
 
 type CredentialsEmail = zod.input<typeof CredentialsEmail>;
 type CredentialsEmailOutput = zod.output<typeof CredentialsEmail>;
@@ -251,9 +228,10 @@ type CredentialsEmailOutput = zod.output<typeof CredentialsEmail>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const CredentialsPassword = zod.object({
-  password: zod.string().optional()
-});
+  "password": zod.string().optional()
+})
 
 type CredentialsPassword = zod.input<typeof CredentialsPassword>;
 type CredentialsPasswordOutput = zod.output<typeof CredentialsPassword>;
@@ -266,7 +244,8 @@ type CredentialsPasswordOutput = zod.output<typeof CredentialsPassword>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const EquationType = zod.enum(["entry", "result", "operator"]);
+
+export const EquationType = zod.enum(['entry', 'result', 'operator'])
 
 type EquationType = zod.input<typeof EquationType>;
 type EquationTypeOutput = zod.output<typeof EquationType>;
@@ -279,12 +258,13 @@ type EquationTypeOutput = zod.output<typeof EquationType>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const Exercise = zod.object({
-  values: zod.array(zod.number()).optional(),
-  result: zod.number().optional(),
-  separator: zod.string().optional(),
-  userInput: zod.string().optional()
-});
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})
 
 type Exercise = zod.input<typeof Exercise>;
 type ExerciseOutput = zod.output<typeof Exercise>;
@@ -297,15 +277,12 @@ type ExerciseOutput = zod.output<typeof Exercise>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const ForgottenCredentials = zod
-  .object({
-    password: zod.string()
-  })
-  .and(
-    zod.object({
-      tokenForgotten: zod.string()
-    })
-  );
+
+export const ForgottenCredentials = zod.object({
+  "password": zod.string()
+}).and(zod.object({
+  "tokenForgotten": zod.string()
+}))
 
 type ForgottenCredentials = zod.input<typeof ForgottenCredentials>;
 type ForgottenCredentialsOutput = zod.output<typeof ForgottenCredentials>;
@@ -318,9 +295,10 @@ type ForgottenCredentialsOutput = zod.output<typeof ForgottenCredentials>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const ForgottenToken = zod.object({
-  tokenForgotten: zod.string().optional()
-});
+  "tokenForgotten": zod.string().optional()
+})
 
 type ForgottenToken = zod.input<typeof ForgottenToken>;
 type ForgottenTokenOutput = zod.output<typeof ForgottenToken>;
@@ -333,63 +311,44 @@ type ForgottenTokenOutput = zod.output<typeof ForgottenToken>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const GameOperationProgress = zod.object({
-  level: zod.number().optional(),
-  xp: zod.number().optional(),
-  challenges: zod
-    .array(
-      zod
-        .object({
-          operationId: zod
-            .enum(["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"])
-            .optional(),
-          minigame: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-          userId: zod.string().uuid().optional(),
-          challengeId: zod.string().uuid().optional()
-        })
-        .and(
-          zod.object({
-            result: zod
-              .object({
-                time: zod.number().optional(),
-                results: zod
-                  .array(
-                    zod.object({
-                      values: zod.array(zod.number()).optional(),
-                      result: zod.number().optional(),
-                      separator: zod.string().optional(),
-                      userInput: zod.string().optional()
-                    })
-                  )
-                  .optional(),
-                correctAnswers: zod.number().optional(),
-                coins: zod.number().optional(),
-                xp: zod.number().optional()
-              })
-              .optional(),
-            id: zod.string().uuid().optional(),
-            exercises: zod
-              .array(
-                zod.object({
-                  values: zod.array(zod.number()).optional(),
-                  result: zod.number().optional(),
-                  separator: zod.string().optional(),
-                  userInput: zod.string().optional()
-                })
-              )
-              .optional(),
-            maxTime: zod.number().optional(),
-            xpOnSuccess: zod.number().optional(),
-            xpOnFailure: zod.number().optional(),
-            coinsOnSuccess: zod.number().optional(),
-            coinsOnFailure: zod.number().optional(),
-            coins: zod.number().optional(),
-            allowedMistakes: zod.number().optional()
-          })
-        )
-    )
-    .optional()
-});
+  "level": zod.number().optional(),
+  "xp": zod.number().optional(),
+  "challenges": zod.array(zod.object({
+  "operationId": zod.enum(['addition', 'subtraction', 'multiplication', 'division', 'gauntlet', 'daily_challenge']).optional(),
+  "minigame": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "userId": zod.string().uuid().optional(),
+  "challengeId": zod.string().uuid().optional()
+}).and(zod.object({
+  "result": zod.object({
+  "time": zod.number().optional(),
+  "results": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "correctAnswers": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "xp": zod.number().optional()
+}).optional(),
+  "id": zod.string().uuid().optional(),
+  "exercises": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "maxTime": zod.number().optional(),
+  "xpOnSuccess": zod.number().optional(),
+  "xpOnFailure": zod.number().optional(),
+  "coinsOnSuccess": zod.number().optional(),
+  "coinsOnFailure": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "allowedMistakes": zod.number().optional()
+}))).optional()
+})
 
 type GameOperationProgress = zod.input<typeof GameOperationProgress>;
 type GameOperationProgressOutput = zod.output<typeof GameOperationProgress>;
@@ -402,85 +361,58 @@ type GameOperationProgressOutput = zod.output<typeof GameOperationProgress>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const GameProgress = zod.object({
-  level: zod.number().optional(),
-  xp: zod.number().optional(),
-  coins: zod.number().optional(),
-  operations: zod
-    .array(
-      zod.object({
-        level: zod.number().optional(),
-        xp: zod.number().optional(),
-        challenges: zod
-          .array(
-            zod
-              .object({
-                operationId: zod
-                  .enum(["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"])
-                  .optional(),
-                minigame: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-                userId: zod.string().uuid().optional(),
-                challengeId: zod.string().uuid().optional()
-              })
-              .and(
-                zod.object({
-                  result: zod
-                    .object({
-                      time: zod.number().optional(),
-                      results: zod
-                        .array(
-                          zod.object({
-                            values: zod.array(zod.number()).optional(),
-                            result: zod.number().optional(),
-                            separator: zod.string().optional(),
-                            userInput: zod.string().optional()
-                          })
-                        )
-                        .optional(),
-                      correctAnswers: zod.number().optional(),
-                      coins: zod.number().optional(),
-                      xp: zod.number().optional()
-                    })
-                    .optional(),
-                  id: zod.string().uuid().optional(),
-                  exercises: zod
-                    .array(
-                      zod.object({
-                        values: zod.array(zod.number()).optional(),
-                        result: zod.number().optional(),
-                        separator: zod.string().optional(),
-                        userInput: zod.string().optional()
-                      })
-                    )
-                    .optional(),
-                  maxTime: zod.number().optional(),
-                  xpOnSuccess: zod.number().optional(),
-                  xpOnFailure: zod.number().optional(),
-                  coinsOnSuccess: zod.number().optional(),
-                  coinsOnFailure: zod.number().optional(),
-                  coins: zod.number().optional(),
-                  allowedMistakes: zod.number().optional()
-                })
-              )
-          )
-          .optional()
-      })
-    )
-    .optional(),
-  purchasedCosmetics: zod.array(zod.string().uuid()).optional(),
-  equippedCape: zod.string().uuid().nullish(),
-  equippedSuit: zod.string().uuid().nullish(),
-  equippedFlare: zod.string().uuid().nullish(),
-  minigameProgress: zod
-    .array(
-      zod.object({
-        minigameId: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-        level: zod.number().optional(),
-        xp: zod.number().optional()
-      })
-    )
-    .optional()
-});
+  "level": zod.number().optional(),
+  "xp": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "operations": zod.array(zod.object({
+  "level": zod.number().optional(),
+  "xp": zod.number().optional(),
+  "challenges": zod.array(zod.object({
+  "operationId": zod.enum(['addition', 'subtraction', 'multiplication', 'division', 'gauntlet', 'daily_challenge']).optional(),
+  "minigame": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "userId": zod.string().uuid().optional(),
+  "challengeId": zod.string().uuid().optional()
+}).and(zod.object({
+  "result": zod.object({
+  "time": zod.number().optional(),
+  "results": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "correctAnswers": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "xp": zod.number().optional()
+}).optional(),
+  "id": zod.string().uuid().optional(),
+  "exercises": zod.array(zod.object({
+  "values": zod.array(zod.number()).optional(),
+  "result": zod.number().optional(),
+  "separator": zod.string().optional(),
+  "userInput": zod.string().optional()
+})).optional(),
+  "maxTime": zod.number().optional(),
+  "xpOnSuccess": zod.number().optional(),
+  "xpOnFailure": zod.number().optional(),
+  "coinsOnSuccess": zod.number().optional(),
+  "coinsOnFailure": zod.number().optional(),
+  "coins": zod.number().optional(),
+  "allowedMistakes": zod.number().optional()
+}))).optional()
+})).optional(),
+  "purchasedCosmetics": zod.array(zod.string().uuid()).optional(),
+  "equippedCape": zod.string().uuid().nullish(),
+  "equippedSuit": zod.string().uuid().nullish(),
+  "equippedFlare": zod.string().uuid().nullish(),
+  "minigameProgress": zod.array(zod.object({
+  "minigameId": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "level": zod.number().optional(),
+  "xp": zod.number().optional()
+})).optional()
+})
 
 type GameProgress = zod.input<typeof GameProgress>;
 type GameProgressOutput = zod.output<typeof GameProgress>;
@@ -493,7 +425,8 @@ type GameProgressOutput = zod.output<typeof GameProgress>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const Id = zod.string().uuid();
+
+export const Id = zod.string().uuid()
 
 type Id = zod.input<typeof Id>;
 type IdOutput = zod.output<typeof Id>;
@@ -506,6 +439,38 @@ type IdOutput = zod.output<typeof Id>;
  * OpenAPI spec version: 0.0.1
  */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Generated by orval v8.17.0 🍺
  * Do not edit manually.
@@ -514,7 +479,8 @@ type IdOutput = zod.output<typeof Id>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const Minigame = zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]);
+
+export const Minigame = zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory'])
 
 type Minigame = zod.input<typeof Minigame>;
 type MinigameOutput = zod.output<typeof Minigame>;
@@ -527,11 +493,12 @@ type MinigameOutput = zod.output<typeof Minigame>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const MinigameProgress = zod.object({
-  minigameId: zod.enum(["singleLine", "dragAndDrop", "crossNumbers", "memory"]).optional(),
-  level: zod.number().optional(),
-  xp: zod.number().optional()
-});
+  "minigameId": zod.enum(['singleLine', 'dragAndDrop', 'crossNumbers', 'memory']).optional(),
+  "level": zod.number().optional(),
+  "xp": zod.number().optional()
+})
 
 type MinigameProgress = zod.input<typeof MinigameProgress>;
 type MinigameProgressOutput = zod.output<typeof MinigameProgress>;
@@ -544,14 +511,8 @@ type MinigameProgressOutput = zod.output<typeof MinigameProgress>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const OperationId = zod.enum([
-  "addition",
-  "subtraction",
-  "multiplication",
-  "division",
-  "gauntlet",
-  "daily_challenge"
-]);
+
+export const OperationId = zod.enum(['addition', 'subtraction', 'multiplication', 'division', 'gauntlet', 'daily_challenge'])
 
 type OperationId = zod.input<typeof OperationId>;
 type OperationIdOutput = zod.output<typeof OperationId>;
@@ -564,18 +525,15 @@ type OperationIdOutput = zod.output<typeof OperationId>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const Subscription = zod
-  .object({
-    type: zod.enum(["addsFree", "full"]).optional(),
-    autoRenew: zod.boolean().optional()
-  })
-  .and(
-    zod.object({
-      id: zod.string().uuid().optional(),
-      type: zod.enum(["addsFree", "full"]).optional(),
-      autoRenew: zod.boolean().optional()
-    })
-  );
+
+export const Subscription = zod.object({
+  "type": zod.enum(['addsFree', 'full']).optional(),
+  "autoRenew": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string().uuid().optional(),
+  "type": zod.enum(['addsFree', 'full']).optional(),
+  "autoRenew": zod.boolean().optional()
+}))
 
 type Subscription = zod.input<typeof Subscription>;
 type SubscriptionOutput = zod.output<typeof Subscription>;
@@ -588,10 +546,11 @@ type SubscriptionOutput = zod.output<typeof Subscription>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const SubscriptionCreate = zod.object({
-  type: zod.enum(["addsFree", "full"]).optional(),
-  autoRenew: zod.boolean().optional()
-});
+  "type": zod.enum(['addsFree', 'full']).optional(),
+  "autoRenew": zod.boolean().optional()
+})
 
 type SubscriptionCreate = zod.input<typeof SubscriptionCreate>;
 type SubscriptionCreateOutput = zod.output<typeof SubscriptionCreate>;
@@ -604,7 +563,8 @@ type SubscriptionCreateOutput = zod.output<typeof SubscriptionCreate>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const SubscriptionType = zod.enum(["addsFree", "full"]);
+
+export const SubscriptionType = zod.enum(['addsFree', 'full'])
 
 type SubscriptionType = zod.input<typeof SubscriptionType>;
 type SubscriptionTypeOutput = zod.output<typeof SubscriptionType>;
@@ -617,10 +577,11 @@ type SubscriptionTypeOutput = zod.output<typeof SubscriptionType>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const SubscriptionUpdateBody = zod.object({
-  type: zod.enum(["addsFree", "full"]).optional(),
-  autoRenew: zod.boolean().optional()
-});
+  "type": zod.enum(['addsFree', 'full']).optional(),
+  "autoRenew": zod.boolean().optional()
+})
 
 type SubscriptionUpdateBody = zod.input<typeof SubscriptionUpdateBody>;
 type SubscriptionUpdateBodyOutput = zod.output<typeof SubscriptionUpdateBody>;
@@ -633,9 +594,10 @@ type SubscriptionUpdateBodyOutput = zod.output<typeof SubscriptionUpdateBody>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const UserForgottenBody = zod.object({
-  email: zod.string().email().optional()
-});
+  "email": zod.string().email().optional()
+})
 
 type UserForgottenBody = zod.input<typeof UserForgottenBody>;
 type UserForgottenBodyOutput = zod.output<typeof UserForgottenBody>;
@@ -648,9 +610,10 @@ type UserForgottenBodyOutput = zod.output<typeof UserForgottenBody>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const UserForgottenPasswordBody = zod.object({
-  email: zod.string().email().optional()
-});
+  "email": zod.string().email().optional()
+})
 
 type UserForgottenPasswordBody = zod.input<typeof UserForgottenPasswordBody>;
 type UserForgottenPasswordBodyOutput = zod.output<typeof UserForgottenPasswordBody>;
@@ -663,15 +626,12 @@ type UserForgottenPasswordBodyOutput = zod.output<typeof UserForgottenPasswordBo
  * OpenAPI spec version: 0.0.1
  */
 
-export const UserLoginBody = zod
-  .object({
-    email: zod.string().email()
-  })
-  .and(
-    zod.object({
-      password: zod.string()
-    })
-  );
+
+export const UserLoginBody = zod.object({
+  "email": zod.string().email()
+}).and(zod.object({
+  "password": zod.string()
+}))
 
 type UserLoginBody = zod.input<typeof UserLoginBody>;
 type UserLoginBodyOutput = zod.output<typeof UserLoginBody>;
@@ -684,9 +644,10 @@ type UserLoginBodyOutput = zod.output<typeof UserLoginBody>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const UserLoginPasswordBody = zod.object({
-  password: zod.string().optional()
-});
+  "password": zod.string().optional()
+})
 
 type UserLoginPasswordBody = zod.input<typeof UserLoginPasswordBody>;
 type UserLoginPasswordBodyOutput = zod.output<typeof UserLoginPasswordBody>;
@@ -699,23 +660,19 @@ type UserLoginPasswordBodyOutput = zod.output<typeof UserLoginPasswordBody>;
  * OpenAPI spec version: 0.0.1
  */
 
+
 export const UserProfile = zod.object({
-  id: zod.string().uuid().optional(),
-  name: zod.string().optional(),
-  subscription: zod
-    .object({
-      type: zod.enum(["addsFree", "full"]).optional(),
-      autoRenew: zod.boolean().optional()
-    })
-    .and(
-      zod.object({
-        id: zod.string().uuid().optional(),
-        type: zod.enum(["addsFree", "full"]).optional(),
-        autoRenew: zod.boolean().optional()
-      })
-    )
-    .optional()
-});
+  "id": zod.string().uuid().optional(),
+  "name": zod.string().optional(),
+  "subscription": zod.object({
+  "type": zod.enum(['addsFree', 'full']).optional(),
+  "autoRenew": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string().uuid().optional(),
+  "type": zod.enum(['addsFree', 'full']).optional(),
+  "autoRenew": zod.boolean().optional()
+})).optional()
+})
 
 type UserProfile = zod.input<typeof UserProfile>;
 type UserProfileOutput = zod.output<typeof UserProfile>;
@@ -728,15 +685,12 @@ type UserProfileOutput = zod.output<typeof UserProfile>;
  * OpenAPI spec version: 0.0.1
  */
 
-export const UserRegisterBody = zod
-  .object({
-    email: zod.string().email()
-  })
-  .and(
-    zod.object({
-      password: zod.string()
-    })
-  );
+
+export const UserRegisterBody = zod.object({
+  "email": zod.string().email()
+}).and(zod.object({
+  "password": zod.string()
+}))
 
 type UserRegisterBody = zod.input<typeof UserRegisterBody>;
 type UserRegisterBodyOutput = zod.output<typeof UserRegisterBody>;

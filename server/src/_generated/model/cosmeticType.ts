@@ -6,10 +6,11 @@
  * OpenAPI spec version: 0.0.1
  */
 
-export type CosmeticType = (typeof CosmeticType)[keyof typeof CosmeticType];
+export type CosmeticType = typeof CosmeticType[keyof typeof CosmeticType];
+
 
 export const CosmeticType = {
-  cape: "cape",
-  suit: "suit",
-  flare: "flare"
+  cape: 'cape',
+  suit: 'suit',
+  flare: 'flare',
 } as const;
