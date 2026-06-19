@@ -1,6 +1,6 @@
 import { Minigame, OperationId } from "@/_generated/model";
 import knex from "@/knexWrapper";
-import { IDBType, OperationProgressRow, MinigameProgressRow, CosmeticRow, UserCosmeticRow } from "@/types/KnexDBType";
+import { OperationProgressRow, MinigameProgressRow, CosmeticRow, UserCosmeticRow } from "@/types/KnexDBType";
 
 export const getMinigame = (value: string | null | undefined): Minigame | undefined => {
   const minigames: Minigame[] = ["singleLine", "dragAndDrop", "crossNumbers", "memory"];
@@ -16,65 +16,52 @@ export const getOperationId = (value: string): OperationId => {
     "gauntlet",
     "daily_challenge"
   ];
-  const found = operations.find((operationItem) => operationItem === value);
-  return found || "addition";
-};
-
-interface EnsureProgressOptions<TableName extends keyof IDBType> {
-  table: TableName;
-  keyField: keyof IDBType[TableName] & string;
-  userId: string;
-  keysList: string[];
-  existingRows: IDBType[TableName][];
-}
-
-const ensureProgress = async <TableName extends keyof IDBType>(
-  options: EnsureProgressOptions<TableName>
-): Promise<IDBType[TableName][]> => {
-  const { table, keyField, userId, keysList, existingRows } = options;
-  const progressMap = new Map<string, IDBType[TableName]>();
-  existingRows.forEach((rowItem) => {
-    const keyValue = rowItem[keyField];
-    if (typeof keyValue === "string") {
-      progressMap.set(keyValue, rowItem);
-    }
-  });
-  for (const key of keysList) {
-    if (!progressMap.has(key)) {
-      const [newRecord] = await knex(table)
-        .insert({ user_id: userId, [keyField]: key, level: 1, xp: 0 })
-        .returning("*");
-      if (newRecord) {
-        progressMap.set(key, newRecord);
-      }
-    }
-  }
-  return Array.from(progressMap.values());
+  return operations.find((operationItem) => operationItem === value) || "addition";
 };
 
 export const ensureOperationProgress = async (
   userId: string,
   progressRows: OperationProgressRow[]
-): Promise<OperationProgressRow[]> =>
-  ensureProgress({
-    table: "operation_progress",
-    keyField: "operation_id",
-    userId,
-    keysList: ["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"],
-    existingRows: progressRows
+): Promise<OperationProgressRow[]> => {
+  const operationsList = ["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"];
+  const progressMap = new Map<string, OperationProgressRow>();
+  progressRows.forEach((rowItem) => {
+    progressMap.set(rowItem.operation_id, rowItem);
   });
+
+  for (const operationIdItem of operationsList) {
+    if (!progressMap.has(operationIdItem)) {
+      const [newOp] = await knex("operation_progress")
+        .insert({ user_id: userId, operation_id: operationIdItem, level: 1, xp: 0 })
+        .returning("*");
+      if (newOp) progressMap.set(operationIdItem, newOp);
+    }
+  }
+  return Array.from(progressMap.values());
+};
 
 export const ensureMinigameProgress = async (
   userId: string,
   minigameProgressRows: MinigameProgressRow[]
-): Promise<MinigameProgressRow[]> =>
-  ensureProgress({
-    table: "minigame_progress",
-    keyField: "minigame_id",
-    userId,
-    keysList: ["singleLine", "dragAndDrop", "crossNumbers", "memory"],
-    existingRows: minigameProgressRows
+): Promise<MinigameProgressRow[]> => {
+  const minigamesList: Minigame[] = ["singleLine", "dragAndDrop", "crossNumbers", "memory"];
+  const minigameProgressMap = new Map<Minigame, MinigameProgressRow>();
+  minigameProgressRows.forEach((rowItem) => {
+    const minigameId = getMinigame(rowItem.minigame_id);
+    if (minigameId) minigameProgressMap.set(minigameId, rowItem);
   });
+
+  for (const minigameIdItem of minigamesList) {
+    if (!minigameProgressMap.has(minigameIdItem)) {
+      const [newMg] = await knex("minigame_progress")
+        .insert({ user_id: userId, minigame_id: minigameIdItem, level: 1, xp: 0 })
+        .returning("*");
+      if (newMg) minigameProgressMap.set(minigameIdItem, newMg);
+    }
+  }
+
+  return Array.from(minigameProgressMap.values());
+};
 
 export interface CosmeticsLoadout {
   purchasedCosmetics: string[];
