@@ -23,7 +23,14 @@ export const ensureOperationProgress = async (
   userId: string,
   progressRows: OperationProgressRow[]
 ): Promise<OperationProgressRow[]> => {
-  const operationsList = ["addition", "subtraction", "multiplication", "division", "gauntlet", "daily_challenge"];
+  const operationsList: OperationId[] = [
+    "addition",
+    "subtraction",
+    "multiplication",
+    "division",
+    "gauntlet",
+    "daily_challenge"
+  ];
   const progressMap = new Map<string, OperationProgressRow>();
   progressRows.forEach((rowItem) => {
     progressMap.set(rowItem.operation_id, rowItem);
@@ -31,9 +38,15 @@ export const ensureOperationProgress = async (
 
   for (const operationIdItem of operationsList) {
     if (!progressMap.has(operationIdItem)) {
-      const [newOp] = await knex("operation_progress")
+      const insertedRows = await knex("operation_progress")
         .insert({ user_id: userId, operation_id: operationIdItem, level: 1, xp: 0 })
+        .onConflict(["user_id", "operation_id"])
+        .ignore()
         .returning("*");
+      let newOp: OperationProgressRow | undefined = insertedRows[0];
+      if (!newOp) {
+        newOp = await knex("operation_progress").where({ user_id: userId, operation_id: operationIdItem }).first();
+      }
       if (newOp) progressMap.set(operationIdItem, newOp);
     }
   }
@@ -53,9 +66,15 @@ export const ensureMinigameProgress = async (
 
   for (const minigameIdItem of minigamesList) {
     if (!minigameProgressMap.has(minigameIdItem)) {
-      const [newMg] = await knex("minigame_progress")
+      const insertedRows = await knex("minigame_progress")
         .insert({ user_id: userId, minigame_id: minigameIdItem, level: 1, xp: 0 })
+        .onConflict(["user_id", "minigame_id"])
+        .ignore()
         .returning("*");
+      let newMg: MinigameProgressRow | undefined = insertedRows[0];
+      if (!newMg) {
+        newMg = await knex("minigame_progress").where({ user_id: userId, minigame_id: minigameIdItem }).first();
+      }
       if (newMg) minigameProgressMap.set(minigameIdItem, newMg);
     }
   }
@@ -73,28 +92,23 @@ export interface CosmeticsLoadout {
 
 export const getCosmeticsLoadout = async (userId: string, totalCoins: number): Promise<CosmeticsLoadout> => {
   const userCosmetics: UserCosmeticRow[] = await knex("user_cosmetics").where("user_id", userId);
-  const purchasedCosmetics = userCosmetics.map((cosmeticItem) => cosmeticItem.cosmetic_id);
+  const purchasedCosmetics = userCosmetics.map((item) => item.cosmetic_id);
 
   const findEquipped = (type: string): string | null =>
-    userCosmetics.find((cosmeticItem) => cosmeticItem.equipped && cosmeticItem.cosmetic_type === type)?.cosmetic_id ||
-    null;
-  const equippedCape = findEquipped("cape");
-  const equippedSuit = findEquipped("suit");
-  const equippedFlare = findEquipped("flare");
+    userCosmetics.find((item) => item.equipped && item.cosmetic_type === type)?.cosmetic_id || null;
 
   let spentCoins = 0;
   if (purchasedCosmetics.length > 0) {
     const cosmeticsList: CosmeticRow[] = await knex("cosmetics").whereIn("id", purchasedCosmetics);
-    spentCoins = cosmeticsList.reduce((accumulatedSum, cosmeticItem) => accumulatedSum + cosmeticItem.price, 0);
+    spentCoins = cosmeticsList.reduce((accumulatedSum, item) => accumulatedSum + item.price, 0);
   }
-  const coinsBalance = Math.max(0, totalCoins - spentCoins);
 
   return {
     purchasedCosmetics,
-    equippedCape,
-    equippedSuit,
-    equippedFlare,
-    coinsBalance
+    equippedCape: findEquipped("cape"),
+    equippedSuit: findEquipped("suit"),
+    equippedFlare: findEquipped("flare"),
+    coinsBalance: Math.max(0, totalCoins - spentCoins)
   };
 };
 
@@ -107,15 +121,15 @@ export const updateProgress = async (
   let record = await knex(table).where(whereClause).first();
 
   if (!record) {
-    const [newRecord] = await knex(table)
+    const conflictKeys = table === "operation_progress" ? ["user_id", "operation_id"] : ["user_id", "minigame_id"];
+    await knex(table)
       .insert({ ...whereClause, ...insertData })
-      .returning("*");
-    record = newRecord;
+      .onConflict(conflictKeys)
+      .ignore();
+    record = await knex(table).where(whereClause).first();
   }
 
-  if (!record) {
-    return;
-  }
+  if (!record) return;
 
   let currentXp = record.xp + xpAwarded;
   let currentLevel = record.level;
@@ -125,31 +139,22 @@ export const updateProgress = async (
     currentLevel += 1;
   }
 
-  await knex(table).where({ id: record.id }).update({
-    xp: currentXp,
-    level: currentLevel
-  });
+  await knex(table).where({ id: record.id }).update({ xp: currentXp, level: currentLevel });
 };
 
 export const handleCosmeticDrop = async (userId: string, operationId: string, isSuccess: boolean): Promise<void> => {
-  if (operationId !== "daily_challenge" || !isSuccess) {
-    return;
-  }
+  if (operationId !== "daily_challenge" || !isSuccess || Math.random() >= 0.05) return;
 
-  if (Math.random() < 0.05) {
-    const allCosmetics = await knex("cosmetics").select("*");
-    const ownedCosmetics = await knex("user_cosmetics").where("user_id", userId).select("cosmetic_id");
-    const ownedIds = new Set(ownedCosmetics.map((row) => row.cosmetic_id));
+  const allCosmetics = await knex("cosmetics").select("*");
+  const ownedCosmetics = await knex("user_cosmetics").where("user_id", userId).select("cosmetic_id");
+  const ownedIds = new Set(ownedCosmetics.map((row) => row.cosmetic_id));
 
-    const unowned = allCosmetics.filter((cosmeticItem) => !ownedIds.has(cosmeticItem.id));
-    if (unowned.length > 0) {
-      const luckyCosmetic = unowned[Math.floor(Math.random() * unowned.length)];
-      await knex("user_cosmetics").insert({
-        user_id: userId,
-        cosmetic_id: luckyCosmetic.id,
-        cosmetic_type: luckyCosmetic.type,
-        equipped: false
-      });
-    }
+  const unowned = allCosmetics.filter((item) => !ownedIds.has(item.id));
+  if (unowned.length > 0) {
+    const luckyCosmetic = unowned[Math.floor(Math.random() * unowned.length)];
+    await knex("user_cosmetics")
+      .insert({ user_id: userId, cosmetic_id: luckyCosmetic.id, cosmetic_type: luckyCosmetic.type, equipped: false })
+      .onConflict(["user_id", "cosmetic_id"])
+      .ignore();
   }
 };
