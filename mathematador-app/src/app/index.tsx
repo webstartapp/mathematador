@@ -12,6 +12,7 @@ import ChallengeScreen from "@/screens/ChallengeGameScreen";
 import ChallengeResultScreen from "@/screens/ChallengeResultScreen";
 import GauntletScreen from "@/screens/GauntletScreen";
 import HomeScreen from "@/screens/HomeScreen";
+import IntroScreen from "@/screens/IntroScreen";
 import OperationSelectionScreen from "@/screens/OperationSelectionScreen";
 import TiendaScreen from "@/screens/TiendaScreen";
 import { RootStackParamList } from "@/types/Navigation";
@@ -26,11 +27,18 @@ const IndexPage = (): JSX.Element => (
       id="_main_layout_holder"
     >
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Intro"
         screenOptions={{
           headerShown: false,
         }}
       >
+        <Stack.Screen
+          name="Intro"
+          component={IntroScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
