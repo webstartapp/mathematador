@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import { useSelector } from "react-redux";
 
-import menuThemeAsset from "@/assets/music/menu-theme.wav";
+import menuThemeAsset from "@/assets/music/menu-theme.mp3";
 import { RootState } from "@/redux/store";
 
 interface MenuMusicControls {

@@ -1,12 +1,13 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
-import { JSX } from "react";
+import { JSX, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { RootState } from "@/redux/store";
 import { RootStackParamList } from "@/types/Navigation";
@@ -17,6 +18,12 @@ const HomeScreen = (): JSX.Element => {
   useAnimatedBackground(imageBG);
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const user = useSelector((state: RootState) => state.user);
+  const { start: startMenuMusic, stop: stopMenuMusic } = useMenuMusic();
+
+  useEffect(() => {
+    startMenuMusic();
+    return () => stopMenuMusic();
+  }, [startMenuMusic, stopMenuMusic]);
 
   const handleStartGame = (): void => {
     navigation.navigate("SelectOperation");
