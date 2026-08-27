@@ -26,7 +26,6 @@ import ComboPopup from "@/components/toro/ComboPopup";
 import ComboRewardBurst from "@/components/toro/ComboRewardBurst";
 import { useOleSound } from "@/components/toro/useOleSound";
 import { minigames } from "@/configs/minigames";
-import { operations } from "@/configs/operations";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import {
@@ -41,11 +40,6 @@ type ChallengeScreenNavigationProps = StackNavigationProp<
   RootStackParamList,
   "Challenge"
 >;
-
-const toExerciseType = (numbers: number[]): ExerciseType => {
-  const exerciseObj: ExerciseType = Object.assign(numbers, {});
-  return exerciseObj;
-};
 
 interface ChallengeState {
   timeLeft: number;
@@ -77,18 +71,7 @@ const useChallengeState = (challenge: Challenge): ChallengeState => {
     if (cooperation < 100) return;
 
     const currentEx: ExerciseType = challenge.exercises[currentIndex];
-    const operationConfig = operations.find(
-      (opItem) => opItem.operationId === challenge.operationId,
-    );
-
-    let answer = 0;
-    if (currentEx.result !== undefined) {
-      answer = currentEx.result;
-    } else if (operationConfig) {
-      answer = operationConfig.getResult(toExerciseType(currentEx.slice(0, 2)));
-    }
-
-    const hintText = getToroHintText(challenge.operationId, currentEx, answer);
+    const hintText = getToroHintText(challenge.operationId, currentEx);
     Alert.alert("Toro Assist 🐂", hintText);
     setCooperation(0); // consume cooperation
   };
@@ -103,23 +86,22 @@ const useChallengeState = (challenge: Challenge): ChallengeState => {
     }, 3000);
   };
 
+  useEffect(() => {
+    const textVal = getComboTextForStreak(streak);
+    if (textVal === null) return;
+    setComboText(textVal);
+    playOleSound();
+    if (isHighComboMilestone(streak)) {
+      setBurstKey((prevKey) => prevKey + 1);
+    }
+  }, [streak, playOleSound]);
+
   const handleAnswerSubmit = (
     isCorrect: boolean,
     _expectedResult: number,
   ): void => {
     if (isCorrect) {
-      setStreak((prev) => {
-        const next = prev + 1;
-        const textVal = getComboTextForStreak(next);
-        if (textVal !== null) {
-          setComboText(textVal);
-          playOleSound();
-          if (isHighComboMilestone(next)) {
-            setBurstKey((prevKey) => prevKey + 1);
-          }
-        }
-        return next;
-      });
+      setStreak((prev) => prev + 1);
       setCooperation((prev) => Math.min(100, prev + 25)); // +25% per correct answer
     } else {
       setStreak(0);

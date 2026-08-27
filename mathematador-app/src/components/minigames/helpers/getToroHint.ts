@@ -1,11 +1,48 @@
 import { Exercise } from "@/types/Chalenge";
 
+// Matches the raw separators mathGenerator.ts stamps onto each exercise
+// (server/src/utils/mathGenerator.ts) - these are NOT the same as the
+// display symbols in configs/operations.ts (which uses "x" for display).
+const SEPARATOR_TO_OPERATION: Record<string, string> = {
+  "+": "addition",
+  "-": "subtraction",
+  "*": "multiplication",
+  "/": "division",
+};
+
 const splitTensUnits = (
   value: number,
 ): { tensPart: number; unitPart: number } => {
   const tensPart = Math.trunc(value / 10) * 10;
   const unitPart = value - tensPart;
   return { tensPart, unitPart };
+};
+
+const resolveOperationId = (
+  challengeOperationId: string,
+  exercise: Exercise,
+): string => {
+  if (exercise.separator && SEPARATOR_TO_OPERATION[exercise.separator]) {
+    return SEPARATOR_TO_OPERATION[exercise.separator];
+  }
+  return challengeOperationId;
+};
+
+const computeAnswer = (
+  operationId: string,
+  firstNumber: number,
+  secondNumber: number,
+): number => {
+  switch (operationId) {
+    case "multiplication":
+      return firstNumber * secondNumber;
+    case "subtraction":
+      return firstNumber - secondNumber;
+    case "division":
+      return firstNumber / secondNumber;
+    default:
+      return firstNumber + secondNumber;
+  }
 };
 
 const getMultiplicationHint = (
@@ -62,24 +99,29 @@ const getDivisionHint = (
 };
 
 export const getToroHintText = (
-  operationId: string,
+  challengeOperationId: string,
   exercise: Exercise,
-  answer: number,
 ): string => {
   const [firstNumber, secondNumber] = exercise;
   if (firstNumber === undefined || secondNumber === undefined) {
-    return `Toro whispers the answer: ${answer}!`;
+    return "Toro is thinking hard about this one!";
   }
-  switch (operationId) {
+  const resolvedOperationId = resolveOperationId(
+    challengeOperationId,
+    exercise,
+  );
+  const answer =
+    exercise.result !== undefined
+      ? exercise.result
+      : computeAnswer(resolvedOperationId, firstNumber, secondNumber);
+  switch (resolvedOperationId) {
     case "multiplication":
       return getMultiplicationHint(firstNumber, secondNumber, answer);
-    case "addition":
-      return getAdditionHint(firstNumber, secondNumber, answer);
     case "subtraction":
       return getSubtractionHint(firstNumber, secondNumber, answer);
     case "division":
       return getDivisionHint(firstNumber, secondNumber, answer);
     default:
-      return `Toro whispers the answer: ${answer}!`;
+      return getAdditionHint(firstNumber, secondNumber, answer);
   }
 };

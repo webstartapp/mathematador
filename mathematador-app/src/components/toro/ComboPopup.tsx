@@ -8,6 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+const AUTO_DISMISS_DELAY_MS = 1500;
+
 interface ComboPopupProps {
   comboText: string | null;
 }
@@ -18,17 +20,21 @@ const ComboPopup = ({ comboText }: ComboPopupProps): JSX.Element => {
   const [displayText, setDisplayText] = useState<string | null>(null);
 
   useEffect(() => {
-    if (comboText !== null) {
-      setDisplayText(comboText);
-      scaleValue.value = 0.4;
-      opacityValue.value = withTiming(1, { duration: 120 });
-      scaleValue.value = withSequence(
-        withSpring(1.15, { damping: 6, stiffness: 180 }),
-        withSpring(1, { damping: 8 }),
-      );
-    } else {
+    if (comboText === null) {
       opacityValue.value = withTiming(0, { duration: 250 });
+      return () => {};
     }
+    setDisplayText(comboText);
+    scaleValue.value = 0.4;
+    opacityValue.value = withTiming(1, { duration: 120 });
+    scaleValue.value = withSequence(
+      withSpring(1.15, { damping: 6, stiffness: 180 }),
+      withSpring(1, { damping: 8 }),
+    );
+    const dismissTimeoutId = setTimeout(() => {
+      opacityValue.value = withTiming(0, { duration: 250 });
+    }, AUTO_DISMISS_DELAY_MS);
+    return () => clearTimeout(dismissTimeoutId);
   }, [comboText, opacityValue, scaleValue]);
 
   const animatedStyle = useAnimatedStyle(() => ({
