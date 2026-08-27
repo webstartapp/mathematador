@@ -7,7 +7,7 @@ import {
   ThemeProvider,
 } from "expo-router/react-navigation";
 import * as SplashScreen from "expo-splash-screen";
-import { JSX, useEffect } from "react";
+import { JSX } from "react";
 import "react-native-reanimated";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -17,19 +17,18 @@ import { store, persistor } from "@/redux/store";
 
 const queryClient = new QueryClient();
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Prevent the splash screen from auto-hiding before asset loading is
+// complete. Deliberately NOT hidden here once fonts load - IntroScreen holds
+// it up further and hides it itself once the intro video is ready to play,
+// so the native splash image acts as a seamless "poster" for the video
+// (expo-splash-screen has no native video/animation support, only a static
+// image compiled from app.json, so this is the closest thing to it).
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = (): JSX.Element | null => {
   const [loaded] = useFonts({
     SpaceMono: spaceMonoFont,
   });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
 
   if (!loaded) {
     return null;

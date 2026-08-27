@@ -1,8 +1,9 @@
 import { useEventListener } from "expo";
 import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import * as SplashScreen from "expo-splash-screen";
 import { useVideoPlayer, VideoView } from "expo-video";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import introVideoAsset from "@/assets/video/intro.mp4";
@@ -15,15 +16,26 @@ type IntroScreenNavigationProp = StackNavigationProp<
 >;
 
 const SKIP_BUTTON_DELAY_MS = 2000;
+// Upper bound on how long the native splash (a static image - expo-splash-
+// screen has no video/animation support) stays up waiting for the video to
+// buffer, so a slow connection never leaves the user stuck looking at it.
+const SPLASH_SAFETY_TIMEOUT_MS = 4000;
 
 const IntroScreen = (): JSX.Element => {
   const navigation = useNavigation<IntroScreenNavigationProp>();
   const { start: startMenuMusic, stop: stopMenuMusic } = useMenuMusic();
   const [showSkip, setShowSkip] = useState(false);
+  const splashHiddenRef = useRef(false);
 
   const player = useVideoPlayer(introVideoAsset, (playerInstance) => {
     playerInstance.muted = true;
   });
+
+  const hideSplash = (): void => {
+    if (splashHiddenRef.current) return;
+    splashHiddenRef.current = true;
+    SplashScreen.hideAsync();
+  };
 
   const goToHome = (): void => {
     navigation.replace("Home");
@@ -31,7 +43,11 @@ const IntroScreen = (): JSX.Element => {
 
   useEventListener(player, "playToEnd", goToHome);
   useEventListener(player, "statusChange", ({ status }) => {
+    if (status === "readyToPlay") {
+      hideSplash();
+    }
     if (status === "error") {
+      hideSplash();
       goToHome();
     }
   });
@@ -41,13 +57,23 @@ const IntroScreen = (): JSX.Element => {
     // VideoView's underlying <video> element is attached on web, so playback
     // never actually starts - call it after mount instead.
     player.play();
+    // Covers the (unlikely) case where the player was already ready before
+    // the statusChange listener above had subscribed.
+    if (player.status === "readyToPlay") {
+      hideSplash();
+    }
     startMenuMusic();
     const skipTimeoutId = setTimeout(
       () => setShowSkip(true),
       SKIP_BUTTON_DELAY_MS,
     );
+    const splashSafetyTimeoutId = setTimeout(
+      hideSplash,
+      SPLASH_SAFETY_TIMEOUT_MS,
+    );
     return () => {
       clearTimeout(skipTimeoutId);
+      clearTimeout(splashSafetyTimeoutId);
       stopMenuMusic();
     };
   }, [player, startMenuMusic, stopMenuMusic]);
