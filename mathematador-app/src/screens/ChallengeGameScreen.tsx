@@ -16,6 +16,15 @@ import { ProgressBar } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
 import Layout from "@/components/common/Layout";
+import { getToroHintText } from "@/components/minigames/helpers/getToroHint";
+import ComboMeter from "@/components/toro/ComboMeter";
+import {
+  getComboTextForStreak,
+  isHighComboMilestone,
+} from "@/components/toro/comboMilestones";
+import ComboPopup from "@/components/toro/ComboPopup";
+import ComboRewardBurst from "@/components/toro/ComboRewardBurst";
+import { useOleSound } from "@/components/toro/useOleSound";
 import { minigames } from "@/configs/minigames";
 import { operations } from "@/configs/operations";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
@@ -38,20 +47,13 @@ const toExerciseType = (numbers: number[]): ExerciseType => {
   return exerciseObj;
 };
 
-const getComboTextForStreak = (streakVal: number): string | null => {
-  if (streakVal === 3) return "¡Ole! x3";
-  if (streakVal === 5) return "¡Ole! Grande x5";
-  if (streakVal === 8) return "¡Ole! Magnífico x8";
-  if (streakVal >= 10 && streakVal % 5 === 0) return `¡Ole! Toro x${streakVal}`;
-  return null;
-};
-
 interface ChallengeState {
   timeLeft: number;
   setTimeLeft: Dispatch<SetStateAction<number>>;
   streak: number;
   cooperation: number;
   comboText: string | null;
+  burstKey: number;
   focusUsed: boolean;
   isFrozen: boolean;
   handleToroHint: () => void;
@@ -65,9 +67,11 @@ const useChallengeState = (challenge: Challenge): ChallengeState => {
   const [streak, setStreak] = useState(0);
   const [cooperation, setCooperation] = useState(0);
   const [comboText, setComboText] = useState<string | null>(null);
+  const [burstKey, setBurstKey] = useState(0);
   const [focusUsed, setFocusUsed] = useState(false);
   const [isFrozen, setIsFrozen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const playOleSound = useOleSound();
 
   const handleToroHint = (): void => {
     if (cooperation < 100) return;
@@ -84,7 +88,8 @@ const useChallengeState = (challenge: Challenge): ChallengeState => {
       answer = operationConfig.getResult(toExerciseType(currentEx.slice(0, 2)));
     }
 
-    Alert.alert("Toro Assist 🐂", `Toro whispers the answer: ${answer}!`);
+    const hintText = getToroHintText(challenge.operationId, currentEx, answer);
+    Alert.alert("Toro Assist 🐂", hintText);
     setCooperation(0); // consume cooperation
   };
 
@@ -108,6 +113,10 @@ const useChallengeState = (challenge: Challenge): ChallengeState => {
         const textVal = getComboTextForStreak(next);
         if (textVal !== null) {
           setComboText(textVal);
+          playOleSound();
+          if (isHighComboMilestone(next)) {
+            setBurstKey((prevKey) => prevKey + 1);
+          }
         }
         return next;
       });
@@ -129,6 +138,7 @@ const useChallengeState = (challenge: Challenge): ChallengeState => {
     streak,
     cooperation,
     comboText,
+    burstKey,
     focusUsed,
     isFrozen,
     handleToroHint,
@@ -255,6 +265,7 @@ const ChallengeGameScreen = (): JSX.Element => {
     streak,
     cooperation,
     comboText,
+    burstKey,
     focusUsed,
     isFrozen,
     handleToroHint,
@@ -356,12 +367,14 @@ const ChallengeGameScreen = (): JSX.Element => {
         isFrozen={isFrozen}
       />
 
+      {/* Combo Streak Meter */}
+      <ComboMeter streak={streak} />
+
       {/* Real-time Streak Combo Text Overlay */}
-      {comboText && (
-        <View style={styles.comboOverlay}>
-          <Text style={styles.comboText}>{comboText}</Text>
-        </View>
-      )}
+      <ComboPopup comboText={comboText} />
+
+      {/* Flowers/Coin Rain Burst on High Combos */}
+      <ComboRewardBurst burstKey={burstKey} />
 
       {/* Core Minigame Layout */}
       <View style={styles.gameContainer}>
@@ -474,22 +487,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
     marginLeft: 6,
-  },
-  comboOverlay: {
-    position: "absolute",
-    top: 150,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 10,
-  },
-  comboText: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#FFD700",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
   },
   gameContainer: {
     flex: 1,

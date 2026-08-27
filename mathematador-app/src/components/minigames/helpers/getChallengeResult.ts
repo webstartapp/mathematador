@@ -46,6 +46,11 @@ export const getChallengeResult = (
         inspiredAnswersCount * (challenge.experiencePoints / totalQuestions),
       )
     : 0;
+  const inspiredCoinsBonus = isSuccess
+    ? Math.floor(
+        inspiredAnswersCount * (challenge.coinsOnSuccess / totalQuestions),
+      )
+    : 0;
 
   return {
     ...challenge,
@@ -54,9 +59,9 @@ export const getChallengeResult = (
     correctAnswers,
     successful: isSuccess,
     coins: Math.ceil(
-      correctAnswers === challenge.exercises.length
+      (correctAnswers === challenge.exercises.length
         ? challenge.coinsOnSuccess
-        : challenge.coinsOnFailure,
+        : challenge.coinsOnFailure) + inspiredCoinsBonus,
     ),
     xp: Math.ceil(challenge.experiencePoints + inspiredBonus),
   };

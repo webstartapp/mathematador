@@ -85,9 +85,12 @@ export const challengeUpdateResult = restAPICall(
     });
 
     const inspiredBonus = isSuccess ? Math.floor(inspiredAnswersCount * (config.xpOnSuccess / totalQuestions)) : 0;
+    const inspiredCoinsBonus = isSuccess
+      ? Math.floor(inspiredAnswersCount * (config.coinsOnSuccess / totalQuestions))
+      : 0;
 
     const xpAwarded = isSuccess ? config.xpOnSuccess + inspiredBonus : config.xpOnFailure;
-    const coinsAwarded = isSuccess ? config.coinsOnSuccess : config.coinsOnFailure;
+    const coinsAwarded = isSuccess ? config.coinsOnSuccess + inspiredCoinsBonus : config.coinsOnFailure;
 
     await updateProgress(
       "operation_progress",

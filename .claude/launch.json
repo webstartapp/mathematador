@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mathematador-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "mathematador-app", "run", "web"],
+      "port": 8081
+    }
+  ]
+}
