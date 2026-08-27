@@ -14,6 +14,8 @@ type ExerciseValueDropDigitsProps = {
   result?: Record<string, number>;
   exerciseId: number;
   exercisePositions: ExerciseInputPosition[];
+  onDigitPress?: (inputIndex: number) => void;
+  hasSelectedDigit?: boolean;
 };
 
 const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
@@ -22,6 +24,8 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
   result,
   exerciseId,
   exercisePositions,
+  onDigitPress,
+  hasSelectedDigit,
 }) => {
   const exerciseIdRef = useRef(exerciseId);
   useEffect(() => {
@@ -46,6 +50,8 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
         updateExercisePositions={updateExercisePositions}
         exercisePositions={exercisePositions}
         exerciseId={exerciseId}
+        onDigitPress={onDigitPress}
+        hasSelectedDigit={hasSelectedDigit}
       />
     </View>
   );

@@ -7,11 +7,18 @@ import ExeriseDigit, {
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
-const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
+interface ExerciseValuePreviewProps extends ExerciseDigitProps {
+  onDigitPress?: (inputIndex: number) => void;
+  hasSelectedDigit?: boolean;
+}
+
+const ExerciseValuePreview: FC<ExerciseValuePreviewProps> = ({
   value,
   updateExercisePositions,
   exercisePositions = [],
   exerciseId,
+  onDigitPress,
+  hasSelectedDigit,
 }) => {
   const refferenceDigits = useRef<(View | null)[]>([]);
   const [layoutsReady, setLayoutsReady] = useState<number[]>();
@@ -82,6 +89,8 @@ const ExerciseValuePreview: FC<ExerciseDigitProps> = ({
               }}
               isUnknown={valueChar === "?"}
               exerciseId={exerciseId}
+              onPress={onDigitPress ? () => onDigitPress(index) : undefined}
+              isTargetable={valueChar === "?" && hasSelectedDigit === true}
             />
           </View>
         ))}

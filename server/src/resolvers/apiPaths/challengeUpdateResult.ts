@@ -5,6 +5,7 @@ import { Exercise } from "@/_generated/model";
 import knex from "@/knexWrapper";
 import { getChallengeConfig } from "@/utils/challengeConfig";
 import { getUserProgress } from "@/utils/gameProgress";
+import { handleCosmeticDrop, updateProgress } from "@/utils/progressHelpers";
 import { restAPICall } from "@/utils/restAPI";
 
 const ExercisesSchema = zod.array(ExerciseSchema);
@@ -26,62 +27,6 @@ const calculateCorrectCount = (
     };
   });
   return { correctCount, exercisesWithAnswers };
-};
-
-const updateProgress = async (
-  table: "operation_progress" | "minigame_progress",
-  whereClause: Record<string, string>,
-  insertData: Record<string, number>,
-  xpAwarded: number
-): Promise<void> => {
-  let record = await knex(table).where(whereClause).first();
-
-  if (!record) {
-    const [newRecord] = await knex(table)
-      .insert({ ...whereClause, ...insertData })
-      .returning("*");
-    record = newRecord;
-  }
-
-  if (!record) {
-    return;
-  }
-
-  let currentXp = record.xp + xpAwarded;
-  let currentLevel = record.level;
-
-  while (currentXp >= currentLevel * 100) {
-    currentXp -= currentLevel * 100;
-    currentLevel += 1;
-  }
-
-  await knex(table).where({ id: record.id }).update({
-    xp: currentXp,
-    level: currentLevel
-  });
-};
-
-const handleCosmeticDrop = async (userId: string, operationId: string, isSuccess: boolean): Promise<void> => {
-  if (operationId !== "daily_challenge" || !isSuccess) {
-    return;
-  }
-
-  if (Math.random() < 0.05) {
-    const allCosmetics = await knex("cosmetics").select("*");
-    const ownedCosmetics = await knex("user_cosmetics").where("user_id", userId).select("cosmetic_id");
-    const ownedIds = new Set(ownedCosmetics.map((row) => row.cosmetic_id));
-
-    const unowned = allCosmetics.filter((cosmeticItem) => !ownedIds.has(cosmeticItem.id));
-    if (unowned.length > 0) {
-      const luckyCosmetic = unowned[Math.floor(Math.random() * unowned.length)];
-      await knex("user_cosmetics").insert({
-        user_id: userId,
-        cosmetic_id: luckyCosmetic.id,
-        cosmetic_type: luckyCosmetic.type,
-        equipped: false
-      });
-    }
-  }
 };
 
 export const challengeUpdateResult = restAPICall(
@@ -122,8 +67,30 @@ export const challengeUpdateResult = restAPICall(
     const config = getChallengeConfig(operationId);
 
     const isSuccess = wrongCount <= config.allowedMistakes;
-    const xpAwarded = isSuccess ? config.xpOnSuccess : config.xpOnFailure;
-    const coinsAwarded = isSuccess ? config.coinsOnSuccess : config.coinsOnFailure;
+
+    let currentStreak = 0;
+    let inspiredAnswersCount = 0;
+    parsedExercises.forEach((_exercise, index) => {
+      const submittedAnswer = results?.[index]?.userInput ?? "";
+      const expectedAnswer = parsedExercises[index].result;
+      const isCorrect = Number(submittedAnswer) === expectedAnswer;
+      if (isCorrect) {
+        if (currentStreak >= 3) {
+          inspiredAnswersCount++;
+        }
+        currentStreak++;
+      } else {
+        currentStreak = 0;
+      }
+    });
+
+    const inspiredBonus = isSuccess ? Math.floor(inspiredAnswersCount * (config.xpOnSuccess / totalQuestions)) : 0;
+    const inspiredCoinsBonus = isSuccess
+      ? Math.floor(inspiredAnswersCount * (config.coinsOnSuccess / totalQuestions))
+      : 0;
+
+    const xpAwarded = isSuccess ? config.xpOnSuccess + inspiredBonus : config.xpOnFailure;
+    const coinsAwarded = isSuccess ? config.coinsOnSuccess + inspiredCoinsBonus : config.coinsOnFailure;
 
     await updateProgress(
       "operation_progress",

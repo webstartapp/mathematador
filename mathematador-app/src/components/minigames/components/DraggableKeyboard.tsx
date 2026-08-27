@@ -45,12 +45,16 @@ type DraggableKeyboardProps = {
     event: GestureResponderEvent,
     gestureState: PanResponderGestureState,
   ) => void;
+  handleTapDigit: (value: number) => void;
+  selectedDigit: number | null;
 };
 
 const DraggableKeyboard: FC<DraggableKeyboardProps> = ({
   exercisePositions,
   handleDragEnd,
   handleDrag,
+  handleTapDigit,
+  selectedDigit,
 }) => {
   const { secondarySize, orientation } = useScreenSizes(75);
   const minSizePortrait = Math.min(
@@ -79,6 +83,8 @@ const DraggableKeyboard: FC<DraggableKeyboardProps> = ({
               handleDragEnd(digit, gestureState)
             }
             onDrag={handleDrag}
+            onTap={() => handleTapDigit(digit)}
+            isSelected={selectedDigit === digit}
           />
         </View>
       ))}

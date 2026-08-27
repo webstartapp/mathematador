@@ -6,6 +6,7 @@ import HalvingLayout from "@/components/minigames/components/HalvingLayout";
 import MinigameKeyboard from "@/components/minigames/components/MinigameKeyboard";
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { getChallengeResult } from "@/components/minigames/helpers/getChallengeResult";
+import { useDigitPlacement } from "@/components/minigames/helpers/useDigitPlacement";
 import { operations } from "@/configs/operations";
 import { MinigameComponentProps } from "@/src/configs/minigames";
 import {
@@ -41,6 +42,9 @@ const SingleLine: FC<MinigameComponentProps> = ({
       return newResults;
     });
   };
+
+  const { selectedDigit, handleTapDigit, handleDigitSlotTap } =
+    useDigitPlacement(currentExerciseIndex, addResponse, setExerciseResults);
 
   if (!challenge || !operationConfig) {
     return <Text>Challenge or Operation not found.</Text>;
@@ -118,6 +122,8 @@ const SingleLine: FC<MinigameComponentProps> = ({
               return [...newPositions, ...exPositions];
             });
           }}
+          onDigitPress={handleDigitSlotTap}
+          hasSelectedDigit={selectedDigit !== null}
         />
       }
       LowerComponent={
@@ -131,6 +137,8 @@ const SingleLine: FC<MinigameComponentProps> = ({
             )
           }
           exercisePositions={exercisePositions}
+          handleTapDigit={handleTapDigit}
+          selectedDigit={selectedDigit}
         />
       }
     />

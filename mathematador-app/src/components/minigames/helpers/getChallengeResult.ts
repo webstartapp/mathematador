@@ -23,17 +23,48 @@ export const getChallengeResult = (
     (exercise) =>
       String(exercise.expectedResult) === String(exercise.userResult),
   ).length;
+
+  let currentStreak = 0;
+  let inspiredAnswersCount = 0;
+  exerciseResult.forEach((resultItem) => {
+    const isCorrect =
+      String(resultItem.expectedResult) === String(resultItem.userResult);
+    if (isCorrect) {
+      if (currentStreak >= 3) {
+        inspiredAnswersCount++;
+      }
+      currentStreak++;
+    } else {
+      currentStreak = 0;
+    }
+  });
+
+  const totalQuestions = challenge.exercises.length || 10;
+  const isSuccess = correctAnswers + 1 >= totalQuestions;
+  const isPerfectRun = correctAnswers === challenge.exercises.length;
+  const inspiredBonus = isSuccess
+    ? Math.floor(
+        inspiredAnswersCount * (challenge.experiencePoints / totalQuestions),
+      )
+    : 0;
+  // Only bonus on top of the coinsOnSuccess base it actually scales from -
+  // otherwise a near-miss (coinsOnFailure base) could out-earn a perfect run.
+  const inspiredCoinsBonus = isPerfectRun
+    ? Math.floor(
+        inspiredAnswersCount * (challenge.coinsOnSuccess / totalQuestions),
+      )
+    : 0;
+
   return {
     ...challenge,
     results: exerciseResult,
     time: 0,
     correctAnswers,
-    successful: correctAnswers + 1 >= challenge.exercises.length,
+    successful: isSuccess,
     coins: Math.ceil(
-      correctAnswers === challenge.exercises.length
-        ? challenge.coinsOnSuccess
-        : challenge.coinsOnFailure,
+      (isPerfectRun ? challenge.coinsOnSuccess : challenge.coinsOnFailure) +
+        inspiredCoinsBonus,
     ),
-    xp: Math.ceil(challenge.experiencePoints),
+    xp: Math.ceil(challenge.experiencePoints + inspiredBonus),
   };
 };

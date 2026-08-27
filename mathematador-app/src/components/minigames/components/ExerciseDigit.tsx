@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
 
@@ -13,24 +13,44 @@ export type ExerciseDigitProps = {
   forwardRef?: (ref: View | null) => void;
   exerciseId: number;
   isUnknown?: boolean;
+  onPress?: () => void;
+  isTargetable?: boolean;
 };
 
 const ExeriseDigit: FC<ExerciseDigitProps> = ({
   value,
   forwardRef,
   isUnknown,
-}) => (
-  <View
-    style={isUnknown ? styles.unknownDigitContainer : styles.digitContainer}
-    ref={(refI) => {
-      if (forwardRef) forwardRef(refI);
-    }}
-  >
-    <Text style={isUnknown ? styles.unknownDigit : styles.digit}>
-      {value || "?"}
-    </Text>
-  </View>
-);
+  onPress,
+  isTargetable,
+}) => {
+  const containerStyle = [
+    isUnknown ? styles.unknownDigitContainer : styles.digitContainer,
+    isTargetable ? styles.targetableDigitContainer : null,
+  ];
+  const digitContent = (
+    <View
+      style={containerStyle}
+      ref={(refI) => {
+        if (forwardRef) forwardRef(refI);
+      }}
+    >
+      <Text style={isUnknown ? styles.unknownDigit : styles.digit}>
+        {value || "?"}
+      </Text>
+    </View>
+  );
+
+  if (!onPress) {
+    return digitContent;
+  }
+
+  return (
+    <TouchableOpacity onPress={onPress} accessibilityRole="button">
+      {digitContent}
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   unknownDigitContainer: {
@@ -56,6 +76,9 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     alignItems: "center",
+  },
+  targetableDigitContainer: {
+    borderColor: "#FFD700",
   },
   unknownDigit: {
     fontSize: 22,
