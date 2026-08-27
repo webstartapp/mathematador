@@ -52,7 +52,6 @@ All three modes below are implemented and match this description numerically; se
     - Starting a challenge generates a session with **10 exercises** scaling in size and complexity according to the player's level.
     - Default settings: 60-second limit, 3 allowed mistakes.
     - Completing a challenge rewards XP and Coins, and unlocks the next challenge level.
-    - ⚠️ Subtraction and Division challenges from this flow currently compute the wrong expected answer (a pre-existing bug in `operations.ts`'s `getResult`, dormant for server-generated exercises but live here since these exercises are generated client-side without a `.result`) — see root `CLAUDE.md`.
 
 ### B. *La Gran Corrida* (Endless Gauntlet)
 *   **Description**: An intense, survival-based gauntlet mode designed to test speed and versatility.

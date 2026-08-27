@@ -9,7 +9,7 @@ See the [root `CLAUDE.md`](../CLAUDE.md) first for monorepo-wide conventions, de
 `RootStackParamList` (`src/types/Navigation.ts`) declares 11 routes, but only **7 are actually registered** in `app/index.tsx`: `Home`, `SelectOperation`, `ChalengeSelect`, `ChallengeResult`, `Challenge`, `Tienda`, `Gauntlet`. `Level`, `Statistics`, `Profile`, and `DailyCorrida` are declared but dead — nothing navigates to them (Daily Challenge is real, but reached by launching the `Challenge` screen with `operationId: "daily_challenge"` from `GauntletScreen.tsx`, not via a `DailyCorrida` route).
 
 Two parallel user flows both end up at the same `ChallengeGameScreen`:
-- **Practice loop**: `HomeScreen` → `OperationSelectionScreen` → `ChalengeSelectScreen` → `Challenge`. Exercises come from `helpers/getChalengeByLevel.ts` (procedural, local, no `.result` set — this is what makes the subtraction/division bug in the root gotchas live).
+- **Practice loop**: `HomeScreen` → `OperationSelectionScreen` → `ChalengeSelectScreen` → `Challenge`. Exercises come from `helpers/getChalengeByLevel.ts` (procedural, local, no `.result` set).
 - **Coliseo hub**: `HomeScreen` → `GauntletScreen` (`"Gauntlet"` route) → `Challenge`, for both the Gauntlet and Daily Challenge cards. Calls `challengeStartNew()` server-side with an offline fallback (`generateOfflineExercises`) if that fails. **Currently broken** — see root gotchas.
 
 ## Redux (`src/redux/`)

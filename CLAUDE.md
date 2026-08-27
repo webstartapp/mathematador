@@ -9,6 +9,16 @@ The gameplay theme: the player is a rookie *Torero* solving arithmetic "passes" 
 
 For workspace-specific detail, see the nested guides: [`mathematador-app/CLAUDE.md`](mathematador-app/CLAUDE.md) and [`server/CLAUDE.md`](server/CLAUDE.md).
 
+## Current direction: the MVP epic
+
+As of 2026-08-27, active work is driven by [issue #29](https://github.com/webstartapp/mathematador/issues/29) ("Epic: Mathematador MVP — mathematador.net") and its ~14 child issues — check it first for current priorities/status rather than assuming this file's architecture description is the target state. The MVP **deliberately reverses** some facts documented below:
+
+- **Offline-first → mandatory login for the web MVP.** The app today has no login UI at all and is designed to work fully offline (see `agents/instructions.md` §2). The MVP requires a real authenticated session to enter at all (#30) — offline/anonymous play is explicitly out for the web target, though this file's "offline-first" architecture description still describes today's actual code until that lands.
+- **No ads/consent/CMS/admin infra today** — the MVP adds all of it from scratch (consent gate #31, settings-with-history #32, CMS-backed `/info`/`/admin` pages #33–#36, ads #38). None of this exists yet in the codebase this file describes.
+- **Only one minigame exists today** (`SingleLineMinigame`) — the MVP's game-modes rework (#37) is blocked on agreeing a roster of ~10 (#28) before it can proceed.
+
+The rest of this file (and the nested workspace guides) describes the codebase **as it stands today**, which is still accurate for anything the MVP hasn't touched yet — just don't be surprised when auth, ads, or an admin panel show up; check the epic for what's landed.
+
 ## Architecture at a glance
 
 ```
@@ -64,23 +74,23 @@ An automated review bot (`cubic-dev-ai`) comments on PRs — treat its findings 
 
 ## Known gotchas & pre-existing bugs
 
-These were found while mapping the codebase (2026-08-27) and are **not** things you introduced — don't waste time re-discovering them, but do fix them if you're touching the affected area (or check the standing follow-up task chips in this session for three of them already queued up).
+These were found while mapping the codebase (2026-08-27) and are **not** things you introduced — don't waste time re-discovering them, but do fix them if you're touching the affected area. Several are already tracked as part of the [MVP epic](https://github.com/webstartapp/mathematador/issues/29)'s child issues, noted below.
 
 ### 🔴 Gauntlet & Daily Challenge are completely broken (minigame-id mismatch)
 
-`mathematador-app/src/configs/minigames.ts` registers its only minigame as `id: "SingleLineMinigame"`. Every other part of the system — the generated `Minigame` enum, the server, `server/src/utils/mathGenerator.ts`, and critically `mathematador-app/src/screens/GauntletScreen.tsx` (both its server-backed path and its offline fallback) — uses the string `"singleLine"`. `ChallengeGameScreen.tsx:241` looks up the component by exact string match, so **starting a Gauntlet run or the Daily Challenge always renders "Minigame component not found."** instead of the game. The normal per-operation practice flow is unaffected because it sources the id from the same config it looks it up in (`helpers/getChalengeByLevel.ts`). Fix: align on `"singleLine"` everywhere (that's what the DB/enum/server already use).
+`mathematador-app/src/configs/minigames.ts` registers its only minigame as `id: "SingleLineMinigame"`. Every other part of the system — the generated `Minigame` enum, the server, `server/src/utils/mathGenerator.ts`, and critically `mathematador-app/src/screens/GauntletScreen.tsx` (both its server-backed path and its offline fallback) — uses the string `"singleLine"`. `ChallengeGameScreen.tsx:241` looks up the component by exact string match, so **starting a Gauntlet run or the Daily Challenge always renders "Minigame component not found."** instead of the game. The normal per-operation practice flow is unaffected because it sources the id from the same config it looks it up in (`helpers/getChalengeByLevel.ts`). Fix: align on `"singleLine"` everywhere (that's what the DB/enum/server already use). Tracked as part of [#37](https://github.com/webstartapp/mathematador/issues/37).
 
-### 🔴 Subtraction and division give wrong answers in the main practice flow
+### ⚠️ `operations.ts`'s subtraction/division `getResult` looks buggy but isn't
 
-`mathematador-app/src/configs/operations.ts`: subtraction's `getResult` reduces with `+` (copy-pasted from addition); division's reduces with `*` (copy-pasted from multiplication). This is usually masked because most exercises carry a server-computed `.result` field, but the **main "Operation Select → Challenge Select → Start" loop** generates exercises via `helpers/getChalengeByLevel.ts`, which never sets `.result` — so for that flow, subtraction/division challenges compute the wrong expected answer and are effectively unplayable.
+`mathematador-app/src/configs/operations.ts`: subtraction's `getResult` reduces with `+` (looks copy-pasted from addition); division's reduces with `*` (looks copy-pasted from multiplication). **This was flagged as an active bug during earlier mapping and turned out to be wrong** — worth recording so it isn't "fixed" into an actual bug later. Both operations have `resultIsFirst: true`, which changes how `Exercise.tsx`/`SingleLineMinigame.tsx` use `getResult`'s output entirely: for a raw exercise `[a, b]`, the displayed equation becomes `getResult([a,b]) - a = ?` (subtraction) or `getResult([a,b]) / a = ?` (division), and the expected answer checked is `exercise[exercise.length - 1]` (i.e. `b`) — `getResult` is **never** used as the expected answer for these two operations, only to compute the *other* displayed term. `a + b` is exactly the value that makes `(a+b) - a = b` true; `a * b` is exactly the value that makes `(a*b) / a = b` true. Hand-verified with concrete numbers (a=7, b=3 → displayed "10 − 7 = ?", correct answer 3). Swapping these to literal `-`/`/` would silently break both operations.
 
 ### 🟠 Auth is not wired up end-to-end
 
-No `LoginScreen`/`RegisterScreen` exists — there is no UI path to obtain a JWT. Even if there were, `userSlice`'s `UserState` never stores the user's `id`, so `mathematador-app/src/utils/api-client.ts`'s `getPersistedViewerId()` always resolves to `undefined`, meaning a stored token would never be re-attached to requests anyway. Every screen that calls an authenticated endpoint (`GauntletScreen`, `TiendaScreen`) is written defensively with try/catch + local-Redux fallback specifically because of this — assume authenticated calls will 401 and silently fall back until this is fixed.
+No `LoginScreen`/`RegisterScreen` exists — there is no UI path to obtain a JWT. Even if there were, `userSlice`'s `UserState` never stores the user's `id`, so `mathematador-app/src/utils/api-client.ts`'s `getPersistedViewerId()` always resolves to `undefined`, meaning a stored token would never be re-attached to requests anyway. Every screen that calls an authenticated endpoint (`GauntletScreen`, `TiendaScreen`) is written defensively with try/catch + local-Redux fallback specifically because of this — assume authenticated calls will 401 and silently fall back until this is fixed. Being built for real as part of [#30](https://github.com/webstartapp/mathematador/issues/30).
 
 ### 🔴 Unauthenticated password-reset endpoint (security)
 
-`server/src/routes.ts` registers `PUT /user/login` (→ `userLoginPassword.ts`) **without** the `requireAuth` middleware every other sensitive route uses. The handler falls back to updating the *first row in the `users` table* (in practice the seeded root admin) when `request.userId` is unset — which it always is on this unauthenticated route. Anyone who knows the endpoint exists can reset the admin account's password. Needs a real fix (proper forgotten-password token flow, or at minimum `requireAuth` + scoping the update to the caller's own row) — see the standing follow-up task for this.
+`server/src/routes.ts` registers `PUT /user/login` (→ `userLoginPassword.ts`) **without** the `requireAuth` middleware every other sensitive route uses. The handler falls back to updating the *first row in the `users` table* (in practice the seeded root admin) when `request.userId` is unset — which it always is on this unauthenticated route. Anyone who knows the endpoint exists can reset the admin account's password. Needs a real fix (proper forgotten-password token flow, or at minimum `requireAuth` + scoping the update to the caller's own row). Tracked as part of [#30](https://github.com/webstartapp/mathematador/issues/30) since it's the same auth surface.
 
 ### Dead / vestigial code worth knowing about (so you don't build on it by mistake)
 
@@ -101,6 +111,7 @@ React Native's `Alert.alert` (used for "Time's Up!" and the Toro Hint popup) doe
 
 ## Where to look next
 
+- **Current priorities & roadmap: [issue #29](https://github.com/webstartapp/mathematador/issues/29) (MVP epic) and its child issues.** Check this before assuming any other doc reflects where the project is headed.
 - Game design & mechanics: [`docs/game_proposal.md`](docs/game_proposal.md), [`docs/game_structure.md`](docs/game_structure.md).
 - Agent roles, theming rules, full git policy: [`agents/instructions.md`](agents/instructions.md).
 - Frontend specifics: [`mathematador-app/CLAUDE.md`](mathematador-app/CLAUDE.md).
