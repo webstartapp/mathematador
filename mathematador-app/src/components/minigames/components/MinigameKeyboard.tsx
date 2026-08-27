@@ -8,11 +8,15 @@ import { ExerciseInputPosition } from "@/src/types/Chalenge";
 type MinigameKeyboardProps = {
   handleDrop: (exercise: ExerciseInputPosition, value: number) => void;
   exercisePositions: ExerciseInputPosition[];
+  handleTapDigit: (value: number) => void;
+  selectedDigit: number | null;
 };
 
 const MinigameKeyboard: FC<MinigameKeyboardProps> = ({
   handleDrop,
   exercisePositions,
+  handleTapDigit,
+  selectedDigit,
 }) => {
   const handleDragEnd: (
     value: number,
@@ -42,6 +46,8 @@ const MinigameKeyboard: FC<MinigameKeyboardProps> = ({
       exercisePositions={exercisePositions}
       handleDrag={handleDrag}
       handleDragEnd={handleDragEnd}
+      handleTapDigit={handleTapDigit}
+      selectedDigit={selectedDigit}
     />
   );
 };

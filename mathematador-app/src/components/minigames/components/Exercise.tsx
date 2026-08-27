@@ -20,6 +20,8 @@ interface ExerciseProps {
     exercisePositions: ExerciseInputPosition[],
     exerciseId: number,
   ) => void;
+  onDigitPress?: (inputIndex: number) => void;
+  hasSelectedDigit?: boolean;
 }
 
 export const Exercise: FC<ExerciseProps> = ({
@@ -29,6 +31,8 @@ export const Exercise: FC<ExerciseProps> = ({
   exerciseResult,
   exerciseId,
   exercisePositions,
+  onDigitPress,
+  hasSelectedDigit,
 }) => {
   const exerciseIdRef = useRef(exerciseId);
   const operation = operations.find(
@@ -114,6 +118,8 @@ export const Exercise: FC<ExerciseProps> = ({
         result={exerciseResult}
         exerciseId={exerciseId}
         exercisePositions={exercisePositions}
+        onDigitPress={onDigitPress}
+        hasSelectedDigit={hasSelectedDigit}
       />
     </View>
   );

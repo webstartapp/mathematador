@@ -9,6 +9,8 @@ import {
   View,
 } from "react-native";
 
+const TAP_MOVEMENT_THRESHOLD = 6;
+
 interface DraggableKeyboardDigitProps {
   renderText: string;
   digitSize: number;
@@ -20,12 +22,16 @@ interface DraggableKeyboardDigitProps {
     event: GestureResponderEvent,
     gestureState: PanResponderGestureState,
   ) => void;
+  onTap: () => void;
+  isSelected?: boolean;
 }
 
 export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
   renderText,
   onDrag,
   onDragRelease,
+  onTap,
+  isSelected,
   digitSize,
 }) => {
   const position = useRef(new Animated.ValueXY()).current;
@@ -65,7 +71,14 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
         onDrag(event, gestureState);
       },
       onPanResponderRelease: (event, gestureState) => {
-        onDragRelease(event, gestureState);
+        const wasTap =
+          Math.abs(gestureState.dx) < TAP_MOVEMENT_THRESHOLD &&
+          Math.abs(gestureState.dy) < TAP_MOVEMENT_THRESHOLD;
+        if (wasTap) {
+          onTap();
+        } else {
+          onDragRelease(event, gestureState);
+        }
         position.flattenOffset();
         // Animate back to the original position
         Animated.spring(position, {
@@ -97,6 +110,7 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
         <View
           style={{
             ...styles.draggableItem,
+            ...(isSelected ? styles.selectedDraggableItem : null),
             width: Math.min(digitSize, 40),
             height: Math.min(digitSize, 40),
           }}
@@ -123,6 +137,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     userSelect: "none",
+    borderWidth: 3,
+    borderColor: "transparent",
+  },
+  selectedDraggableItem: {
+    borderColor: "#FFD700",
+    backgroundColor: "#e8b06f",
   },
   draggableText: {
     color: "#fff",
