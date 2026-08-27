@@ -40,6 +40,7 @@ export interface UserState {
   equippedSuit: string | null;
   equippedFlare: string | null;
   minigameProgress: MinigameProgress[];
+  musicEnabled: boolean;
 }
 
 const initialState: UserState = {
@@ -47,6 +48,7 @@ const initialState: UserState = {
   level: 1,
   xp: 0,
   coins: 0,
+  musicEnabled: true,
   xpToNextLevel: calculateXPToNextLevel(1 * 2),
   operationProgress: operations.map((operation) => ({
     completedChallenges: [],
@@ -108,6 +110,9 @@ const userSlice = createSlice({
   reducers: {
     setName(state, action: PayloadAction<string>) {
       state.name = action.payload;
+    },
+    setMusicEnabled(state, action: PayloadAction<boolean>) {
+      state.musicEnabled = action.payload;
     },
     levelUserUp(state) {
       state.level += 1;
@@ -224,6 +229,7 @@ const userSlice = createSlice({
 
 export const {
   setName,
+  setMusicEnabled,
   levelOperationUp,
   levelUserUp,
   completeChalange,

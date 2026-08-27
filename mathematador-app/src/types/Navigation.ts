@@ -1,6 +1,7 @@
 import { ChalengeResult, Challenge } from "@/types/Chalenge";
 
 export type RootStackParamList = {
+  Intro?: {};
   Home?: {};
   Level: { levelId: number };
   Challenge: Challenge;
