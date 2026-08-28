@@ -1,6 +1,6 @@
 # mathematador-app — Frontend Guide
 
-React Native + Expo (SDK 56) client. Router: Expo Router provides a thin outer shell (`app/_layout.tsx`, routes `index` + `+not-found` only); the *real* navigation is a hand-coded React Navigation stack inside `app/index.tsx`. State: Redux Toolkit + `redux-persist`/AsyncStorage, offline-first (see `agents/instructions.md` §2).
+React Native + Expo (SDK 56) client. Router: Expo Router provides a thin outer shell (`app/_layout.tsx`, routes `index` + `+not-found`, plus `app/info/[slug].tsx` and `app/admin/index.tsx`); the *real* game navigation is a hand-coded React Navigation stack inside `app/index.tsx`. That inner stack is wrapped in its own `NavigationContainer` via React Navigation's `NavigationIndependentTree` pattern (`expo-router/build/react-navigation/core` and `/native`) — without this isolation, the inner stack shares Expo Router's single linking system by default and React Navigation's default path serialization writes every screen name into the browser URL (confirmed live while building issue #33: Home → SelectOperation actually changed the address bar). With the isolation in place, gameplay always stays at `/` no matter how deep the in-game navigation goes, while `/info/[slug]` and `/admin` remain real, distinct, bookmarkable URLs. State: Redux Toolkit + `redux-persist`/AsyncStorage, offline-first (see `agents/instructions.md` §2).
 
 See the [root `CLAUDE.md`](../CLAUDE.md) first for monorepo-wide conventions, dev commands, and known gotchas — this file only covers what's specific to this workspace.
 
