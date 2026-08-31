@@ -87,10 +87,11 @@ const getPersistedViewerId = async (): Promise<string | number | undefined> => {
 
 const ResponseHeadersSchema = z.record(z.string());
 
+type HeaderValue = string | number | boolean | undefined;
+type ConfigHeadersParam = Record<string, HeaderValue> | undefined;
+
 const buildHeaders = (
-  configHeaders:
-    | Record<string, string | number | boolean | undefined>
-    | undefined,
+  configHeaders: ConfigHeadersParam,
   token: string | null,
 ): Record<string, string> => {
   const headers: Record<string, string> = {};

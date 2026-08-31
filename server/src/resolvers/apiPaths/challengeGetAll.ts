@@ -10,7 +10,7 @@ export const challengeGetAll = restAPICall(
   "mathematador",
   "challengeGetAll",
   async (request, response): Promise<void> => {
-    const operationId = request.params.operationId;
+    const operationId = OperationId.parse(request.params.operationId);
     const userId = request.userId;
 
     if (!userId) {

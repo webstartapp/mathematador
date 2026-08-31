@@ -1,3 +1,5 @@
+import type { OperationId } from "@/_generated/model/operationId";
+
 export type Exercise = number[] & {
   separator?: string;
   result?: number;
@@ -11,7 +13,7 @@ export type Challenge = {
   experiencePoints: number;
   coinsOnSuccess: number;
   coinsOnFailure: number;
-  operationId: string;
+  operationId: OperationId;
   level: number;
   minigame: string;
   onAnswerSubmit?: (isCorrect: boolean, expectedResult: number) => void;
