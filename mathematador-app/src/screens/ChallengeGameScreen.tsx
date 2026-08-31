@@ -28,12 +28,23 @@ import { useOleSound } from "@/components/toro/useOleSound";
 import { minigames } from "@/configs/minigames";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
+import { OperationId } from "@/src/_generated/model";
 import {
   Challenge,
   ChalengeResult,
   Exercise as ExerciseType,
 } from "@/types/Chalenge";
 import { RootStackParamList } from "@/types/Navigation";
+
+const toOperationId = (value: string): OperationId | undefined => {
+  if (value === "addition") return value;
+  if (value === "subtraction") return value;
+  if (value === "multiplication") return value;
+  if (value === "division") return value;
+  if (value === "gauntlet") return value;
+  if (value === "daily_challenge") return value;
+  return undefined;
+};
 
 type ChallengeScreenRouteProp = RouteProp<RootStackParamList, "Challenge">;
 type ChallengeScreenNavigationProps = StackNavigationProp<
@@ -292,7 +303,10 @@ const ChallengeGameScreen = (): JSX.Element => {
     result: ChalengeResult,
   ): Promise<void> => {
     try {
-      const operationId = challenge.operationId;
+      const operationId = toOperationId(challenge.operationId);
+      if (!operationId) {
+        throw new Error(`Unknown operationId: ${challenge.operationId}`);
+      }
       const challengeIdStr = String(challenge.challengeId);
       const response = await challengeUpdateResult(
         operationId,

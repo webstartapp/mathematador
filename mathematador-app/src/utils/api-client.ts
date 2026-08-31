@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { z } from "zod";
 
 const AXIOS_INSTANCE = axios.create({
@@ -33,11 +33,6 @@ const getAuthToken = async (
   return AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
 };
 
-export type CustomRequestConfig = AxiosRequestConfig & {
-  body?: string | object | number | boolean | null;
-  headers?: Record<string, string | number | boolean | undefined>;
-};
-
 const JsonValueSchema = z.union([
   z.string(),
   z.number(),
@@ -46,8 +41,6 @@ const JsonValueSchema = z.union([
   z.array(z.any()),
   z.null(),
 ]);
-
-const HeadersSchema = z.record(z.union([z.string(), z.number(), z.boolean()]));
 
 const parseJSON = (
   jsonString: string,
@@ -87,79 +80,90 @@ const getPersistedViewerId = async (): Promise<string | number | undefined> => {
 
 const ResponseHeadersSchema = z.record(z.string());
 
-type HeaderValue = string | number | boolean | undefined;
-type ConfigHeadersParam = Record<string, HeaderValue> | undefined;
-
-const buildHeaders = (
-  configHeaders: ConfigHeadersParam,
-  token: string | null,
+const normalizeHeaders = (
+  headersInit: HeadersInit | undefined,
 ): Record<string, string> => {
   const headers: Record<string, string> = {};
 
-  if (configHeaders) {
-    const parsedHeaders = HeadersSchema.safeParse(configHeaders);
-    if (parsedHeaders.success) {
-      Object.keys(parsedHeaders.data).forEach((key) => {
-        const value = parsedHeaders.data[key];
-        if (value !== undefined) {
-          headers[key] = String(value);
-        }
-      });
-    }
+  if (!headersInit) {
+    return headers;
   }
+
+  if (headersInit instanceof Headers) {
+    headersInit.forEach((value, key) => {
+      headers[key] = value;
+    });
+    return headers;
+  }
+
+  const entries = Array.isArray(headersInit)
+    ? headersInit
+    : Object.entries(headersInit);
+
+  entries.forEach(([key, value]) => {
+    if (value !== undefined) {
+      headers[key] = String(value);
+    }
+  });
+
+  return headers;
+};
+
+const persistAuthTokenIfPresent = async (
+  requestUrl: string,
+  responseHeaders: AxiosResponse["headers"],
+): Promise<void> => {
+  const isAuthRequest =
+    requestUrl.includes("/user/login") || requestUrl.includes("/user/register");
+  if (!isAuthRequest) {
+    return;
+  }
+
+  const parsedHeaders = ResponseHeadersSchema.safeParse(responseHeaders);
+  if (!parsedHeaders.success) {
+    return;
+  }
+
+  const authHeader =
+    parsedHeaders.data["authorization"] ?? parsedHeaders.data["Authorization"];
+  if (!authHeader) {
+    return;
+  }
+
+  const parts = authHeader.split(" ");
+  const tokenVal = parts.length === 2 ? parts[1] : parts[0];
+  if (tokenVal) {
+    await AsyncStorage.setItem(PERSISTED_TOKEN_KEY, tokenVal);
+  }
+};
+
+// Matches the RequestInit shape orval's fetch-client codegen always passes
+// (see @orval/fetch's generated `options?: RequestInit`), translated into
+// an axios call under the hood.
+export const customInstance = async <T>(
+  requestUrl: string,
+  options: RequestInit,
+): Promise<T> => {
+  const viewerId = await getPersistedViewerId();
+  const token = await getAuthToken(viewerId);
+  const headers = normalizeHeaders(options.headers);
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  return headers;
-};
-
-export const customInstance = async <T>(
-  requestUrl: string,
-  config: CustomRequestConfig,
-): Promise<T> => {
-  const viewerId = await getPersistedViewerId();
-  const token = await getAuthToken(viewerId);
-  const headers = buildHeaders(config.headers, token);
-
-  const { body, ...rest } = config;
-  let requestData = body;
-  if (typeof body === "string") {
-    try {
-      requestData = parseJSON(body);
-    } catch {
-      requestData = body;
-    }
-  }
+  const requestBody =
+    typeof options.body === "string" ? parseJSON(options.body) : options.body;
 
   const response = await AXIOS_INSTANCE<T>({
     url: requestUrl,
-    data: requestData,
-    ...rest,
+    method: options.method,
+    data: requestBody,
     headers,
+    signal: options.signal ?? undefined,
   });
 
-  // Extract and persist the authorization token if returned from login/register
-  if (
-    requestUrl.includes("/user/login") ||
-    requestUrl.includes("/user/register")
-  ) {
-    const parsedHeaders = ResponseHeadersSchema.safeParse(response.headers);
-    if (parsedHeaders.success) {
-      const authHeader =
-        parsedHeaders.data["authorization"] ??
-        parsedHeaders.data["Authorization"];
-
-      if (authHeader) {
-        const parts = authHeader.split(" ");
-        const tokenVal = parts.length === 2 ? parts[1] : parts[0];
-        if (tokenVal) {
-          await AsyncStorage.setItem(PERSISTED_TOKEN_KEY, tokenVal);
-        }
-      }
-    }
-  }
+  await persistAuthTokenIfPresent(requestUrl, response.headers);
 
   return response.data;
 };
