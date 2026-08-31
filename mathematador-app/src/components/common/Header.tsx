@@ -17,14 +17,10 @@ import { levelOperationUp, levelUserUp } from "@/src/redux/slices/userSlice";
 import { RootStackParamList } from "@/types/Navigation";
 
 type HeaderProps = {
-  backTo?: keyof RootStackParamList;
+  backTo?: "Home";
   showOperation?: boolean;
   props: StackHeaderProps;
 };
-
-type LooseNavigationProp = StackNavigationProp<
-  Record<string, Record<string, string | number | undefined>>
->;
 
 const GameHeader: FC<HeaderProps> = ({
   backTo,
@@ -48,7 +44,7 @@ const GameHeader: FC<HeaderProps> = ({
     handleMeasurement();
   }, []);
 
-  const navigation = useNavigation<LooseNavigationProp>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { backToParams } = useSelector((state: RootState) => state.navigation);
 
   const { level, xp, xpToNextLevel, operationProgress } = useSelector(

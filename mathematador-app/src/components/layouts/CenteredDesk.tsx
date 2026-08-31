@@ -52,14 +52,20 @@ const localStyles = StyleSheet.create({
   },
 });
 
-type LocalStylesType = typeof localStyles;
+type CenteredDeskStyleOverrides = Partial<{
+  wrapper: ViewStyle;
+  container: ViewStyle;
+  title: TextStyle;
+  subtitle: TextStyle;
+  description: TextStyle;
+}>;
 
 const CenteredDesk: FC<{
   title: string;
   subtitles?: string[];
   descriptions?: string[];
   children?: ReactNode;
-  styles?: Partial<Record<keyof LocalStylesType, ViewStyle | TextStyle>>;
+  styles?: CenteredDeskStyleOverrides;
 }> = ({ title, subtitles, descriptions, children, styles }) => {
   return (
     <View style={[localStyles.wrapper, styles?.wrapper]}>

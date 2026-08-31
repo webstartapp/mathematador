@@ -93,15 +93,20 @@ const syncMinigames = (
   if (!payloadMinigames) {
     return [];
   }
-  return payloadMinigames.map((minigameItem) => {
+  const minigameProgress: MinigameProgress[] = [];
+  payloadMinigames.forEach((minigameItem) => {
+    if (minigameItem.minigameId === undefined) {
+      return;
+    }
     const levelVal = minigameItem.level ?? 1;
-    return {
+    minigameProgress.push({
       minigameId: minigameItem.minigameId,
       level: levelVal,
       xp: minigameItem.xp ?? 0,
       xpToNextLevel: calculateXPToNextLevel(levelVal),
-    };
+    });
   });
+  return minigameProgress;
 };
 
 const userSlice = createSlice({
