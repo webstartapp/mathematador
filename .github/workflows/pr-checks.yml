@@ -33,3 +33,6 @@ jobs:
 
       - name: Build frontend app (Expo Web)
         run: npm run build --workspace=mathematador-app
+
+      - name: Run unit tests
+        run: npm test

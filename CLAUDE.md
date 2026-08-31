@@ -57,14 +57,14 @@ Ports and DB connection come from `.env` (see `.env.example`) — `PORT`/`EXPO_P
 - `unknown` and `as` type assertions are banned; `any` is a lint error too.
 - Prettier runs as an ESLint rule (`prettier/prettier`) — `npx eslint --fix` resolves most formatting nits.
 
-Run `npx eslint <path>` on files you touch before considering a change done — `npm run lint` at the repo root is what CI actually runs. `pr-checks.yml` is deliberately minimal: install → lint → build (server, then app) → done. It does not run tests or the OpenAPI-generate/diff check — those are developer responsibilities, not CI gates (see below).
+Run `npx eslint <path>` on files you touch before considering a change done — `npm run lint` at the repo root is what CI actually runs. `pr-checks.yml` is deliberately minimal: install → lint → build (server, then app) → test → done. It does not run the OpenAPI-generate/diff check — keeping the generated code in sync with the spec is a developer responsibility, not a CI gate (see below).
 
 ## Git / PR workflow
 
 Full policy is in [`agents/instructions.md`](agents/instructions.md) — summary:
 
 1. Branch from `develop`: `issue-<number>-<short-description>`.
-2. Implement, then verify locally (see below) — CI checks (`pr-checks.yml`) sometimes don't report on a PR promptly, so **run the equivalent commands locally before merging, don't rely on the PR's check status alone**: `npm run lint`, `npm run build --workspace=server`, `npm run build --workspace=mathematador-app` (this is the full extent of what CI runs). Also run `npm test` locally as good practice — CI doesn't gate on it, but a broken test suite is still a broken test suite. If you touched the OpenAPI spec or `orval.config.ts`, also run `npm run generate && git diff --exit-code` locally — CI does not check this either.
+2. Implement, then verify locally (see below) — CI checks (`pr-checks.yml`) sometimes don't report on a PR promptly, so **run the equivalent commands locally before merging, don't rely on the PR's check status alone**: `npm run lint`, `npm run build --workspace=server`, `npm run build --workspace=mathematador-app`, `npm test` (this is the full extent of what CI runs). If you touched the OpenAPI spec or `orval.config.ts`, also run `npm run generate && git diff --exit-code` locally — CI does not check this.
 3. Push directly — pushes to feature branches (`issue-*`) are pre-approved per `agents/instructions.md` §3.4. Pushes/merges to `develop`/`main` are not.
 4. Open a PR targeting `develop` with `Closes #<number>` in the body.
 5. This repo's convention has been **squash-merge**, with the feature branch deleted (locally and on origin) immediately after.
