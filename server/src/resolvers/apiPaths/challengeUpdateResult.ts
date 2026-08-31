@@ -33,7 +33,7 @@ export const challengeUpdateResult = restAPICall(
   "mathematador",
   "challengeUpdateResult",
   async (request, response): Promise<void> => {
-    const operationId = request.params.operationId;
+    const operationId = OperationId.parse(request.params.operationId);
     const id = request.params.id;
     const { results, time } = request.body;
     const userId = request.userId;

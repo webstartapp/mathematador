@@ -1,17 +1,17 @@
 export enum DBReadEnum {
-  "all" = "all",
-  "detail" = "detail",
-  "none" = "none",
+  all = "all",
+  detail = "detail",
+  none = "none",
 }
 export enum DBObjectEnum {
-  "none" = "none",
-  "object" = "object",
-  "array" = "array",
+  none = "none",
+  object = "object",
+  array = "array",
 }
 export enum DBWriteEnum {
-  "createOnly" = "createOnly",
-  "any" = "any",
-  "none" = "none",
+  createOnly = "createOnly",
+  any = "any",
+  none = "none",
 }
 export enum COREFormInputTypeEnum {
   Input = "input",

@@ -1,5 +1,6 @@
 import { minigames } from "@/configs/minigames";
 import { operations } from "@/configs/operations";
+import { OperationId } from "@/src/_generated/model";
 import { Challenge, Exercise } from "@/types/Chalenge";
 
 const generateExercises = (
@@ -27,7 +28,7 @@ const generateExercises = (
 
 export const getChallengeByLevel = (
   level: number,
-  operationId: string,
+  operationId: OperationId,
   challengeOrderId: number,
 ): Challenge => {
   const minigameIndex = challengeOrderId % minigames.length;

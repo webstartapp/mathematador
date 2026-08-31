@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
-import { StyleSheet, Text, TextProps } from "react-native";
+import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
 
 const applyStylesFN = <T extends string>(
-  styles: StyleSheet.NamedStyles<Record<T, string>>,
-): StyleSheet.NamedStyles<Record<T, string>> => styles;
+  styles: Record<T, TextStyle>,
+): Record<T, TextStyle> => styles;
 
 const themedStyles = applyStylesFN({
   title: {

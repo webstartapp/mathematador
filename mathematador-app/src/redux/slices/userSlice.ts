@@ -5,6 +5,7 @@ import {
   GameProgress,
   MinigameProgress as ApiMinigameProgress,
   GameOperationProgress,
+  OperationId,
 } from "@/src/_generated/model";
 import { operations } from "@/src/configs/operations";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
@@ -19,7 +20,7 @@ export type MinigameProgress = {
 };
 
 type OperationProgress = {
-  operationId: string;
+  operationId: OperationId;
   level: number;
   xp: number;
   xpToNextLevel: number;
@@ -93,15 +94,20 @@ const syncMinigames = (
   if (!payloadMinigames) {
     return [];
   }
-  return payloadMinigames.map((minigameItem) => {
+  const minigameProgress: MinigameProgress[] = [];
+  payloadMinigames.forEach((minigameItem) => {
+    if (minigameItem.minigameId === undefined) {
+      return;
+    }
     const levelVal = minigameItem.level ?? 1;
-    return {
+    minigameProgress.push({
       minigameId: minigameItem.minigameId,
       level: levelVal,
       xp: minigameItem.xp ?? 0,
       xpToNextLevel: calculateXPToNextLevel(levelVal),
-    };
+    });
   });
+  return minigameProgress;
 };
 
 const userSlice = createSlice({

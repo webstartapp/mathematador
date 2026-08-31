@@ -31,7 +31,7 @@ server (Express, requireAuth middleware, restAPICall wrapper)
 PostgreSQL
 ```
 
-A single OpenAPI spec, `analytics/_swaggers/be_fe.yaml`, drives **all** generated code on both sides via `orval.config.ts` (run with `npm run generate`). Never hand-edit anything under `_generated/` — edit the spec and regenerate. CI (`.github/workflows/pr-checks.yml`) fails the build if `npm run generate` produces a diff, i.e. the generated code and the spec must always be in sync in every commit.
+A single OpenAPI spec, `analytics/_swaggers/be_fe.yaml`, drives **all** generated code on both sides via `orval.config.ts` (run with `npm run generate`). Never hand-edit anything under `_generated/` — edit the spec and regenerate. Keeping the generated code in sync with the spec is a developer responsibility, not a CI gate — `pr-checks.yml` deliberately does **not** run `npm run generate`/diff-check itself; run it locally before committing when you touch the spec or `orval.config.ts`.
 
 ## Dev commands (run from repo root)
 
@@ -43,7 +43,7 @@ npm run build          # server tsc build, then app `expo export -p web`
 npm run generate       # regenerate all Orval clients/models/zod schemas from the OpenAPI spec
 ```
 
-Ports and DB connection come from `.env` (see `.env.example`) — `PORT`/`EXPO_PORT` default to 4076/4075, `DATABASE=stage|production` switches which Postgres connection string `server/src/knexWrapper.ts` uses (not `NODE_ENV`).
+Each workspace loads its own `.env` independently — `server/.env` (see `server/.env.example`) and `mathematador-app/.env` (see `mathematador-app/.env.example`); there is no shared root `.env`. `npm run dev` ([scripts/dev.js](scripts/dev.js)) seeds each workspace's `.env` from its `.env.example` on first run (so a fresh clone works out of the box), then runs the backend in the background and Expo in the foreground (`stdio: "inherit"`, needed for its QR code/dev menu to render) — no env-handling logic beyond that seeding step. This is only a loose parallel to how `deploy.yml` deploys, not a real one: it copies two separate files too (`server/.env`, `web/.env`), but `web/.env` is never actually read at runtime — `web/` is served by `serve` (a static file server with no `.env` support), and the Expo web build that produces `web/`'s contents already ran, env-less, *before* that copy step even happens in the job. `server/.env`'s `PORT` defaults to 4076 (read directly in `server/src/index.ts`, populated via `dotenv` in `server/src/knexWrapper.ts`); `mathematador-app/.env`'s `RCT_METRO_PORT` defaults to 4075 (the actual env var Expo's CLI reads natively for its dev-server port — picked up automatically by Expo's built-in `.env` support, no code needed). `DATABASE=stage|production` (in `server/.env`) switches which Postgres connection string `server/src/knexWrapper.ts` uses (not `NODE_ENV`).
 
 ## Coding conventions (enforced by `eslint.config.js`, not just style advice)
 
@@ -57,14 +57,14 @@ Ports and DB connection come from `.env` (see `.env.example`) — `PORT`/`EXPO_P
 - `unknown` and `as` type assertions are banned; `any` is a lint error too.
 - Prettier runs as an ESLint rule (`prettier/prettier`) — `npx eslint --fix` resolves most formatting nits.
 
-Run `npx eslint <path>` on files you touch before considering a change done — `npm run lint` at the repo root is what CI actually runs.
+Run `npx eslint <path>` on files you touch before considering a change done — `npm run lint` at the repo root is what CI actually runs. `pr-checks.yml` is deliberately minimal: install → lint → build (server, then app) → test → done. It does not run the OpenAPI-generate/diff check — keeping the generated code in sync with the spec is a developer responsibility, not a CI gate (see below).
 
 ## Git / PR workflow
 
 Full policy is in [`agents/instructions.md`](agents/instructions.md) — summary:
 
 1. Branch from `develop`: `issue-<number>-<short-description>`.
-2. Implement, then verify locally (see below) — CI checks (`pr-checks.yml`) sometimes don't report on a PR promptly, so **run the equivalent commands locally before merging, don't rely on the PR's check status alone**: `npm run generate && git diff --exit-code`, `npm run lint`, `npm run build --workspace=server`, `npm run build --workspace=mathematador-app`, `npm test`.
+2. Implement, then verify locally (see below) — CI checks (`pr-checks.yml`) sometimes don't report on a PR promptly, so **run the equivalent commands locally before merging, don't rely on the PR's check status alone**: `npm run lint`, `npm run build --workspace=server`, `npm run build --workspace=mathematador-app`, `npm test` (this is the full extent of what CI runs). If you touched the OpenAPI spec or `orval.config.ts`, also run `npm run generate && git diff --exit-code` locally — CI does not check this.
 3. Push directly — pushes to feature branches (`issue-*`) are pre-approved per `agents/instructions.md` §3.4. Pushes/merges to `develop`/`main` are not.
 4. Open a PR targeting `develop` with `Closes #<number>` in the body.
 5. This repo's convention has been **squash-merge**, with the feature branch deleted (locally and on origin) immediately after.
