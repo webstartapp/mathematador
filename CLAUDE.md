@@ -43,7 +43,7 @@ npm run build          # server tsc build, then app `expo export -p web`
 npm run generate       # regenerate all Orval clients/models/zod schemas from the OpenAPI spec
 ```
 
-Ports and DB connection come from `.env` (see `.env.example`) — `PORT`/`EXPO_PORT` default to 4076/4075, `DATABASE=stage|production` switches which Postgres connection string `server/src/knexWrapper.ts` uses (not `NODE_ENV`).
+Each workspace loads its own `.env` independently — `server/.env` (see `server/.env.example`) and `mathematador-app/.env` (see `mathematador-app/.env.example`); there is no shared root `.env`. `npm run dev` ([scripts/dev.js](scripts/dev.js)) is pure orchestration (`concurrently` running both workspaces' own dev commands) with no env-handling logic of its own — this matches how production deploys already work (`deploy.yml` copies two separate env files, `server/.env` and `web/.env`, onto the server). `server/.env`'s `PORT` defaults to 4076 (read directly in `server/src/index.ts`, populated via `dotenv` in `server/src/knexWrapper.ts`); `mathematador-app/.env`'s `RCT_METRO_PORT` defaults to 4075 (the actual env var Expo's CLI reads natively for its dev-server port — picked up automatically by Expo's built-in `.env` support, no code needed). `DATABASE=stage|production` (in `server/.env`) switches which Postgres connection string `server/src/knexWrapper.ts` uses (not `NODE_ENV`).
 
 ## Coding conventions (enforced by `eslint.config.js`, not just style advice)
 
