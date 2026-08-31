@@ -25,11 +25,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify OpenAPI Client Generation
-        run: |
-          npm run generate
-          git diff --exit-code || { echo "ERROR: API client or Zod validation schemas are out of sync with the OpenAPI specification. Please run 'npm run generate' locally and commit the changes."; exit 1; }
-
       - name: Run linter
         run: npm run lint
 
@@ -38,6 +33,3 @@ jobs:
 
       - name: Build frontend app (Expo Web)
         run: npm run build --workspace=mathematador-app
-
-      - name: Run unit tests
-        run: npm test

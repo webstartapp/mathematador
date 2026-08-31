@@ -50,7 +50,7 @@ const createLocalChallenge = (
   serverChallenge: ApiChallenge,
   localExercises: Exercise[],
   userLevel: number,
-  mode: string,
+  mode: "gauntlet" | "daily_challenge",
 ): LocalChallenge => {
   return {
     challengeId: serverChallenge.id ? 12345 : Math.floor(Math.random() * 1000),

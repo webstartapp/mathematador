@@ -1,3 +1,4 @@
+import { OperationId } from "@/src/_generated/model";
 import { Challenge, Exercise } from "@/types/Chalenge";
 
 const generateChalenge = (challengeId: number): Partial<Challenge> => {
@@ -95,7 +96,7 @@ const enhanceChallenges = (challenges: Partial<Challenge>[]): Challenge[] => {
       experiencePoints,
       coinsOnSuccess,
       coinsOnFailure,
-      operationId: challenge.operationId ?? "",
+      operationId: challenge.operationId ?? OperationId.addition,
       level: challenge.level ?? 1,
       minigame: challenge.minigame ?? "",
     };

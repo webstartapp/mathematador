@@ -1,7 +1,8 @@
+import { OperationId } from "@/src/_generated/model";
 import { Exercise } from "@/types/Chalenge";
 
 export type Operation = {
-  operationId: string;
+  operationId: OperationId;
   label: string;
   symbol: string;
   description: string;

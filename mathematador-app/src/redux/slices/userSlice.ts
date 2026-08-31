@@ -5,6 +5,7 @@ import {
   GameProgress,
   MinigameProgress as ApiMinigameProgress,
   GameOperationProgress,
+  OperationId,
 } from "@/src/_generated/model";
 import { operations } from "@/src/configs/operations";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
@@ -19,7 +20,7 @@ export type MinigameProgress = {
 };
 
 type OperationProgress = {
-  operationId: string;
+  operationId: OperationId;
   level: number;
   xp: number;
   xpToNextLevel: number;
