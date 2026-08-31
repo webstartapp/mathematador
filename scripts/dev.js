@@ -1,4 +1,5 @@
 const { spawn } = require("child_process");
+const fs = require("fs");
 const path = require("path");
 
 // Each workspace loads its own env independently (server via dotenv in
@@ -15,6 +16,25 @@ const path = require("path");
 // so the backend has to be the one that gives it up.
 const rootDir = path.resolve(__dirname, "..");
 const isWindows = process.platform === "win32";
+
+// .env files are gitignored, so a fresh clone has none - without a fallback
+// the server would silently start on its hardcoded default port (4021)
+// instead of the 4076 mathematador-app/.env.example's EXPO_PUBLIC_API_URL
+// assumes. Seed each workspace's real .env from its committed .example on
+// first run, matching the defaults documented there.
+const ensureEnvFile = (workspaceDir) => {
+  const envPath = path.join(workspaceDir, ".env");
+  const examplePath = path.join(workspaceDir, ".env.example");
+  if (!fs.existsSync(envPath) && fs.existsSync(examplePath)) {
+    fs.copyFileSync(examplePath, envPath);
+    console.log(
+      `[dev] Created ${path.relative(rootDir, envPath)} from .env.example (first run).`,
+    );
+  }
+};
+
+ensureEnvFile(path.join(rootDir, "server"));
+ensureEnvFile(path.join(rootDir, "mathematador-app"));
 
 // On Windows, npm resolves to npm.cmd, which node can only spawn through a
 // shell - passed as one joined string (rather than shell:true + an args
@@ -41,6 +61,22 @@ serverProcess.stderr.on("data", (chunk) => {
   process.stderr.write(`[server] ${chunk}`);
 });
 
+// On Windows, `shell: true` means each child is cmd.exe, and killing just
+// that does not cascade to its grandchildren (npm.cmd -> node -> nodemon's
+// own child process, for the server) - Windows doesn't propagate signals
+// down a process tree the way POSIX does, so a grandchild can leak and keep
+// its port bound after this script exits. `taskkill /T` kills the whole tree.
+const killProcessTree = (childProcess) => {
+  if (!childProcess.pid) {
+    return;
+  }
+  if (isWindows) {
+    spawn("taskkill", ["/pid", String(childProcess.pid), "/T", "/F"]);
+    return;
+  }
+  childProcess.kill();
+};
+
 let shuttingDown = false;
 
 const shutdown = (exitCode) => {
@@ -48,7 +84,8 @@ const shutdown = (exitCode) => {
     return;
   }
   shuttingDown = true;
-  serverProcess.kill();
+  killProcessTree(serverProcess);
+  killProcessTree(expoProcess);
   process.exit(exitCode);
 };
 
