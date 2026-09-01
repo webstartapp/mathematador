@@ -36,7 +36,12 @@ export const useMenuMusic = (): MenuMusicControls => {
 
   const stop = useCallback((): void => {
     wantsToPlayRef.current = false;
-    player.pause();
+    try {
+      player.pause();
+    } catch {
+      // The underlying native player may already be released if the
+      // owning screen is mid-unmount - nothing left to stop in that case.
+    }
   }, [player]);
 
   useEffect(() => {
