@@ -353,10 +353,9 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255, 255, 255, 0.1)",
     padding: 16,
     marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
+    boxShadow: [
+      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(0,0,0,0.15)" },
+    ],
   },
   sectionTitle: {
     color: "#fff",

@@ -2,6 +2,9 @@ import { FC, ReactNode } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
+import { createTextShadow } from "@/helpers/createTextShadow";
+
+const bodyTextShadow = createTextShadow("black", 2, 2, 5);
 
 const localStyles = StyleSheet.create({
   container: {
@@ -11,20 +14,14 @@ const localStyles = StyleSheet.create({
     backgroundColor: "#d49b57",
     color: "#fff",
     width: "100%",
-    shadowColor: "#B47b37",
-    shadowOffset: {
-      width: 2,
-      height: 2,
-    },
+    boxShadow: [{ offsetX: 2, offsetY: 2, blurRadius: 0, color: "#B47b37" }],
   },
   wrapper: {},
   title: {
     fontSize: 30,
     marginBottom: 10,
     color: "white",
-    textShadowColor: "black",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
+    ...bodyTextShadow,
     paddingLeft: 10,
     paddingRight: 10,
   },
@@ -32,9 +29,7 @@ const localStyles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 5,
     color: "white",
-    textShadowColor: "black",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
+    ...bodyTextShadow,
     textAlign: "center",
     paddingLeft: 10,
     paddingRight: 10,
@@ -43,9 +38,7 @@ const localStyles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 5,
     color: "white",
-    textShadowColor: "black",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
+    ...bodyTextShadow,
     textAlign: "justify",
     paddingLeft: 10,
     paddingRight: 10,

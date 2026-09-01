@@ -7,7 +7,13 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { ImageSourcePropType, StyleSheet, View, Animated } from "react-native";
+import {
+  ImageSourcePropType,
+  StyleSheet,
+  View,
+  Animated,
+  Platform,
+} from "react-native";
 
 type AnimatedImageProps = {
   image: ImageSourcePropType | undefined;
@@ -26,7 +32,14 @@ export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
       Animated.loop(
         Animated.sequence(
           sequence.map((step) =>
-            Animated.timing(anim, { ...step, useNativeDriver: true }),
+            Animated.timing(anim, {
+              ...step,
+              // react-native-web has no native animation driver and warns
+              // on every setup that requests one - only native platforms
+              // get the perf benefit, matching this file's other Animated
+              // usages that are already platform-gated the same way.
+              useNativeDriver: Platform.OS !== "web",
+            }),
           ),
         ),
       ).start();

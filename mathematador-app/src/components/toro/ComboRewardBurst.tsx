@@ -91,7 +91,7 @@ const ComboRewardBurst = ({ burstKey }: ComboRewardBurstProps): JSX.Element => {
   }
 
   return (
-    <View style={styles.overlay} pointerEvents="none">
+    <View style={[styles.overlay, { pointerEvents: "none" }]}>
       {particles.map((particleItem) => (
         <Particle
           key={particleItem.particleKey}
