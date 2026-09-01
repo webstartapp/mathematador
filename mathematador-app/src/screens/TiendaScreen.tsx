@@ -460,10 +460,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    shadowColor: "#FFD700",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
+    boxShadow: [
+      { offsetX: 0, offsetY: 0, blurRadius: 5, color: "rgba(255,215,0,0.3)" },
+    ],
   },
   coinsEmoji: {
     fontSize: 18,
@@ -492,10 +491,14 @@ const styles = StyleSheet.create({
   },
   tabActive: {
     backgroundColor: "rgba(255, 255, 255, 0.15)",
-    shadowColor: "#fff",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 2,
+        blurRadius: 3,
+        color: "rgba(255,255,255,0.1)",
+      },
+    ],
   },
   tabText: {
     color: "rgba(255, 255, 255, 0.6)",
@@ -526,17 +529,19 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255, 255, 255, 0.1)",
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
+    boxShadow: [
+      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(0,0,0,0.15)" },
+    ],
   },
   cardEquipped: {
     borderColor: "#FFD700",
     backgroundColor: "rgba(255, 215, 0, 0.05)",
-    shadowColor: "#FFD700",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    // Matches `card`'s offsetY:4 - previously this only overrode
+    // shadowColor/Opacity/Radius and inherited card's shadowOffset since
+    // boxShadow replaces the whole shadow as one style key, not four.
+    boxShadow: [
+      { offsetX: 0, offsetY: 4, blurRadius: 8, color: "rgba(255,215,0,0.1)" },
+    ],
   },
   cardLocked: {
     opacity: 0.6,

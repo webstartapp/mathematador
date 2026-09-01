@@ -1,10 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosResponse } from "axios";
 import { z } from "zod";
 
-const AXIOS_INSTANCE = axios.create({
-  baseURL: String(process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076"),
-});
+const BASE_URL = String(
+  process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076",
+);
 
 const PERSISTED_STATE_KEY = "persist:root";
 
@@ -33,25 +32,6 @@ const getAuthToken = async (
   return AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
 };
 
-const JsonValueSchema = z.union([
-  z.string(),
-  z.number(),
-  z.boolean(),
-  z.record(z.any()),
-  z.array(z.any()),
-  z.null(),
-]);
-
-const parseJSON = (
-  jsonString: string,
-): string | object | number | boolean | null => {
-  const parsed = JsonValueSchema.safeParse(JSON.parse(jsonString));
-  if (parsed.success) {
-    return parsed.data;
-  }
-  return null;
-};
-
 const getPersistedViewerId = async (): Promise<string | number | undefined> => {
   try {
     const storage =
@@ -77,8 +57,6 @@ const getPersistedViewerId = async (): Promise<string | number | undefined> => {
   }
   return undefined;
 };
-
-const ResponseHeadersSchema = z.record(z.string());
 
 const normalizeHeaders = (
   headersInit: HeadersInit | undefined,
@@ -111,7 +89,7 @@ const normalizeHeaders = (
 
 const persistAuthTokenIfPresent = async (
   requestUrl: string,
-  responseHeaders: AxiosResponse["headers"],
+  responseHeaders: Headers,
 ): Promise<void> => {
   const isAuthRequest =
     requestUrl.includes("/user/login") || requestUrl.includes("/user/register");
@@ -119,13 +97,7 @@ const persistAuthTokenIfPresent = async (
     return;
   }
 
-  const parsedHeaders = ResponseHeadersSchema.safeParse(responseHeaders);
-  if (!parsedHeaders.success) {
-    return;
-  }
-
-  const authHeader =
-    parsedHeaders.data["authorization"] ?? parsedHeaders.data["Authorization"];
+  const authHeader = responseHeaders.get("authorization");
   if (!authHeader) {
     return;
   }
@@ -138,8 +110,7 @@ const persistAuthTokenIfPresent = async (
 };
 
 // Matches the RequestInit shape orval's fetch-client codegen always passes
-// (see @orval/fetch's generated `options?: RequestInit`), translated into
-// an axios call under the hood.
+// (see @orval/fetch's generated `options?: RequestInit`).
 export const customInstance = async <T>(
   requestUrl: string,
   options: RequestInit,
@@ -152,18 +123,26 @@ export const customInstance = async <T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const requestBody =
-    typeof options.body === "string" ? parseJSON(options.body) : options.body;
-
-  const response = await AXIOS_INSTANCE<T>({
-    url: requestUrl,
-    method: options.method,
-    data: requestBody,
+  const response = await fetch(`${BASE_URL}${requestUrl}`, {
+    ...options,
     headers,
-    signal: options.signal ?? undefined,
   });
+
+  if (!response.ok) {
+    throw new Error(
+      `Request to ${requestUrl} failed with status ${response.status}`,
+    );
+  }
 
   await persistAuthTokenIfPresent(requestUrl, response.headers);
 
-  return response.data;
+  const responseText = await response.text();
+  // The generated fetcher already types this call's result as T from the
+  // OpenAPI spec; axios's own AxiosResponse<T> typing did this same "trust
+  // the API contract" cast internally before, just hidden inside its .d.ts.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const parsedBody = responseText ? JSON.parse(responseText) : undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return parsedBody;
 };

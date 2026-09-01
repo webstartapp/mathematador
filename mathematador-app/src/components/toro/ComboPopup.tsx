@@ -8,6 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { createTextShadow } from "@/helpers/createTextShadow";
+
 const AUTO_DISMISS_DELAY_MS = 1500;
 
 interface ComboPopupProps {
@@ -47,7 +49,9 @@ const ComboPopup = ({ comboText }: ComboPopupProps): JSX.Element => {
   }
 
   return (
-    <Animated.View style={[styles.overlay, animatedStyle]} pointerEvents="none">
+    <Animated.View
+      style={[styles.overlay, { pointerEvents: "none" }, animatedStyle]}
+    >
       <Text style={styles.text}>{displayText}</Text>
     </Animated.View>
   );
@@ -66,9 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "900",
     color: "#FFD700",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+    ...createTextShadow("rgba(0, 0, 0, 0.75)", -1, 1, 10),
   },
 });
 
