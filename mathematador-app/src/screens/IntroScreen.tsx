@@ -38,6 +38,11 @@ const IntroScreen = (): JSX.Element => {
   };
 
   const goToHome = (): void => {
+    // Stop the music here, deterministically, before the screen starts
+    // unmounting - relying on the effect cleanup below instead raced
+    // expo-audio's own auto-release-on-unmount and crashed (native only):
+    // the player was already released by the time cleanup called pause().
+    stopMenuMusic();
     navigation.replace("Home");
   };
 
@@ -74,9 +79,8 @@ const IntroScreen = (): JSX.Element => {
     return () => {
       clearTimeout(skipTimeoutId);
       clearTimeout(splashSafetyTimeoutId);
-      stopMenuMusic();
     };
-  }, [player, startMenuMusic, stopMenuMusic]);
+  }, [player, startMenuMusic]);
 
   return (
     <View style={styles.container}>
