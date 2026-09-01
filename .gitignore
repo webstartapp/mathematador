@@ -14,4 +14,5 @@ mathematador-app/dist/
 **/*.tsbuildinfo
 
 # Expo
+.expo/
 mathematador-app/.expo/
