@@ -38,4 +38,4 @@ Fetches `cosmeticsGetAll()` on mount; on any failure (almost certainly triggered
 
 ## Dead code specific to this workspace
 
-See the root `CLAUDE.md`'s "Dead / vestigial code" list — most of it is frontend-specific: `gameSlice.ts`, `configs/challengeExercises.ts`, `types/enums.ts`, `hooks/useTypedSelector.ts` (empty file), `HeaderModule`/`HeaderEvents.ts` (no native module ever registered), `expo-jwt`/`EXPO_PUBLIC_JWT_SECRET`, `GauntletScreen.tsx`'s hardcoded fake leaderboard, the unused `QueryClientProvider`.
+See the root `CLAUDE.md`'s "Dead / vestigial code" list — most of it is frontend-specific: `gameSlice.ts`, `configs/challengeExercises.ts`, `types/enums.ts`, `hooks/useTypedSelector.ts` (empty file), `HeaderModule`/`HeaderEvents.ts` (no native module ever registered), `GauntletScreen.tsx`'s hardcoded fake leaderboard, the unused `QueryClientProvider`.
