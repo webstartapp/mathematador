@@ -1,13 +1,12 @@
 const eslintJS = require("@eslint/js");
 const tseslint = require("typescript-eslint");
-const importPlugin = require("eslint-plugin-import");
+const importPlugin = require("eslint-plugin-import-x");
 const unusedImports = require("eslint-plugin-unused-imports");
 const globals = require("globals");
 const prettierConfig = require("eslint-config-prettier");
 const prettierPlugin = require("eslint-plugin-prettier");
 const reactPlugin = require("eslint-plugin-react");
 const reactHooksPlugin = require("eslint-plugin-react-hooks");
-const reactNativePlugin = require("eslint-plugin-react-native");
 
 const baseRestrictedSyntax = [
   {
@@ -325,7 +324,6 @@ module.exports = [
     plugins: {
       react: reactPlugin,
       "react-hooks": reactHooksPlugin,
-      "react-native": reactNativePlugin,
     },
     settings: {
       react: {

@@ -99,7 +99,6 @@ No `LoginScreen`/`RegisterScreen` exists — there is no UI path to obtain a JWT
 - `types/enums.ts` (both `mathematador-app` and `server` copies) — unused leftover boilerplate from a different project template.
 - `mathematador-app/src/hooks/useTypedSelector.ts` — empty file.
 - `HeaderModule` (`components/common/HeaderEvents.ts`) — no such native module is registered anywhere; always a no-op.
-- `expo-jwt` dependency and `EXPO_PUBLIC_JWT_SECRET` env var — unused (JWT signing is server-only).
 - `server/src/_generated/serverAPI.ts` — type-extraction plumbing only, never called at runtime; real routing is 100% hand-written in `server/src/routes.ts`.
 - `server/src/migrations/20241109002335_gameData.js` — a no-op migration (empty `up`/`down`).
 - `GauntletScreen.tsx`'s leaderboard — fully hardcoded/fake, not backed by any API.
