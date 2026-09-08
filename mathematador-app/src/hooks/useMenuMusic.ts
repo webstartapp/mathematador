@@ -1,9 +1,8 @@
-import { useAudioPlayer } from "expo-audio";
-import { useCallback, useEffect, useRef } from "react";
-import { Platform } from "react-native";
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
 
 import menuThemeAsset from "@/assets/music/menu-theme.mp3";
+import { useMenuMusicContext } from "@/providers/audio/MenuMusicProvider";
 import { RootState } from "@/redux/store";
 
 interface MenuMusicControls {
@@ -11,57 +10,20 @@ interface MenuMusicControls {
   stop: () => void;
 }
 
-// Browsers block audio autoplay until the page has seen a user gesture, so a
-// bare play() call on mount is silently ignored on a cold load. Retrying on
-// the first interaction (any click/tap/keypress) is the standard workaround.
-const FIRST_INTERACTION_EVENTS = ["pointerdown", "keydown", "touchstart"];
-
 export const useMenuMusic = (): MenuMusicControls => {
   const musicEnabled = useSelector(
     (state: RootState) => state.user.musicEnabled,
   );
-  const player = useAudioPlayer(menuThemeAsset);
-  const wantsToPlayRef = useRef(false);
-
-  useEffect(() => {
-    player.loop = true;
-  }, [player]);
+  const { requestTrack } = useMenuMusicContext();
 
   const start = useCallback((): void => {
     if (!musicEnabled) return;
-    wantsToPlayRef.current = true;
-    player.seekTo(0);
-    player.play();
-  }, [musicEnabled, player]);
+    requestTrack(menuThemeAsset);
+  }, [musicEnabled, requestTrack]);
 
   const stop = useCallback((): void => {
-    wantsToPlayRef.current = false;
-    try {
-      player.pause();
-    } catch {
-      // The underlying native player may already be released if the
-      // owning screen is mid-unmount - nothing left to stop in that case.
-    }
-  }, [player]);
-
-  useEffect(() => {
-    if (Platform.OS !== "web") return () => {};
-
-    const retryOnInteraction = (): void => {
-      if (wantsToPlayRef.current && player.paused) {
-        player.play();
-      }
-    };
-
-    FIRST_INTERACTION_EVENTS.forEach((eventName) =>
-      document.addEventListener(eventName, retryOnInteraction),
-    );
-    return () => {
-      FIRST_INTERACTION_EVENTS.forEach((eventName) =>
-        document.removeEventListener(eventName, retryOnInteraction),
-      );
-    };
-  }, [player]);
+    requestTrack(null);
+  }, [requestTrack]);
 
   return { start, stop };
 };
