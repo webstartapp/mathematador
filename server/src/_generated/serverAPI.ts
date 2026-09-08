@@ -9,6 +9,7 @@ import type {
   Challenge,
   ChallengeRequest,
   ChallengeResultRequest,
+  CheckEmailResponse,
   Cosmetic,
   CosmeticsBuyBody,
   CosmeticsEquipBody,
@@ -16,6 +17,7 @@ import type {
   CredentialsEmail,
   CredentialsPassword,
   GameProgress,
+  RegisterCredentials,
   Subscription,
   SubscriptionCreate,
   UserProfile
@@ -189,7 +191,7 @@ export const getUserRegisterUrl = () => {
 /**
  * @summary Register a new user
  */
-export const userRegister = async (credentials: Credentials, options?: RequestInit): Promise<userRegisterResponse> => {
+export const userRegister = async (registerCredentials: RegisterCredentials, options?: RequestInit): Promise<userRegisterResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -202,7 +204,7 @@ const res = await fetch(getUserRegisterUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(registerCredentials)
   }
 )
 
@@ -211,6 +213,55 @@ const res = await fetch(getUserRegisterUrl(),
 
   const data: userRegisterResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as userRegisterResponse
+}
+
+
+
+export type userCheckEmailResponse200 = {
+  data: CheckEmailResponse
+  status: 200
+}
+
+export type userCheckEmailResponseSuccess = (userCheckEmailResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userCheckEmailResponse = (userCheckEmailResponseSuccess)
+
+export const getUserCheckEmailUrl = () => {
+
+
+
+
+  return `/user/check-email`
+}
+
+/**
+ * @summary Check whether an email is already registered
+ */
+export const userCheckEmail = async (credentialsEmail: CredentialsEmail, options?: RequestInit): Promise<userCheckEmailResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+const res = await fetch(getUserCheckEmailUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(credentialsEmail)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: userCheckEmailResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userCheckEmailResponse
 }
 
 

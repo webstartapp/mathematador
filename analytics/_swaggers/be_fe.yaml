@@ -65,10 +65,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Credentials'
+              $ref: '#/components/schemas/RegisterCredentials'
       responses:
         '200':
           $ref: '#/components/schemas/UserProfile'
+  /user/check-email:
+    post:
+      operationId: user_check_email
+      summary: Check whether an email is already registered
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialsEmail'
+      responses:
+        '200':
+          description: Whether the email is already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckEmailResponse'
   /user/forgotten-password:
     post:
       operationId: user_forgotten_password
@@ -427,6 +444,28 @@ components:
       required:
         - password
         - tokenForgotten
+    CredentialsUsername:
+      type: object
+      properties:
+        username:
+          type: string
+    RegisterCredentials:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CredentialsEmail'
+        - $ref: '#/components/schemas/CredentialsPassword'
+        - $ref: '#/components/schemas/CredentialsUsername'
+      required:
+        - email
+        - password
+        - username
+    CheckEmailResponse:
+      type: object
+      properties:
+        exists:
+          type: boolean
+      required:
+        - exists
     SubscriptionType:
       type: string
       enum:

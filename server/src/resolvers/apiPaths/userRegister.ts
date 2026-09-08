@@ -1,4 +1,4 @@
-import { Credentials } from "@/_generated/be_fe.zod";
+import { RegisterCredentials } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { signToken } from "@/utils/JWT";
 import { hashPassword } from "@/utils/password";
@@ -8,17 +8,21 @@ export const userRegister = restAPICall(
   "mathematador",
   "userRegister",
   async (request, response): Promise<void> => {
-    const { email, password } = request.body;
+    const { email, password, username } = request.body;
 
     // Check if email already registered
-    const existingUser = await knex("users").where("email", email).first();
-    if (existingUser) {
+    const existingEmail = await knex("users").where("email", email).first();
+    if (existingEmail) {
       response.status(400).json({ message: "Email already registered" });
       return;
     }
 
-    // Create username from email
-    const username = email;
+    // Check if username already taken
+    const existingUsername = await knex("users").where("username", username).first();
+    if (existingUsername) {
+      response.status(400).json({ message: "Username already taken" });
+      return;
+    }
 
     // Hash password
     const hashedPassword = await hashPassword(password);
@@ -48,6 +52,6 @@ export const userRegister = restAPICall(
     });
   },
   {
-    body: Credentials
+    body: RegisterCredentials
   }
 );

@@ -23,6 +23,7 @@ import type {
   Challenge,
   ChallengeRequest,
   ChallengeResultRequest,
+  CheckEmailResponse,
   Cosmetic,
   CosmeticsBuyBody,
   CosmeticsEquipBody,
@@ -30,6 +31,7 @@ import type {
   CredentialsEmail,
   CredentialsPassword,
   GameProgress,
+  RegisterCredentials,
   Subscription,
   SubscriptionCreate,
   UserProfile
@@ -350,7 +352,7 @@ export const getUserRegisterUrl = () => {
 /**
  * @summary Register a new user
  */
-export const userRegister = async (credentials: Credentials, options?: Parameters<typeof customInstance>[1]): Promise<userRegisterResponse> => {
+export const userRegister = async (registerCredentials: RegisterCredentials, options?: Parameters<typeof customInstance>[1]): Promise<userRegisterResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -363,7 +365,7 @@ return customInstance<userRegisterResponse>(getUserRegisterUrl(),
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(registerCredentials)
   }
 );}
 
@@ -401,9 +403,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UserRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof userRegister>>>
-    export type UserRegisterMutationBody = Credentials
+    export type UserRegisterMutationBody = RegisterCredentials
     export type UserRegisterMutationError = unknown
-    export type UserRegisterMutationVariables = {data: Credentials}
+    export type UserRegisterMutationVariables = {data: RegisterCredentials}
 
     /**
  * @summary Register a new user
@@ -417,6 +419,98 @@ export const useUserRegister = <TError = unknown,
         TContext
       > => {
       return useMutation(getUserRegisterMutationOptions(options));
+    }
+
+export type userCheckEmailResponse200 = {
+  data: CheckEmailResponse
+  status: 200
+}
+
+export type userCheckEmailResponseSuccess = (userCheckEmailResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userCheckEmailResponse = (userCheckEmailResponseSuccess)
+
+export const getUserCheckEmailUrl = () => {
+
+
+
+
+  return `/user/check-email`
+}
+
+/**
+ * @summary Check whether an email is already registered
+ */
+export const userCheckEmail = async (credentialsEmail: CredentialsEmail, options?: Parameters<typeof customInstance>[1]): Promise<userCheckEmailResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customInstance<userCheckEmailResponse>(getUserCheckEmailUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(credentialsEmail)
+  }
+);}
+
+
+
+
+
+export const getUserCheckEmailMutationKey = () => ['userCheckEmail'] as const;
+
+export const getUserCheckEmailMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userCheckEmail>>, TError,UserCheckEmailMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userCheckEmail>>, TError,UserCheckEmailMutationVariables, TContext> => {
+
+const mutationKey = getUserCheckEmailMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userCheckEmail>>, UserCheckEmailMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  userCheckEmail(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserCheckEmailMutationResult = NonNullable<Awaited<ReturnType<typeof userCheckEmail>>>
+    export type UserCheckEmailMutationBody = CredentialsEmail
+    export type UserCheckEmailMutationError = unknown
+    export type UserCheckEmailMutationVariables = {data: CredentialsEmail}
+
+    /**
+ * @summary Check whether an email is already registered
+ */
+export const useUserCheckEmail = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userCheckEmail>>, TError,UserCheckEmailMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userCheckEmail>>,
+        TError,
+        UserCheckEmailMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUserCheckEmailMutationOptions(options));
     }
 
 export type userForgottenPasswordResponse201 = {
