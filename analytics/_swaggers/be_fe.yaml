@@ -458,6 +458,8 @@ components:
           $ref: '#/components/schemas/Id'
         name:
           type: string
+        role:
+          type: string
         subscription:
           $ref: '#/components/schemas/Subscription'
     Cosmetic:

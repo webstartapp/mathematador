@@ -43,6 +43,7 @@ export const userRegister = restAPICall(
     response.status(200).json({
       id: newUser.id,
       name: newUser.username,
+      role: newUser.role,
       subscription: undefined
     });
   },

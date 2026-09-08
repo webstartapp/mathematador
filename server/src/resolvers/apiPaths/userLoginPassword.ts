@@ -8,15 +8,14 @@ export const userLoginPassword = restAPICall(
   "userLoginPassword",
   async (request, response): Promise<void> => {
     const { password } = request.body;
-    const userId = request.userId; // If authenticated
+    const userId = request.userId;
 
-    let userRecord;
-    if (userId) {
-      userRecord = await knex("users").where("id", userId).first();
-    } else {
-      // Fallback to first user in database
-      userRecord = await knex("users").first();
+    if (!userId) {
+      response.status(401).json({ message: "Unauthorized" });
+      return;
     }
+
+    const userRecord = await knex("users").where("id", userId).first();
 
     if (!userRecord) {
       response.status(404).json({ message: "User not found" });
@@ -34,6 +33,7 @@ export const userLoginPassword = restAPICall(
     response.status(200).json({
       id: userRecord.id,
       name: userRecord.username,
+      role: userRecord.role,
       subscription: subscriptionRecord
         ? {
             id: subscriptionRecord.id,

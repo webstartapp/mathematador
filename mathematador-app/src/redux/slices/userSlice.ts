@@ -30,6 +30,8 @@ type OperationProgress = {
 };
 
 export interface UserState {
+  id: string | null;
+  role: string | null;
   name: string;
   level: number;
   xp: number;
@@ -45,6 +47,8 @@ export interface UserState {
 }
 
 const initialState: UserState = {
+  id: null,
+  role: null,
   name: "Corina",
   level: 1,
   xp: 0,
@@ -116,6 +120,20 @@ const userSlice = createSlice({
   reducers: {
     setName(state, action: PayloadAction<string>) {
       state.name = action.payload;
+    },
+    setAuth(
+      state,
+      action: PayloadAction<{ id: string; role: string; name?: string }>,
+    ) {
+      state.id = action.payload.id;
+      state.role = action.payload.role;
+      if (action.payload.name) {
+        state.name = action.payload.name;
+      }
+    },
+    logout(state) {
+      state.id = null;
+      state.role = null;
     },
     setMusicEnabled(state, action: PayloadAction<boolean>) {
       state.musicEnabled = action.payload;
@@ -235,6 +253,8 @@ const userSlice = createSlice({
 
 export const {
   setName,
+  setAuth,
+  logout,
   setMusicEnabled,
   levelOperationUp,
   levelUserUp,

@@ -1,6 +1,7 @@
 import { useEventListener } from "expo";
 import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { RouteProp, useRoute } from "expo-router/react-navigation";
 import * as SplashScreen from "expo-splash-screen";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { JSX, useEffect, useRef, useState } from "react";
@@ -14,6 +15,7 @@ type IntroScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "Intro"
 >;
+type IntroScreenRouteProp = RouteProp<RootStackParamList, "Intro">;
 
 const SKIP_BUTTON_DELAY_MS = 2000;
 // Upper bound on how long the native splash (a static image - expo-splash-
@@ -23,6 +25,8 @@ const SPLASH_SAFETY_TIMEOUT_MS = 4000;
 
 const IntroScreen = (): JSX.Element => {
   const navigation = useNavigation<IntroScreenNavigationProp>();
+  const route = useRoute<IntroScreenRouteProp>();
+  const nextRoute = route.params?.nextRoute ?? "Home";
   const { start: startMenuMusic } = useMenuMusic();
   const [showSkip, setShowSkip] = useState(false);
   const splashHiddenRef = useRef(false);
@@ -37,18 +41,18 @@ const IntroScreen = (): JSX.Element => {
     SplashScreen.hideAsync();
   };
 
-  const goToHome = (): void => {
-    navigation.replace("Home");
+  const goToNext = (): void => {
+    navigation.replace(nextRoute);
   };
 
-  useEventListener(player, "playToEnd", goToHome);
+  useEventListener(player, "playToEnd", goToNext);
   useEventListener(player, "statusChange", ({ status }) => {
     if (status === "readyToPlay") {
       hideSplash();
     }
     if (status === "error") {
       hideSplash();
-      goToHome();
+      goToNext();
     }
   });
 
@@ -86,7 +90,7 @@ const IntroScreen = (): JSX.Element => {
         nativeControls={false}
       />
       {showSkip && (
-        <TouchableOpacity style={styles.skipButton} onPress={goToHome}>
+        <TouchableOpacity style={styles.skipButton} onPress={goToNext}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       )}

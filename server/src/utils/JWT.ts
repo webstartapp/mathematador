@@ -33,5 +33,5 @@ export const signToken = (data: ITokenBody): string => {
   if (!secret) {
     throw new Error("JWT secret is not defined");
   }
-  return jwtLib.sign(data, secret);
+  return jwtLib.sign(data, secret, { expiresIn: "30d" });
 };

@@ -1,7 +1,7 @@
 import { ChalengeResult, Challenge } from "@/types/Chalenge";
 
 export type RootStackParamList = {
-  Intro?: {};
+  Intro?: { nextRoute?: "Home" | "Login" };
   Home?: {};
   Level: { levelId: number };
   Challenge: Challenge;
@@ -13,4 +13,6 @@ export type RootStackParamList = {
   Tienda?: {};
   Gauntlet?: {};
   DailyCorrida?: {};
+  Login?: {};
+  Register?: {};
 };

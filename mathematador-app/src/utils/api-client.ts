@@ -137,12 +137,29 @@ export const customInstance = async <T>(
   await persistAuthTokenIfPresent(requestUrl, response.headers);
 
   const responseText = await response.text();
-  // The generated fetcher already types this call's result as T from the
-  // OpenAPI spec; axios's own AxiosResponse<T> typing did this same "trust
-  // the API contract" cast internally before, just hidden inside its .d.ts.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const parsedBody = responseText ? JSON.parse(responseText) : undefined;
 
+  // The generated fetcher types this call's result as T from the OpenAPI
+  // spec - for a custom mutator, orval always generates that as the
+  // axios-style { data, status, headers } shape, regardless of what the
+  // mutator itself actually does under the hood (it has no way to
+  // introspect arbitrary user code). Wrap the parsed body to match, or
+  // every generated fetcher's `.data` access silently reads undefined.
+  // Spreading parsedBody (typed any) is what lets this literal's inferred
+  // type flow through as any overall, satisfying the generic T below the
+  // same way returning parsedBody directly used to - a plain `data:
+  // parsedBody` property here would give the object a concrete shape TS
+  // can't prove assignable to an arbitrary T.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const wrappedResponse = {
+    ...parsedBody,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    data: parsedBody,
+    status: response.status,
+    headers: response.headers,
+  };
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return parsedBody;
+  return wrappedResponse;
 };

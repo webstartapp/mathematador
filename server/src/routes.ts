@@ -24,11 +24,12 @@ router.post("/user/forgotten", userForgotten);
 
 router.post("/user/login", userLogin);
 
-router.put("/user/login", userLoginPassword);
-
 router.post("/user/register", userRegister);
 
 router.post("/user/forgotten-password", userForgottenPassword);
+
+// --- Authenticated Auth Routes ---
+router.put("/user/login", requireAuth, userLoginPassword);
 
 // --- Authenticated Challenge Routes ---
 router.post("/challenges/:operationId", requireAuth, challengeStartNew);

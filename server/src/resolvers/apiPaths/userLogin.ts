@@ -37,6 +37,7 @@ export const userLogin = restAPICall(
     response.status(200).json({
       id: userRecord.id,
       name: userRecord.username,
+      role: userRecord.role,
       subscription: subscriptionRecord
         ? {
             id: subscriptionRecord.id,
