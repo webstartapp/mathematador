@@ -19,6 +19,10 @@ As of 2026-08-27, active work is driven by [issue #29](https://github.com/websta
 
 The rest of this file (and the nested workspace guides) describes the codebase **as it stands today**, which is still accurate for anything the MVP hasn't touched yet — just don't be surprised when auth, ads, or an admin panel show up; check the epic for what's landed.
 
+## Orientation: locked to portrait, by design
+
+`mathematador-app/app.json`'s `"orientation": "portrait"` is a deliberate, permanent direction, not just an unreviewed default — see [issue #61](https://github.com/webstartapp/mathematador/issues/61) for the full reasoning. In short: every hub/menu screen is a single vertically-scrolling column of cards, the core minigame input (`DraggableKeyboard`, a 10-digit numeric pad) is laid out full-width at the bottom of the screen for one-handed thumb reach, and none of the ~10 candidate minigames in [#28](https://github.com/webstartapp/mathematador/issues/28) need landscape's extra width more than they'd lose from portrait's extra height. **Design new screens/minigames for portrait.** `mathematador-app/src/helpers/getScreenSizes.ts`, `HalvingLayout.tsx`, and `DraggableKeyboard.tsx`'s landscape branch exist only as defensive responsive-web handling (a browser window can be arbitrarily wide/short even with native orientation locked) — not a target to actively design toward. The intro/event videos (`intro.mp4`, `success.mp4`, `failure.mp4`, `levelup.mp4`, `itembought.mp4`) are landscape-format (16:9) source footage shown via `contentFit="cover"` (crop-to-fill) inside the portrait frame — request future video generations in a vertical/9:16 aspect where practical instead of relying on cropping.
+
 ## Architecture at a glance
 
 ```
