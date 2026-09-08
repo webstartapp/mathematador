@@ -55,6 +55,16 @@ export const createMenuMusicEngine = (): MenuMusicEngine => {
     currentSlots.forEach((player, slotIndex) => {
       const isActive =
         slotIndex === activeSlotIndex && currentTrackKey !== null;
+
+      if (isActive && !player.playing) {
+        // Autoplay may have been silently blocked (e.g. no user gesture yet
+        // on web) - hold the fade-in until playback genuinely starts, so the
+        // crossfade happens relative to when audio is actually audible, not
+        // to wall-clock time since the request was made.
+        allAtTarget = false;
+        return;
+      }
+
       const target = isActive ? TARGET_VOLUME : 0;
       const nextVolume = stepToward(player.volume, target);
 
@@ -105,6 +115,7 @@ export const createMenuMusicEngine = (): MenuMusicEngine => {
     const activePlayer = slots[activeSlotIndex];
     if (activePlayer.paused) {
       activePlayer.play();
+      beginFade();
     }
   };
 
