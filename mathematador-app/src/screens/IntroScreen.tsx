@@ -1,6 +1,7 @@
 import { useEventListener } from "expo";
 import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
+import { RouteProp, useRoute } from "expo-router/react-navigation";
 import * as SplashScreen from "expo-splash-screen";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { JSX, useEffect, useRef, useState } from "react";
@@ -8,12 +9,15 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
+import { useSessionVerification } from "@/hooks/useSessionVerification";
+import { markIntroPlayed } from "@/navigation/introSession";
 import { RootStackParamList } from "@/types/Navigation";
 
 type IntroScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "Intro"
 >;
+type IntroScreenRouteProp = RouteProp<RootStackParamList, "Intro">;
 
 const SKIP_BUTTON_DELAY_MS = 2000;
 // Upper bound on how long the native splash (a static image - expo-splash-
@@ -23,9 +27,13 @@ const SPLASH_SAFETY_TIMEOUT_MS = 4000;
 
 const IntroScreen = (): JSX.Element => {
   const navigation = useNavigation<IntroScreenNavigationProp>();
+  const route = useRoute<IntroScreenRouteProp>();
+  const nextRoute = route.params?.nextRoute ?? "Home";
   const { start: startMenuMusic } = useMenuMusic();
   const [showSkip, setShowSkip] = useState(false);
+  const [videoWantsNext, setVideoWantsNext] = useState(false);
   const splashHiddenRef = useRef(false);
+  const verificationOutcome = useSessionVerification();
 
   const player = useVideoPlayer(introVideoAsset, (playerInstance) => {
     playerInstance.muted = true;
@@ -37,22 +45,35 @@ const IntroScreen = (): JSX.Element => {
     SplashScreen.hideAsync();
   };
 
-  const goToHome = (): void => {
-    navigation.replace("Home");
+  // The video ending (or being skipped) is only half of "ready to move on" -
+  // a persisted user.id is unverified client state (see useSessionVerification),
+  // so this waits for that check too before actually navigating. On
+  // "blocked" (a confirmed-invalid session) this deliberately never
+  // navigates - logout() already flipped isAuthenticated to false, and
+  // app/index.tsx reactively swaps this whole stack out for AuthStack.
+  const requestNext = (): void => {
+    setVideoWantsNext(true);
   };
 
-  useEventListener(player, "playToEnd", goToHome);
+  useEffect(() => {
+    if (videoWantsNext && verificationOutcome === "proceed") {
+      navigation.replace(nextRoute);
+    }
+  }, [videoWantsNext, verificationOutcome, navigation, nextRoute]);
+
+  useEventListener(player, "playToEnd", requestNext);
   useEventListener(player, "statusChange", ({ status }) => {
     if (status === "readyToPlay") {
       hideSplash();
     }
     if (status === "error") {
       hideSplash();
-      goToHome();
+      requestNext();
     }
   });
 
   useEffect(() => {
+    markIntroPlayed();
     // Calling play() from the useVideoPlayer setup callback fires before the
     // VideoView's underlying <video> element is attached on web, so playback
     // never actually starts - call it after mount instead.
@@ -86,7 +107,7 @@ const IntroScreen = (): JSX.Element => {
         nativeControls={false}
       />
       {showSkip && (
-        <TouchableOpacity style={styles.skipButton} onPress={goToHome}>
+        <TouchableOpacity style={styles.skipButton} onPress={requestNext}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       )}

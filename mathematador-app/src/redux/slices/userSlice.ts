@@ -30,6 +30,8 @@ type OperationProgress = {
 };
 
 export interface UserState {
+  id: string | null;
+  role: string | null;
   name: string;
   level: number;
   xp: number;
@@ -44,12 +46,19 @@ export interface UserState {
   musicEnabled: boolean;
 }
 
-const initialState: UserState = {
+// A factory (not a shared literal) so setAuth can reset a returning
+// account's progress to genuinely fresh objects/arrays on every call -
+// assigning previously-created initialState references back onto state
+// under Immer risks both sharing mutable state across accounts and Immer
+// auto-freeze errors on any later mutation of those same objects.
+const createInitialUserProgress = (): Omit<
+  UserState,
+  "id" | "role" | "musicEnabled"
+> => ({
   name: "Corina",
   level: 1,
   xp: 0,
   coins: 0,
-  musicEnabled: true,
   xpToNextLevel: calculateXPToNextLevel(1 * 2),
   operationProgress: operations.map((operation) => ({
     completedChallenges: [],
@@ -70,6 +79,13 @@ const initialState: UserState = {
     { minigameId: "crossNumbers", level: 1, xp: 0, xpToNextLevel: 100 },
     { minigameId: "memory", level: 1, xp: 0, xpToNextLevel: 100 },
   ],
+});
+
+const initialState: UserState = {
+  id: null,
+  role: null,
+  musicEnabled: true,
+  ...createInitialUserProgress(),
 };
 
 const syncOperations = (
@@ -116,6 +132,34 @@ const userSlice = createSlice({
   reducers: {
     setName(state, action: PayloadAction<string>) {
       state.name = action.payload;
+    },
+    setAuth(
+      state,
+      action: PayloadAction<{ id: string; role: string; name?: string }>,
+    ) {
+      // Resets every account-scoped field (progress, coins, cosmetics, ...)
+      // so a second account logging in on the same device/browser never
+      // sees the previous account's locally-persisted state, even for the
+      // moment before any server sync happens to overwrite it. musicEnabled
+      // is a device preference, not account data, so it's left alone.
+      const freshProgress = createInitialUserProgress();
+      state.name = action.payload.name || freshProgress.name;
+      state.level = freshProgress.level;
+      state.xp = freshProgress.xp;
+      state.coins = freshProgress.coins;
+      state.xpToNextLevel = freshProgress.xpToNextLevel;
+      state.operationProgress = freshProgress.operationProgress;
+      state.purchasedCosmetics = freshProgress.purchasedCosmetics;
+      state.equippedCape = freshProgress.equippedCape;
+      state.equippedSuit = freshProgress.equippedSuit;
+      state.equippedFlare = freshProgress.equippedFlare;
+      state.minigameProgress = freshProgress.minigameProgress;
+      state.id = action.payload.id;
+      state.role = action.payload.role;
+    },
+    logout(state) {
+      state.id = null;
+      state.role = null;
     },
     setMusicEnabled(state, action: PayloadAction<boolean>) {
       state.musicEnabled = action.payload;
@@ -235,6 +279,8 @@ const userSlice = createSlice({
 
 export const {
   setName,
+  setAuth,
+  logout,
   setMusicEnabled,
   levelOperationUp,
   levelUserUp,

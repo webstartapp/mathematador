@@ -17,6 +17,12 @@ export const userLogin = restAPICall(
       return;
     }
 
+    // A Google-linked account with no local password can't log in this way
+    if (!userRecord.password) {
+      response.status(401).json({ message: "Invalid email or password" });
+      return;
+    }
+
     // Compare passwords
     const passwordMatch = await comparePassword(password, userRecord.password);
     if (!passwordMatch) {
@@ -37,6 +43,7 @@ export const userLogin = restAPICall(
     response.status(200).json({
       id: userRecord.id,
       name: userRecord.username,
+      role: userRecord.role,
       subscription: subscriptionRecord
         ? {
             id: subscriptionRecord.id,

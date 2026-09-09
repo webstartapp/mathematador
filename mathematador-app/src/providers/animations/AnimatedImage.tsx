@@ -131,6 +131,14 @@ export default AnimatedBackgroundProvider;
 const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
+    // Oversized so the scale/translate wobble never exposes the container's
+    // edges. An absolutely-positioned child isn't reliably centered by the
+    // parent's flex alignment alone (confirmed live: without these
+    // offsets, the image drifted almost entirely below the visible area,
+    // leaving only a sliver visible at the bottom) - top/left explicitly
+    // center the oversized box: -(120%-100%)/2 and -(110%-100%)/2.
+    top: "-5%",
+    left: "-10%",
     width: "120%",
     height: "110%",
   },
@@ -148,7 +156,12 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    // Was a semi-transparent white scrim, but the only screens using this
+    // background (Home, Auth) put their text inside an opaque card
+    // (CenteredDesk), never directly over the image - so it only ever
+    // washed the image out once it became visible (see index.tsx's
+    // transparentNavigationTheme fix).
+    backgroundColor: "transparent",
     display: "flex",
     flex: 1,
     alignContent: "center",
