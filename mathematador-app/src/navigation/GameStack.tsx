@@ -5,6 +5,7 @@ import {
 import { JSX } from "react";
 
 import GameHeader from "@/components/common/Header";
+import { hasIntroAlreadyPlayed } from "@/navigation/introSession";
 import ChalengeSelectScreen from "@/screens/ChalengeSelectScreen";
 import ChallengeScreen from "@/screens/ChallengeGameScreen";
 import ChallengeResultScreen from "@/screens/ChallengeResultScreen";
@@ -18,10 +19,12 @@ import { RootStackParamList } from "@/types/Navigation";
 const Stack = createStackNavigator<RootStackParamList>();
 
 // Rendered only while the player is authenticated (see app/index.tsx) - the
-// game itself and everything reachable from Home.
+// game itself and everything reachable from Home. Skips straight to Home
+// when Intro already played this session (e.g. just shown by AuthStack
+// right before sign-in) so it never plays twice in a row.
 const GameStack = (): JSX.Element => (
   <Stack.Navigator
-    initialRouteName="Intro"
+    initialRouteName={hasIntroAlreadyPlayed() ? "Home" : "Intro"}
     screenOptions={{
       headerShown: false,
     }}

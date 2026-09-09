@@ -9,6 +9,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
+import { markIntroPlayed } from "@/navigation/introSession";
 import { RootStackParamList } from "@/types/Navigation";
 
 type IntroScreenNavigationProp = StackNavigationProp<
@@ -57,6 +58,7 @@ const IntroScreen = (): JSX.Element => {
   });
 
   useEffect(() => {
+    markIntroPlayed();
     // Calling play() from the useVideoPlayer setup callback fires before the
     // VideoView's underlying <video> element is attached on web, so playback
     // never actually starts - call it after mount instead.
