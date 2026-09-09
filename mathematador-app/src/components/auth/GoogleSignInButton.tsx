@@ -36,7 +36,8 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({
     if (Platform.OS !== "web") {
       return;
     }
-    const clientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+    const clientId: string | undefined =
+      process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
       return;
     }
