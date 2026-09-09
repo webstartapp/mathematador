@@ -31,6 +31,7 @@ import type {
   CredentialsEmail,
   CredentialsPassword,
   GameProgress,
+  GoogleIdToken,
   RegisterCredentials,
   Subscription,
   SubscriptionCreate,
@@ -419,6 +420,98 @@ export const useUserRegister = <TError = unknown,
         TContext
       > => {
       return useMutation(getUserRegisterMutationOptions(options));
+    }
+
+export type userGoogleLoginResponse200 = {
+  data: UserProfile
+  status: 200
+}
+
+export type userGoogleLoginResponseSuccess = (userGoogleLoginResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userGoogleLoginResponse = (userGoogleLoginResponseSuccess)
+
+export const getUserGoogleLoginUrl = () => {
+
+
+
+
+  return `/user/google-login`
+}
+
+/**
+ * @summary Sign in (or register/link) via a verified Google ID token
+ */
+export const userGoogleLogin = async (googleIdToken: GoogleIdToken, options?: Parameters<typeof customInstance>[1]): Promise<userGoogleLoginResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customInstance<userGoogleLoginResponse>(getUserGoogleLoginUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(googleIdToken)
+  }
+);}
+
+
+
+
+
+export const getUserGoogleLoginMutationKey = () => ['userGoogleLogin'] as const;
+
+export const getUserGoogleLoginMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userGoogleLogin>>, TError,UserGoogleLoginMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userGoogleLogin>>, TError,UserGoogleLoginMutationVariables, TContext> => {
+
+const mutationKey = getUserGoogleLoginMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userGoogleLogin>>, UserGoogleLoginMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  userGoogleLogin(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserGoogleLoginMutationResult = NonNullable<Awaited<ReturnType<typeof userGoogleLogin>>>
+    export type UserGoogleLoginMutationBody = GoogleIdToken
+    export type UserGoogleLoginMutationError = unknown
+    export type UserGoogleLoginMutationVariables = {data: GoogleIdToken}
+
+    /**
+ * @summary Sign in (or register/link) via a verified Google ID token
+ */
+export const useUserGoogleLogin = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userGoogleLogin>>, TError,UserGoogleLoginMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userGoogleLogin>>,
+        TError,
+        UserGoogleLoginMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUserGoogleLoginMutationOptions(options));
     }
 
 export type userCheckEmailResponse200 = {

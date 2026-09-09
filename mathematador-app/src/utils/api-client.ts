@@ -108,7 +108,9 @@ const persistAuthTokenIfPresent = async (
   responseHeaders: Headers,
 ): Promise<void> => {
   const isAuthRequest =
-    requestUrl.includes("/user/login") || requestUrl.includes("/user/register");
+    requestUrl.includes("/user/login") ||
+    requestUrl.includes("/user/register") ||
+    requestUrl.includes("/user/google-login");
   if (!isAuthRequest) {
     return;
   }

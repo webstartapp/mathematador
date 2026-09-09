@@ -69,6 +69,19 @@ paths:
       responses:
         '200':
           $ref: '#/components/schemas/UserProfile'
+  /user/google-login:
+    post:
+      operationId: user_google_login
+      summary: Sign in (or register/link) via a verified Google ID token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleIdToken'
+      responses:
+        '200':
+          $ref: '#/components/schemas/UserProfile'
   /user/check-email:
     post:
       operationId: user_check_email
@@ -468,6 +481,13 @@ components:
           type: boolean
       required:
         - exists
+    GoogleIdToken:
+      type: object
+      properties:
+        idToken:
+          type: string
+      required:
+        - idToken
     SubscriptionType:
       type: string
       enum:

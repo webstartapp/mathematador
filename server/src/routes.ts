@@ -14,6 +14,7 @@ import { subscriptionUpdate } from "@/resolvers/apiPaths/subscriptionUpdate";
 import { userCheckEmail } from "@/resolvers/apiPaths/userCheckEmail";
 import { userForgotten } from "@/resolvers/apiPaths/userForgotten";
 import { userForgottenPassword } from "@/resolvers/apiPaths/userForgottenPassword";
+import { userGoogleLogin } from "@/resolvers/apiPaths/userGoogleLogin";
 import { userLogin } from "@/resolvers/apiPaths/userLogin";
 import { userLoginPassword } from "@/resolvers/apiPaths/userLoginPassword";
 import { userRegister } from "@/resolvers/apiPaths/userRegister";
@@ -30,6 +31,8 @@ router.post("/user/register", userRegister);
 router.post("/user/forgotten-password", userForgottenPassword);
 
 router.post("/user/check-email", userCheckEmail);
+
+router.post("/user/google-login", userGoogleLogin);
 
 // --- Authenticated Auth Routes ---
 router.put("/user/login", requireAuth, userLoginPassword);
