@@ -14,8 +14,9 @@ import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
-import { setAuth } from "@/redux/slices/userSlice";
+import { setAuth, syncProgress } from "@/redux/slices/userSlice";
 import {
+  gameProgress,
   userCheckEmail,
   userGoogleLogin,
   userLogin,
@@ -110,6 +111,39 @@ const AuthScreen = (): JSX.Element => {
     setErrorMessage(null);
   };
 
+  // Shared by every successful auth path (login, register, Google). setAuth
+  // resets account-scoped progress to a fresh snapshot (so a different
+  // account never inherits stale local data - see userSlice.setAuth), which
+  // means a *returning* user needs their real progress re-hydrated from the
+  // server right away, or they'd see Level 1/0 XP until their next reload.
+  // Best-effort: if this fails, the user just stays on the freshly-reset
+  // state, matching the offline-first fallback pattern used elsewhere.
+  const applyAuthSuccess = useCallback(
+    async (userProfile: {
+      id?: string;
+      role?: string;
+      name?: string;
+    }): Promise<void> => {
+      if (!userProfile.id || !userProfile.role) {
+        throw new Error("Auth response is missing required fields");
+      }
+      dispatch(
+        setAuth({
+          id: userProfile.id,
+          role: userProfile.role,
+          name: userProfile.name,
+        }),
+      );
+      try {
+        const progress = await gameProgress();
+        dispatch(syncProgress(progress.data));
+      } catch {
+        // Ignored - see comment above.
+      }
+    },
+    [dispatch],
+  );
+
   const handleCheckEmail = async (): Promise<void> => {
     setErrorMessage(null);
     if (!EMAIL_PATTERN.test(email)) {
@@ -133,23 +167,14 @@ const AuthScreen = (): JSX.Element => {
       setIsSubmitting(true);
       try {
         const response = await userGoogleLogin({ idToken });
-        if (!response.data.id || !response.data.role) {
-          throw new Error("Google sign-in response is missing required fields");
-        }
-        dispatch(
-          setAuth({
-            id: response.data.id,
-            role: response.data.role,
-            name: response.data.name,
-          }),
-        );
+        await applyAuthSuccess(response.data);
       } catch {
         setErrorMessage("Could not sign in with Google. Try again.");
       } finally {
         setIsSubmitting(false);
       }
     },
-    [dispatch],
+    [applyAuthSuccess],
   );
 
   const handleLogin = async (): Promise<void> => {
@@ -157,16 +182,7 @@ const AuthScreen = (): JSX.Element => {
     setIsSubmitting(true);
     try {
       const response = await userLogin({ email, password });
-      if (!response.data.id || !response.data.role) {
-        throw new Error("Login response is missing required fields");
-      }
-      dispatch(
-        setAuth({
-          id: response.data.id,
-          role: response.data.role,
-          name: response.data.name,
-        }),
-      );
+      await applyAuthSuccess(response.data);
     } catch (error) {
       setErrorMessage(
         error instanceof ApiRequestError && error.status === 401
@@ -195,16 +211,7 @@ const AuthScreen = (): JSX.Element => {
         password,
         username: username.trim(),
       });
-      if (!response.data.id || !response.data.role) {
-        throw new Error("Register response is missing required fields");
-      }
-      dispatch(
-        setAuth({
-          id: response.data.id,
-          role: response.data.role,
-          name: response.data.name,
-        }),
-      );
+      await applyAuthSuccess(response.data);
     } catch {
       setErrorMessage("Could not create your account. Try again.");
     } finally {

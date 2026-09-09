@@ -147,14 +147,19 @@ export const customInstance = async <T>(
   });
 
   if (!response.ok) {
-    if (response.status === 401) {
-      // A JWT is only ever invalid/expired here, never on the login/register
-      // calls themselves (those return their own 401 for bad credentials
-      // while the caller is already logged out) - either way, dropping the
-      // stale token and flipping auth state off routes back to AuthStack
-      // instead of leaving GameStack up while every call quietly fails.
-      await AsyncStorage.removeItem(PERSISTED_TOKEN_KEY);
-      store.dispatch(logout());
+    if (response.status === 401 && token) {
+      // Only invalidate if the token this specific request was sent with is
+      // still the one currently stored - otherwise a stale in-flight
+      // request's 401 (from a session that has since logged out and a
+      // different account logged back in before this response arrived)
+      // would wrongly log out the newer, unrelated session. A request made
+      // with no token at all (e.g. a failed login attempt) never reaches
+      // here either, since there was nothing to invalidate.
+      const currentToken = await AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
+      if (currentToken === token) {
+        await AsyncStorage.removeItem(PERSISTED_TOKEN_KEY);
+        store.dispatch(logout());
+      }
     }
     throw new ApiRequestError(response.status, requestUrl);
   }
