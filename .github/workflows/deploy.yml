@@ -48,6 +48,22 @@ jobs:
         run: npm run build --workspace=server
 
 
+      - name: Fetch GUI env file from server
+        # expo export -p web (the next step) inlines EXPO_PUBLIC_* vars into
+        # the static JS bundle at build time, and there is no
+        # mathematador-app/.env in this checkout (it's gitignored, never
+        # committed) - so the real mathematador.gui.env has to be pulled
+        # down and in place *before* building, not copied to the server
+        # afterwards like it was before (see issue #51). The env file stays
+        # the single source of truth on the server; this just fetches it at
+        # the point in the pipeline where it's actually needed.
+        env:
+          SSHPASS: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          sshpass -e scp -o StrictHostKeyChecking=no \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:"${{ secrets.GUI_ENV_FILE }}" \
+            mathematador-app/.env
+
       - name: Build app (Expo Web)
         run: npm run build --workspace=mathematador-app
 
@@ -96,15 +112,20 @@ jobs:
             rm deploy.zip
           ENDSSH
 
-      - name: Copy environment files on server
+      - name: Copy environment file on server
+        # Only the server's .env is load-bearing here - it's a running Node
+        # process that reads env at startup/runtime via dotenv. The web
+        # build has no equivalent: EXPO_PUBLIC_* vars are already baked into
+        # the static bundle by the "Build app (Expo Web)" step above, and
+        # `serve` (the static file server PM2 runs for the GUI) never reads
+        # a .env file at all - see issue #51.
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
             set -e
             cp "${{ secrets.SERVER_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/server/.env"
-            cp "${{ secrets.GUI_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/web/.env"
-            echo "Server and GUI .env files copied"
+            echo "Server .env file copied"
           ENDSSH
 
       - name: Install server production dependencies
