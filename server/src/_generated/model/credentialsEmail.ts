@@ -7,5 +7,5 @@
  */
 
 export type CredentialsEmail = {
-  email?: string;
+  email: string;
 };

@@ -8,4 +8,4 @@
 import type { CredentialsEmail } from './credentialsEmail';
 import type { CredentialsPassword } from './credentialsPassword';
 
-export type Credentials = CredentialsEmail & CredentialsPassword & Required<Pick<CredentialsEmail & CredentialsPassword, 'email' | 'password'>>;
+export type Credentials = CredentialsEmail & CredentialsPassword & Required<Pick<CredentialsEmail & CredentialsPassword, 'password'>>;

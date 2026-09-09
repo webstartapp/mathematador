@@ -7,5 +7,5 @@
  */
 
 export interface CredentialsEmail {
-  email?: string;
+  email: string;
 }

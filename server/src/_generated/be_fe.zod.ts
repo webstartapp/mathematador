@@ -230,7 +230,7 @@ type CredentialsOutput = zod.output<typeof Credentials>;
 
 
 export const CredentialsEmail = zod.object({
-  "email": zod.string().email().optional()
+  "email": zod.string().email()
 })
 
 type CredentialsEmail = zod.input<typeof CredentialsEmail>;
@@ -652,7 +652,7 @@ type SubscriptionUpdateBodyOutput = zod.output<typeof SubscriptionUpdateBody>;
 
 
 export const UserCheckEmailBody = zod.object({
-  "email": zod.string().email().optional()
+  "email": zod.string().email()
 })
 
 type UserCheckEmailBody = zod.input<typeof UserCheckEmailBody>;
@@ -668,7 +668,7 @@ type UserCheckEmailBodyOutput = zod.output<typeof UserCheckEmailBody>;
 
 
 export const UserForgottenBody = zod.object({
-  "email": zod.string().email().optional()
+  "email": zod.string().email()
 })
 
 type UserForgottenBody = zod.input<typeof UserForgottenBody>;
@@ -684,7 +684,7 @@ type UserForgottenBodyOutput = zod.output<typeof UserForgottenBody>;
 
 
 export const UserForgottenPasswordBody = zod.object({
-  "email": zod.string().email().optional()
+  "email": zod.string().email()
 })
 
 type UserForgottenPasswordBody = zod.input<typeof UserForgottenPasswordBody>;

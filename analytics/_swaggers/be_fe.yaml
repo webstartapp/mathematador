@@ -418,6 +418,8 @@ components:
         email:
           type: string
           format: email
+      required:
+        - email
     CredentialsPassword:
       type: object
       properties:

@@ -1,6 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { z } from "zod";
 
+import { logout } from "@/redux/slices/userSlice";
+import { store } from "@/redux/store";
+
+// Carries the HTTP status alongside the message so callers (AuthScreen's
+// login, mainly) can tell "server rejected the password" apart from "server
+// unreachable" instead of collapsing every failure into one generic message.
+export class ApiRequestError extends Error {
+  status: number;
+
+  constructor(status: number, requestUrl: string) {
+    super(`Request to ${requestUrl} failed with status ${status}`);
+    this.name = "ApiRequestError";
+    this.status = status;
+  }
+}
+
 const BASE_URL = String(
   process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076",
 );
@@ -129,9 +145,16 @@ export const customInstance = async <T>(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Request to ${requestUrl} failed with status ${response.status}`,
-    );
+    if (response.status === 401) {
+      // A JWT is only ever invalid/expired here, never on the login/register
+      // calls themselves (those return their own 401 for bad credentials
+      // while the caller is already logged out) - either way, dropping the
+      // stale token and flipping auth state off routes back to AuthStack
+      // instead of leaving GameStack up while every call quietly fails.
+      await AsyncStorage.removeItem(PERSISTED_TOKEN_KEY);
+      store.dispatch(logout());
+    }
+    throw new ApiRequestError(response.status, requestUrl);
   }
 
   await persistAuthTokenIfPresent(requestUrl, response.headers);

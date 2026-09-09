@@ -15,6 +15,7 @@ import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { setAuth } from "@/redux/slices/userSlice";
 import { userCheckEmail, userLogin, userRegister } from "@/src/_generated/api";
+import { ApiRequestError } from "@/utils/api-client";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -97,6 +98,7 @@ const AuthScreen = (): JSX.Element => {
 
   const resetToEmailStep = (): void => {
     setStep("email");
+    setUsername("");
     setPassword("");
     setConfirmPassword("");
     setErrorMessage(null);
@@ -134,8 +136,12 @@ const AuthScreen = (): JSX.Element => {
           name: response.data.name,
         }),
       );
-    } catch {
-      setErrorMessage("Incorrect password.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof ApiRequestError && error.status === 401
+          ? "Incorrect password."
+          : "Could not reach the server. Try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -143,13 +149,21 @@ const AuthScreen = (): JSX.Element => {
 
   const handleRegister = async (): Promise<void> => {
     setErrorMessage(null);
+    if (!username.trim() || !password) {
+      setErrorMessage("Enter a username and password.");
+      return;
+    }
     if (password !== confirmPassword) {
       setErrorMessage("Passwords don't match.");
       return;
     }
     setIsSubmitting(true);
     try {
-      const response = await userRegister({ email, password, username });
+      const response = await userRegister({
+        email,
+        password,
+        username: username.trim(),
+      });
       if (!response.data.id || !response.data.role) {
         throw new Error("Register response is missing required fields");
       }
