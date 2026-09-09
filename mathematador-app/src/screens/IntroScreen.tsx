@@ -9,6 +9,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
+import { useSessionVerification } from "@/hooks/useSessionVerification";
 import { markIntroPlayed } from "@/navigation/introSession";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -30,7 +31,9 @@ const IntroScreen = (): JSX.Element => {
   const nextRoute = route.params?.nextRoute ?? "Home";
   const { start: startMenuMusic } = useMenuMusic();
   const [showSkip, setShowSkip] = useState(false);
+  const [videoWantsNext, setVideoWantsNext] = useState(false);
   const splashHiddenRef = useRef(false);
+  const verificationOutcome = useSessionVerification();
 
   const player = useVideoPlayer(introVideoAsset, (playerInstance) => {
     playerInstance.muted = true;
@@ -42,18 +45,30 @@ const IntroScreen = (): JSX.Element => {
     SplashScreen.hideAsync();
   };
 
-  const goToNext = (): void => {
-    navigation.replace(nextRoute);
+  // The video ending (or being skipped) is only half of "ready to move on" -
+  // a persisted user.id is unverified client state (see useSessionVerification),
+  // so this waits for that check too before actually navigating. On
+  // "blocked" (a confirmed-invalid session) this deliberately never
+  // navigates - logout() already flipped isAuthenticated to false, and
+  // app/index.tsx reactively swaps this whole stack out for AuthStack.
+  const requestNext = (): void => {
+    setVideoWantsNext(true);
   };
 
-  useEventListener(player, "playToEnd", goToNext);
+  useEffect(() => {
+    if (videoWantsNext && verificationOutcome === "proceed") {
+      navigation.replace(nextRoute);
+    }
+  }, [videoWantsNext, verificationOutcome, navigation, nextRoute]);
+
+  useEventListener(player, "playToEnd", requestNext);
   useEventListener(player, "statusChange", ({ status }) => {
     if (status === "readyToPlay") {
       hideSplash();
     }
     if (status === "error") {
       hideSplash();
-      goToNext();
+      requestNext();
     }
   });
 
@@ -92,7 +107,7 @@ const IntroScreen = (): JSX.Element => {
         nativeControls={false}
       />
       {showSkip && (
-        <TouchableOpacity style={styles.skipButton} onPress={goToNext}>
+        <TouchableOpacity style={styles.skipButton} onPress={requestNext}>
           <Text style={styles.skipText}>Skip</Text>
         </TouchableOpacity>
       )}
