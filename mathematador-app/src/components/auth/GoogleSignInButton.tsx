@@ -6,29 +6,8 @@ const GOOGLE_SCRIPT_ID = "google-identity-services-script";
 const GOOGLE_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 const BUTTON_CONTAINER_ID = "google-sign-in-button-container";
 
-interface GoogleCredentialResponse {
-  credential: string;
-}
-
-interface GoogleAccountsId {
-  initialize: (config: {
-    client_id: string;
-    callback: (response: GoogleCredentialResponse) => void;
-  }) => void;
-  renderButton: (
-    parent: HTMLElement,
-    options: { theme: string; size: string; width: string; shape: string },
-  ) => void;
-}
-
-declare global {
-  // A `declare global` value (as opposed to a type) can only be introduced
-  // with `var` - this augments the actual global scope the GIS script
-  // attaches `google` to, read below as the plain identifier `google` (not
-  // `window.google`, which this repo's lint config forbids outright).
-  var google: { accounts: { id: GoogleAccountsId } } | undefined;
-}
-
+// The global `google` identifier's type comes from src/types/google.d.ts
+// (not `window.google`, which this repo's lint config forbids outright).
 interface GoogleSignInButtonProps {
   onCredential: (idToken: string) => void;
 }
