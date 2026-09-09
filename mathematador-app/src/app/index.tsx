@@ -1,5 +1,8 @@
 import { NavigationIndependentTree } from "expo-router/build/react-navigation/core";
-import { NavigationContainer } from "expo-router/build/react-navigation/native";
+import {
+  DefaultTheme,
+  NavigationContainer,
+} from "expo-router/build/react-navigation/native";
 import { JSX } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
@@ -9,6 +12,16 @@ import GameStack from "@/navigation/GameStack";
 import AnimatedBackgroundProvider from "@/providers/animations/AnimatedImage";
 import MenuMusicProvider from "@/providers/audio/MenuMusicProvider";
 import { selectIsAuthenticated } from "@/redux/selectors/auth";
+
+// React Navigation's default theme paints every screen's own container with
+// an opaque background (colors.background, rgb(242,242,242)) - since that
+// container sits in front of AnimatedBackgroundProvider's image (a sibling
+// layer behind all screen content), leaving it in place hid the animated
+// background completely on every screen, not just visually behind widgets.
+const transparentNavigationTheme = {
+  ...DefaultTheme,
+  colors: { ...DefaultTheme.colors, background: "transparent" },
+};
 
 const IndexPage = (): JSX.Element => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -27,7 +40,7 @@ const IndexPage = (): JSX.Element => {
           default path serialization writes every nested screen name into
           the URL since this stack has no linking config of its own. */}
           <NavigationIndependentTree>
-            <NavigationContainer>
+            <NavigationContainer theme={transparentNavigationTheme}>
               {isAuthenticated ? <GameStack /> : <AuthStack />}
             </NavigationContainer>
           </NavigationIndependentTree>

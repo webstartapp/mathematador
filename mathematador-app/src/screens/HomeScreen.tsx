@@ -1,8 +1,7 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { JSX, useEffect } from "react";
-import { Text, TouchableOpacity } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
 import Button from "@/components/common/Button";
@@ -10,7 +9,6 @@ import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
-import { logout } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -19,7 +17,6 @@ type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 const HomeScreen = (): JSX.Element => {
   useAnimatedBackground(imageBG);
   const navigation = useNavigation<HomeScreenNavigationProp>();
-  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const { start: startMenuMusic, stop: stopMenuMusic } = useMenuMusic();
 
@@ -50,11 +47,6 @@ const HomeScreen = (): JSX.Element => {
           style={{ backgroundColor: "#FFD700" }}
           textStyle={{ color: "#1a1a1a" }}
         />
-        <TouchableOpacity onPress={() => dispatch(logout())}>
-          <Text style={{ color: "rgba(255,255,255,0.6)", marginTop: 16 }}>
-            Log out
-          </Text>
-        </TouchableOpacity>
       </CenteredDesk>
     </Layout>
   );

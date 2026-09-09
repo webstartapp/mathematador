@@ -156,7 +156,12 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    // Was a semi-transparent white scrim, but the only screens using this
+    // background (Home, Auth) put their text inside an opaque card
+    // (CenteredDesk), never directly over the image - so it only ever
+    // washed the image out once it became visible (see index.tsx's
+    // transparentNavigationTheme fix).
+    backgroundColor: "transparent",
     display: "flex",
     flex: 1,
     alignContent: "center",
