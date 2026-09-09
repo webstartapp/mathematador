@@ -31,8 +31,8 @@ jobs:
           [ -n "${{ secrets.SERVER_HOST }}" ]         || { echo "ERROR: SERVER_HOST is not set"; exit 1; }
           [ -n "${{ secrets.SERVER_PASSWORD }}" ]     || { echo "ERROR: SERVER_PASSWORD is not set"; exit 1; }
           [ -n "${{ secrets.SERVER_ENV_FILE }}" ]     || { echo "ERROR: SERVER_ENV_FILE is not set"; exit 1; }
-          [ -n "${{ secrets.GUI_ENV_FILE }}" ]        || { echo "ERROR: GUI_ENV_FILE is not set"; exit 1; }
           [ -n "${{ secrets.PM2_APP_NAME }}" ]        || { echo "ERROR: PM2_APP_NAME is not set"; exit 1; }
+          [ -n "${{ secrets.EXPO_PUBLIC_API_URL }}" ] || { echo "ERROR: EXPO_PUBLIC_API_URL is not set"; exit 1; }
           echo "All required secrets are set"
 
       - name: Install zip and sshpass
@@ -49,6 +49,14 @@ jobs:
 
 
       - name: Build app (Expo Web)
+        # expo export -p web inlines EXPO_PUBLIC_* vars into the static JS
+        # bundle at this exact step - there is no mathematador-app/.env in
+        # this checkout (it's gitignored) and no later step can retroactively
+        # fix a value baked in wrong here, so these must come from secrets,
+        # not a copied .env file (see issue #51).
+        env:
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_GOOGLE_CLIENT_ID }}
         run: npm run build --workspace=mathematador-app
 
       - name: Prepare stage folder
@@ -96,15 +104,20 @@ jobs:
             rm deploy.zip
           ENDSSH
 
-      - name: Copy environment files on server
+      - name: Copy environment file on server
+        # Only the server's .env is load-bearing here - it's a running Node
+        # process that reads env at startup/runtime via dotenv. The web
+        # build has no equivalent: EXPO_PUBLIC_* vars are already baked into
+        # the static bundle by the "Build app (Expo Web)" step above, and
+        # `serve` (the static file server PM2 runs for the GUI) never reads
+        # a .env file at all - see issue #51.
         env:
           SSHPASS: ${{ secrets.SERVER_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} bash -se << 'ENDSSH'
             set -e
             cp "${{ secrets.SERVER_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/server/.env"
-            cp "${{ secrets.GUI_ENV_FILE }}" "${{ secrets.DEPLOY_PATH }}/web/.env"
-            echo "Server and GUI .env files copied"
+            echo "Server .env file copied"
           ENDSSH
 
       - name: Install server production dependencies
