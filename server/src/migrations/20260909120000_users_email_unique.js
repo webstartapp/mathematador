@@ -1,4 +1,13 @@
 exports.up = async function (knex) {
+  // Knex runs each migration inside its own transaction (Postgres client
+  // default), so this lock is held from here until the ALTER TABLE below
+  // commits - closing the window where a concurrent registration could
+  // insert a fresh duplicate email between the scan and the constraint
+  // being added. SHARE ROW EXCLUSIVE conflicts with the ROW EXCLUSIVE lock
+  // any INSERT/UPDATE/DELETE on this table takes, so writers block (and
+  // retry) instead of racing past the check.
+  await knex.raw("LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE");
+
   // The email uniqueness check before this migration only ever ran at the
   // application layer (never a DB constraint), so two concurrent
   // registrations could already have produced duplicate emails on an

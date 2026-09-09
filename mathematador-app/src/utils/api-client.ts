@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { z } from "zod";
 
 import { logout } from "@/redux/slices/userSlice";
 import { store } from "@/redux/store";
@@ -21,57 +20,19 @@ const BASE_URL = String(
   process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076",
 );
 
-const PERSISTED_STATE_KEY = "persist:root";
-
-const PersistedStateSchema = z.object({
-  user: z.string().optional(),
-});
-
-const UserStateSchema = z.object({
-  id: z.union([z.string(), z.number()]).optional(),
-  viewer: z
-    .object({
-      id: z.union([z.string(), z.number()]).optional(),
-    })
-    .optional(),
-});
-
 const PERSISTED_TOKEN_KEY = "auth_token";
 
-const getAuthToken = async (
-  viewerId?: string | number,
-): Promise<string | null> => {
-  if (!viewerId) {
-    await AsyncStorage.removeItem(PERSISTED_TOKEN_KEY);
-    return null;
-  }
+// The token itself is the single source of truth for "is there a session to
+// attach" - it must not be gated on whatever the persisted redux `user` slice
+// currently says, since redux-persist writes to AsyncStorage asynchronously
+// (debounced) after a dispatch. Reading persisted state here previously
+// raced setAuth()'s dispatch: a request made in the same tick (e.g.
+// AuthScreen's post-login gameProgress() sync) could see a stale/absent
+// persisted id, which deleted the just-stored token outright. Actual
+// invalidation (on a confirmed 401, or logout) already happens explicitly
+// below and has no dependency on this lookup.
+const getAuthToken = async (): Promise<string | null> => {
   return AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
-};
-
-const getPersistedViewerId = async (): Promise<string | number | undefined> => {
-  try {
-    const storage =
-      typeof window !== "undefined"
-        ? await AsyncStorage.getItem(PERSISTED_STATE_KEY)
-        : null;
-
-    if (storage) {
-      const rootParsedSafe = PersistedStateSchema.safeParse(
-        JSON.parse(storage),
-      );
-      if (rootParsedSafe.success && rootParsedSafe.data.user) {
-        const userParsedSafe = UserStateSchema.safeParse(
-          JSON.parse(rootParsedSafe.data.user),
-        );
-        if (userParsedSafe.success) {
-          return userParsedSafe.data.id ?? userParsedSafe.data.viewer?.id;
-        }
-      }
-    }
-  } catch {
-    // Ignore parsing errors to prevent app crash
-  }
-  return undefined;
 };
 
 const normalizeHeaders = (
@@ -133,8 +94,7 @@ export const customInstance = async <T>(
   requestUrl: string,
   options: RequestInit,
 ): Promise<T> => {
-  const viewerId = await getPersistedViewerId();
-  const token = await getAuthToken(viewerId);
+  const token = await getAuthToken();
   const headers = normalizeHeaders(options.headers);
 
   if (token) {
