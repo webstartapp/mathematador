@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { JSX, useState } from "react";
+import { JSX, useCallback, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -10,11 +10,17 @@ import { TextInput } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
+import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { setAuth } from "@/redux/slices/userSlice";
-import { userCheckEmail, userLogin, userRegister } from "@/src/_generated/api";
+import {
+  userCheckEmail,
+  userGoogleLogin,
+  userLogin,
+  userRegister,
+} from "@/src/_generated/api";
 import { ApiRequestError } from "@/utils/api-client";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -120,6 +126,31 @@ const AuthScreen = (): JSX.Element => {
       setIsSubmitting(false);
     }
   };
+
+  const handleGoogleCredential = useCallback(
+    async (idToken: string): Promise<void> => {
+      setErrorMessage(null);
+      setIsSubmitting(true);
+      try {
+        const response = await userGoogleLogin({ idToken });
+        if (!response.data.id || !response.data.role) {
+          throw new Error("Google sign-in response is missing required fields");
+        }
+        dispatch(
+          setAuth({
+            id: response.data.id,
+            role: response.data.role,
+            name: response.data.name,
+          }),
+        );
+      } catch {
+        setErrorMessage("Could not sign in with Google. Try again.");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [dispatch],
+  );
 
   const handleLogin = async (): Promise<void> => {
     setErrorMessage(null);
@@ -234,6 +265,12 @@ const AuthScreen = (): JSX.Element => {
             <Text style={styles.linkText}>Use a different email</Text>
           </TouchableOpacity>
         )}
+        {step === "email" && (
+          <>
+            <Text style={styles.dividerText}>or</Text>
+            <GoogleSignInButton onCredential={handleGoogleCredential} />
+          </>
+        )}
       </CenteredDesk>
     </Layout>
   );
@@ -272,6 +309,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 16,
     textDecorationLine: "underline",
+  },
+  dividerText: {
+    color: "rgba(255,255,255,0.8)",
+    textAlign: "center",
+    marginTop: 16,
+    marginBottom: 12,
   },
 });
 

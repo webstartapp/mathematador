@@ -17,6 +17,7 @@ import type {
   CredentialsEmail,
   CredentialsPassword,
   GameProgress,
+  GoogleIdToken,
   RegisterCredentials,
   Subscription,
   SubscriptionCreate,
@@ -213,6 +214,55 @@ const res = await fetch(getUserRegisterUrl(),
 
   const data: userRegisterResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as userRegisterResponse
+}
+
+
+
+export type userGoogleLoginResponse200 = {
+  data: UserProfile
+  status: 200
+}
+
+export type userGoogleLoginResponseSuccess = (userGoogleLoginResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userGoogleLoginResponse = (userGoogleLoginResponseSuccess)
+
+export const getUserGoogleLoginUrl = () => {
+
+
+
+
+  return `/user/google-login`
+}
+
+/**
+ * @summary Sign in (or register/link) via a verified Google ID token
+ */
+export const userGoogleLogin = async (googleIdToken: GoogleIdToken, options?: RequestInit): Promise<userGoogleLoginResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+const res = await fetch(getUserGoogleLoginUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(googleIdToken)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: userGoogleLoginResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userGoogleLoginResponse
 }
 
 

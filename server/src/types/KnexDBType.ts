@@ -5,8 +5,9 @@ export interface UserRow {
   created: Date;
   username: string;
   email: string;
-  password: string;
+  password: string | null;
   role: string;
+  google_id: string | null;
 }
 import { OperationId, Minigame, SubscriptionType } from "@/_generated/model";
 
@@ -78,7 +79,7 @@ export type IDBType = {
 
 // Minimal DBConfig placeholder for legacy expressTypeResolver.ts to compile
 export const DBConfig: Record<string, string[]> = {
-  users: ["id", "created", "username", "email", "password", "role"]
+  users: ["id", "created", "username", "email", "password", "role", "google_id"]
 };
 
 export type DBConfigType = typeof DBConfig;

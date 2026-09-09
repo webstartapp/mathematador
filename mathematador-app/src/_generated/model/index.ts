@@ -24,6 +24,7 @@ export * from './forgottenCredentials';
 export * from './forgottenToken';
 export * from './gameOperationProgress';
 export * from './gameProgress';
+export * from './googleIdToken';
 export * from './id';
 export * from './minigame';
 export * from './minigameProgress';
