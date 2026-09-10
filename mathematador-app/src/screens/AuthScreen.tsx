@@ -4,9 +4,10 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { TextInput } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
@@ -42,6 +43,44 @@ interface AuthStepFieldsProps {
   setConfirmPassword: (value: string) => void;
 }
 
+interface LabeledFieldProps {
+  label: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  keyboardType?: "default" | "email-address";
+  secureTextEntry?: boolean;
+}
+
+// Plain RN TextInput, not react-native-paper's: Paper's TextInput computes
+// its own height internally from label/font metrics rather than respecting
+// a plain `height` style (the `height` in its style prop is intercepted for
+// that math and deliberately excluded from what actually reaches its outer
+// View - see callstack/react-native-paper's TextInputFlat.tsx), and without
+// a PaperProvider (never set up in this app) that computation rendered a
+// full-screen-tall box on Android. A plain TextInput has no such layer to
+// fight - a fixed-height style is respected identically everywhere.
+const LabeledField = ({
+  label,
+  value,
+  onChangeText,
+  autoCapitalize = "sentences",
+  keyboardType = "default",
+  secureTextEntry = false,
+}: LabeledFieldProps): JSX.Element => (
+  <View style={styles.fieldGroup}>
+    <Text style={styles.fieldLabel}>{label}</Text>
+    <TextInput
+      value={value}
+      onChangeText={onChangeText}
+      autoCapitalize={autoCapitalize}
+      keyboardType={keyboardType}
+      secureTextEntry={secureTextEntry}
+      style={styles.input}
+    />
+  </View>
+);
+
 const AuthStepFields = ({
   step,
   email,
@@ -55,40 +94,36 @@ const AuthStepFields = ({
 }: AuthStepFieldsProps): JSX.Element => (
   <>
     {step === "email" && (
-      <TextInput
+      <LabeledField
         label="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
-        style={styles.input}
       />
     )}
     {step === "register" && (
-      <TextInput
+      <LabeledField
         label="Username"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
-        style={styles.input}
       />
     )}
     {step !== "email" && (
-      <TextInput
+      <LabeledField
         label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={styles.input}
       />
     )}
     {step === "register" && (
-      <TextInput
+      <LabeledField
         label="Confirm password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
-        style={styles.input}
       />
     )}
   </>
@@ -303,14 +338,20 @@ const styles = StyleSheet.create({
     maxWidth: 420,
     padding: 20,
   },
-  input: {
-    // react-native-paper's TextInput has no intrinsic height of its own on
-    // native - without one, it stretches to fill whatever vertical space is
-    // left in its flex parent (a known RNP quirk: github.com/callstack/
-    // react-native-paper/issues/1858). Web happens to size it sanely by
-    // itself, which is why this only ever showed up on a phone.
-    height: 56,
+  fieldGroup: {
     marginBottom: 16,
+  },
+  fieldLabel: {
+    color: "#fff",
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  input: {
+    height: 48,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 16,
   },
   errorText: {
     color: "#FF3B30",
