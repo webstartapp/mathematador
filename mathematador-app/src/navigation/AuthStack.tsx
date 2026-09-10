@@ -29,7 +29,11 @@ const AuthStack = (): JSX.Element => (
       component={IntroScreen}
       initialParams={{ nextRoute: "Consent" }}
     />
-    <Stack.Screen name="Consent" component={ConsentScreen} />
+    <Stack.Screen
+      name="Consent"
+      component={ConsentScreen}
+      initialParams={{ nextRoute: "Auth" }}
+    />
     <Stack.Screen name="Auth" component={AuthScreen} />
   </Stack.Navigator>
 );

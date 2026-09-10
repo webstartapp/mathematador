@@ -2,7 +2,7 @@ import { ChalengeResult, Challenge } from "@/types/Chalenge";
 
 export type RootStackParamList = {
   Intro?: { nextRoute?: "Home" | "Consent" | "Auth" };
-  Consent?: {};
+  Consent?: { nextRoute?: "Home" | "Auth" };
   Home?: {};
   Level: { levelId: number };
   Challenge: Challenge;
