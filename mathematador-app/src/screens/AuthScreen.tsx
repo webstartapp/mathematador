@@ -82,6 +82,7 @@ const LabeledField = ({
       keyboardType={keyboardType}
       secureTextEntry={secureTextEntry}
       style={styles.input}
+      accessibilityLabel={label}
     />
   </View>
 );

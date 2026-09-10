@@ -90,7 +90,9 @@ const ConsentScreen = (): JSX.Element | null => {
       // record now exists, so there's nothing left blocking navigation -
       // awaiting a slow/unreachable server here would strand the user on
       // the gate for no reason.
-      userConsentRecord(localConsent).catch(() => {});
+      userConsentRecord(localConsent).catch(() => {
+        // Ignored - see comment above.
+      });
     }
     navigation.replace(nextRoute);
   };
