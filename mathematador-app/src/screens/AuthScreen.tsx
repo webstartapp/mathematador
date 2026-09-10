@@ -64,7 +64,12 @@ const LabeledField = ({
   label,
   value,
   onChangeText,
-  autoCapitalize = "sentences",
+  // Every field in this screen is a credential (email, username, password) -
+  // none of them should ever auto-capitalize. Password fields in particular
+  // must not: on native keyboards, autoCapitalize actually mutates the typed
+  // value (not just its display), so a "sentences" default would silently
+  // submit a different password than the one the user typed.
+  autoCapitalize = "none",
   keyboardType = "default",
   secureTextEntry = false,
 }: LabeledFieldProps): JSX.Element => (
