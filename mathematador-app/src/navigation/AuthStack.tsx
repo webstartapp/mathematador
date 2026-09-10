@@ -3,6 +3,7 @@ import { JSX } from "react";
 
 import { hasIntroAlreadyPlayed } from "@/navigation/introSession";
 import AuthScreen from "@/screens/AuthScreen";
+import ConsentScreen from "@/screens/ConsentScreen";
 import IntroScreen from "@/screens/IntroScreen";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -10,11 +11,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 // Rendered only while the player is NOT authenticated (see app/index.tsx).
 // Intro is reused from GameStack so a first-time visitor still sees it
-// before being asked to log in - #31 (consent gate) will later insert a
-// Consent screen here between Intro and Auth by adding one screen and
-// changing Intro's initialParams.nextRoute below. Skips straight to Auth
-// when Intro already played this session (e.g. logging out and back in
-// without reloading the page) so it never plays twice in a row.
+// before being asked to log in. Consent (#31) sits between Intro and Auth -
+// it decides for itself whether to actually show the gate or skip straight
+// to Auth (see ConsentScreen's own local-storage check), so no branching is
+// needed here. Skips straight to Auth when Intro already played this
+// session (e.g. logging out and back in without reloading the page) so it
+// never plays - or re-prompts for consent - twice in a row.
 const AuthStack = (): JSX.Element => (
   <Stack.Navigator
     initialRouteName={hasIntroAlreadyPlayed() ? "Auth" : "Intro"}
@@ -25,8 +27,9 @@ const AuthStack = (): JSX.Element => (
     <Stack.Screen
       name="Intro"
       component={IntroScreen}
-      initialParams={{ nextRoute: "Auth" }}
+      initialParams={{ nextRoute: "Consent" }}
     />
+    <Stack.Screen name="Consent" component={ConsentScreen} />
     <Stack.Screen name="Auth" component={AuthScreen} />
   </Stack.Navigator>
 );

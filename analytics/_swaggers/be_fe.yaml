@@ -99,6 +99,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CheckEmailResponse'
+  /user/consent:
+    post:
+      operationId: user_consent_record
+      summary: Persist the device-recorded, pre-login consent against the now-authenticated account (idempotent - the first consent on file always wins)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentRecord'
+      responses:
+        '200':
+          description: The consent record now on file for this account (the one just submitted, or a pre-existing one if this account already had one)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
   /user/forgotten-password:
     post:
       operationId: user_forgotten_password
@@ -488,6 +505,24 @@ components:
           type: string
       required:
         - idToken
+    ConsentRecord:
+      type: object
+      properties:
+        deviceId:
+          type: string
+        consentedAt:
+          # Deliberately plain `string`, not `format: date-time` - that
+          # format makes orval emit `zod.iso.datetime(...)`, which needs
+          # zod v4 and breaks the build against this repo's pinned zod v3
+          # (root devDependency vs. each workspace's own ^3.23.8 - the two
+          # versions coexist via npm workspace hoisting, and orval's codegen
+          # picks up the root's v4). An ISO-8601 string (always produced via
+          # `new Date().toISOString()` client-side) still round-trips fine
+          # into a Postgres timestamp column either way.
+          type: string
+      required:
+        - deviceId
+        - consentedAt
     SubscriptionType:
       type: string
       enum:

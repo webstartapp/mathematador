@@ -12,6 +12,7 @@ import { gameProgress } from "@/resolvers/apiPaths/gameProgress";
 import { subscriptionCancelImmediately } from "@/resolvers/apiPaths/subscriptionCancelImmediately";
 import { subscriptionUpdate } from "@/resolvers/apiPaths/subscriptionUpdate";
 import { userCheckEmail } from "@/resolvers/apiPaths/userCheckEmail";
+import { userConsentRecord } from "@/resolvers/apiPaths/userConsentRecord";
 import { userForgotten } from "@/resolvers/apiPaths/userForgotten";
 import { userForgottenPassword } from "@/resolvers/apiPaths/userForgottenPassword";
 import { userGoogleLogin } from "@/resolvers/apiPaths/userGoogleLogin";
@@ -36,6 +37,8 @@ router.post("/user/google-login", userGoogleLogin);
 
 // --- Authenticated Auth Routes ---
 router.put("/user/login", requireAuth, userLoginPassword);
+
+router.post("/user/consent", requireAuth, userConsentRecord);
 
 // --- Authenticated Challenge Routes ---
 router.post("/challenges/:operationId", requireAuth, challengeStartNew);

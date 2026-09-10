@@ -67,6 +67,14 @@ export interface MinigameProgressRow {
   xp: number;
 }
 
+export interface UserConsentRow {
+  id: string;
+  created: Date;
+  user_id: string;
+  device_id: string;
+  consented_at: Date;
+}
+
 export type IDBType = {
   users: UserRow;
   subscriptions: SubscriptionRow;
@@ -75,6 +83,7 @@ export type IDBType = {
   cosmetics: CosmeticRow;
   user_cosmetics: UserCosmeticRow;
   minigame_progress: MinigameProgressRow;
+  user_consents: UserConsentRow;
 };
 
 // Minimal DBConfig placeholder for legacy expressTypeResolver.ts to compile

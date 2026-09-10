@@ -18,11 +18,13 @@ import { setAuth, syncProgress } from "@/redux/slices/userSlice";
 import {
   gameProgress,
   userCheckEmail,
+  userConsentRecord,
   userGoogleLogin,
   userLogin,
   userRegister,
 } from "@/src/_generated/api";
 import { ApiRequestError } from "@/utils/api-client";
+import { getLocalConsentRecord } from "@/utils/consent";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -137,6 +139,19 @@ const AuthScreen = (): JSX.Element => {
       try {
         const progress = await gameProgress();
         dispatch(syncProgress(progress.data));
+      } catch {
+        // Ignored - see comment above.
+      }
+      // Exchanges the pre-login, device-local consent record (#31) with the
+      // now-authenticated account. Best-effort like the progress sync above:
+      // a returning user who already has a server-side record just gets it
+      // echoed back and does nothing with it, so a failure here costs
+      // nothing beyond the next login retrying it.
+      try {
+        const localConsent = await getLocalConsentRecord();
+        if (localConsent) {
+          await userConsentRecord(localConsent);
+        }
       } catch {
         // Ignored - see comment above.
       }
