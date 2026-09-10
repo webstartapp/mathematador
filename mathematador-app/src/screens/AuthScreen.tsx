@@ -304,6 +304,12 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   input: {
+    // react-native-paper's TextInput has no intrinsic height of its own on
+    // native - without one, it stretches to fill whatever vertical space is
+    // left in its flex parent (a known RNP quirk: github.com/callstack/
+    // react-native-paper/issues/1858). Web happens to size it sanely by
+    // itself, which is why this only ever showed up on a phone.
+    height: 56,
     marginBottom: 16,
   },
   errorText: {
