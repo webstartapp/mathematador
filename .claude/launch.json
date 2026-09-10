@@ -4,7 +4,7 @@
     {
       "name": "mathematador-web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "mathematador-app", "run", "web"],
+      "runtimeArgs": ["--prefix", "mathematador-app", "run", "start"],
       "port": 4075
     }
   ]
