@@ -10,6 +10,7 @@ import type {
   ChallengeRequest,
   ChallengeResultRequest,
   CheckEmailResponse,
+  ConsentRecord,
   Cosmetic,
   CosmeticsBuyBody,
   CosmeticsEquipBody,
@@ -312,6 +313,55 @@ const res = await fetch(getUserCheckEmailUrl(),
 
   const data: userCheckEmailResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as userCheckEmailResponse
+}
+
+
+
+export type userConsentRecordResponse200 = {
+  data: ConsentRecord
+  status: 200
+}
+
+export type userConsentRecordResponseSuccess = (userConsentRecordResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userConsentRecordResponse = (userConsentRecordResponseSuccess)
+
+export const getUserConsentRecordUrl = () => {
+
+
+
+
+  return `/user/consent`
+}
+
+/**
+ * @summary Persist the device-recorded, pre-login consent against the now-authenticated account (idempotent - the first consent on file always wins)
+ */
+export const userConsentRecord = async (consentRecord: ConsentRecord, options?: RequestInit): Promise<userConsentRecordResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+const res = await fetch(getUserConsentRecordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(consentRecord)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: userConsentRecordResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userConsentRecordResponse
 }
 
 

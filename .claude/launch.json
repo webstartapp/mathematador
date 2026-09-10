@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "mathematador-web",
+      "name": "mathematador-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "mathematador-app", "run", "web"],
+      "runtimeArgs": ["--prefix", "mathematador-app", "run", "start"],
       "port": 4075
     }
   ]

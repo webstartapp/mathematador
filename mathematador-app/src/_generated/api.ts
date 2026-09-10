@@ -24,6 +24,7 @@ import type {
   ChallengeRequest,
   ChallengeResultRequest,
   CheckEmailResponse,
+  ConsentRecord,
   Cosmetic,
   CosmeticsBuyBody,
   CosmeticsEquipBody,
@@ -604,6 +605,98 @@ export const useUserCheckEmail = <TError = unknown,
         TContext
       > => {
       return useMutation(getUserCheckEmailMutationOptions(options));
+    }
+
+export type userConsentRecordResponse200 = {
+  data: ConsentRecord
+  status: 200
+}
+
+export type userConsentRecordResponseSuccess = (userConsentRecordResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userConsentRecordResponse = (userConsentRecordResponseSuccess)
+
+export const getUserConsentRecordUrl = () => {
+
+
+
+
+  return `/user/consent`
+}
+
+/**
+ * @summary Persist the device-recorded, pre-login consent against the now-authenticated account (idempotent - the first consent on file always wins)
+ */
+export const userConsentRecord = async (consentRecord: ConsentRecord, options?: Parameters<typeof customInstance>[1]): Promise<userConsentRecordResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customInstance<userConsentRecordResponse>(getUserConsentRecordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(consentRecord)
+  }
+);}
+
+
+
+
+
+export const getUserConsentRecordMutationKey = () => ['userConsentRecord'] as const;
+
+export const getUserConsentRecordMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userConsentRecord>>, TError,UserConsentRecordMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof userConsentRecord>>, TError,UserConsentRecordMutationVariables, TContext> => {
+
+const mutationKey = getUserConsentRecordMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof userConsentRecord>>, UserConsentRecordMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  userConsentRecord(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UserConsentRecordMutationResult = NonNullable<Awaited<ReturnType<typeof userConsentRecord>>>
+    export type UserConsentRecordMutationBody = ConsentRecord
+    export type UserConsentRecordMutationError = unknown
+    export type UserConsentRecordMutationVariables = {data: ConsentRecord}
+
+    /**
+ * @summary Persist the device-recorded, pre-login consent against the now-authenticated account (idempotent - the first consent on file always wins)
+ */
+export const useUserConsentRecord = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof userConsentRecord>>, TError,UserConsentRecordMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof userConsentRecord>>,
+        TError,
+        UserConsentRecordMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUserConsentRecordMutationOptions(options));
     }
 
 export type userForgottenPasswordResponse201 = {

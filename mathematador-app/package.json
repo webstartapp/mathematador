@@ -3,11 +3,11 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "node ./scripts/run-expo.js",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android": "node ./scripts/run-expo.js --android",
+    "ios": "node ./scripts/run-expo.js --ios",
+    "web": "node ./scripts/run-expo.js --web",
     "test": "jest --watchAll",
     "lint": "cd .. && eslint mathematador-app",
     "build": "expo export -p web"

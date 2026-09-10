@@ -10,6 +10,7 @@ export * from './challenge';
 export * from './challengeRequest';
 export * from './challengeResultRequest';
 export * from './checkEmailResponse';
+export * from './consentRecord';
 export * from './cosmetic';
 export * from './cosmeticsBuyBody';
 export * from './cosmeticsEquipBody';
