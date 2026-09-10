@@ -1,13 +1,14 @@
-import { useNavigation } from "expo-router";
+import { Link, useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp, useRoute } from "expo-router/react-navigation";
 import { JSX, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
+import { markConsentResolved } from "@/navigation/introSession";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { selectIsAuthenticated } from "@/redux/selectors/auth";
 import { userConsentRecord } from "@/src/_generated/api";
@@ -53,12 +54,14 @@ const ConsentScreen = (): JSX.Element | null => {
 
   useEffect(() => {
     if (gateState === "skip") {
+      markConsentResolved();
       navigation.replace(nextRoute);
     }
   }, [gateState, navigation, nextRoute]);
 
   const handleAccept = async (): Promise<void> => {
     const localConsent = await recordLocalConsent();
+    markConsentResolved();
     if (isAuthenticated) {
       try {
         await userConsentRecord(localConsent);
@@ -89,6 +92,32 @@ const ConsentScreen = (): JSX.Element | null => {
         ]}
         styles={{ container: styles.card }}
       >
+        {/*
+          These `/info/*` routes are real, public Expo Router pages - a
+          sibling of this isolated in-game navigation tree (see
+          mathematador-app/CLAUDE.md's "Screen flow & navigation"), not
+          gated by auth or consent, so linking out from here doesn't need
+          any access change of its own. Content is still a placeholder
+          pending #35 - the links exist so the reader can at least reach
+          the (soon-to-be-real) page while deciding whether to accept.
+          Slugs match #35's own naming exactly, so its eventual CMS-backed
+          implementation doesn't need to coordinate a rename with this
+          screen (or if it does, this file is the other place to update).
+        */}
+        <View style={styles.policyLinks}>
+          <Link href="/info/terms-and-conditions" style={styles.policyLink}>
+            Terms &amp; Conditions
+          </Link>
+          <Link href="/info/gdpr" style={styles.policyLink}>
+            Privacy Policy
+          </Link>
+          <Link href="/info/cookies-policy" style={styles.policyLink}>
+            Cookies Policy
+          </Link>
+          <Link href="/info/ai-participation" style={styles.policyLink}>
+            AI Participation
+          </Link>
+        </View>
         {showDeclineMessage && (
           <Text style={styles.declineText}>
             You need to accept to use Mathematador.
@@ -109,6 +138,19 @@ const styles = StyleSheet.create({
   card: {
     maxWidth: 420,
     padding: 20,
+  },
+  policyLinks: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    columnGap: 12,
+    rowGap: 4,
+    marginBottom: 16,
+  },
+  policyLink: {
+    color: "#fff",
+    fontSize: 14,
+    textDecorationLine: "underline",
   },
   acceptButton: {
     backgroundColor: "#704c21",

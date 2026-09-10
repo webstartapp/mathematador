@@ -5,7 +5,7 @@ import {
 import { JSX } from "react";
 
 import GameHeader from "@/components/common/Header";
-import { hasIntroAlreadyPlayed } from "@/navigation/introSession";
+import { resolveGatedInitialRoute } from "@/navigation/introSession";
 import ChalengeSelectScreen from "@/screens/ChalengeSelectScreen";
 import ChallengeScreen from "@/screens/ChallengeGameScreen";
 import ChallengeResultScreen from "@/screens/ChallengeResultScreen";
@@ -24,13 +24,14 @@ const Stack = createStackNavigator<RootStackParamList>();
 // Consent (#31), same as AuthStack - an authenticated session can still
 // have no local consent record (e.g. an account that logged in before this
 // gate existed, or a fresh device/browser that never went through it), so
-// reaching Home isn't safe to assume implies consent was ever given. Skips
-// straight to Home when Intro already played this session (e.g. just shown
-// by AuthStack right before sign-in, which means Consent was already
-// handled there too) so it never plays twice in a row.
+// reaching Home isn't safe to assume implies consent was ever given. Jumps
+// straight to Home only once BOTH Intro and Consent are already resolved
+// this session (e.g. just shown by AuthStack right before sign-in) - see
+// introSession.ts's resolveGatedInitialRoute for why Intro alone having
+// played isn't enough.
 const GameStack = (): JSX.Element => (
   <Stack.Navigator
-    initialRouteName={hasIntroAlreadyPlayed() ? "Home" : "Intro"}
+    initialRouteName={resolveGatedInitialRoute("Home")}
     screenOptions={{
       headerShown: false,
     }}
