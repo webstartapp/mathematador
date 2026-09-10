@@ -7,6 +7,10 @@
  */
 
 export interface ConsentRecord {
+  /**
+     * @minLength 1
+     * @maxLength 255
+     */
   deviceId: string;
   consentedAt: string;
 }

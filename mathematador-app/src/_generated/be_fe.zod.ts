@@ -157,8 +157,11 @@ type CheckEmailResponseOutput = zod.output<typeof CheckEmailResponse>;
  */
 
 
+export const consentRecordDeviceIdMax = 255;
+
+
 export const ConsentRecord = zod.object({
-  "deviceId": zod.string(),
+  "deviceId": zod.string().min(1).max(consentRecordDeviceIdMax),
   "consentedAt": zod.string()
 })
 
@@ -704,8 +707,11 @@ type UserCheckEmailBodyOutput = zod.output<typeof UserCheckEmailBody>;
  */
 
 
+export const userConsentRecordBodyDeviceIdMax = 255;
+
+
 export const UserConsentRecordBody = zod.object({
-  "deviceId": zod.string(),
+  "deviceId": zod.string().min(1).max(userConsentRecordBodyDeviceIdMax),
   "consentedAt": zod.string()
 })
 

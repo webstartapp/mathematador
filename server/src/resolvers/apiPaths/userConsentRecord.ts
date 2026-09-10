@@ -5,6 +5,13 @@ import knex from "@/knexWrapper";
 import { restAPICall } from "@/utils/restAPI";
 
 const POSTGRES_UNIQUE_VIOLATION = "23505";
+// Tolerates ordinary client/server clock drift, not a real future date.
+const MAX_CLOCK_SKEW_MS = 5 * 60 * 1000;
+// Sanity floor, not a real launch date - this field is the "consent
+// predates the account" proof (#31), so a client submitting an
+// obviously-fabricated timestamp (epoch zero, a typo'd year) shouldn't be
+// accepted as evidence of anything.
+const EARLIEST_VALID_CONSENT_DATE = new Date("2020-01-01T00:00:00.000Z");
 
 export const userConsentRecord = restAPICall(
   "mathematador",
@@ -30,7 +37,11 @@ export const userConsentRecord = restAPICall(
 
     const { deviceId, consentedAt } = request.body;
     const consentedAtDate = new Date(consentedAt);
-    if (Number.isNaN(consentedAtDate.getTime())) {
+    const isOutOfRange =
+      Number.isNaN(consentedAtDate.getTime()) ||
+      consentedAtDate.getTime() > Date.now() + MAX_CLOCK_SKEW_MS ||
+      consentedAtDate < EARLIEST_VALID_CONSENT_DATE;
+    if (isOutOfRange) {
       response.status(400).json({ message: "Invalid consentedAt" });
       return;
     }

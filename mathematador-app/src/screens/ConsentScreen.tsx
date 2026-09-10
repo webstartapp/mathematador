@@ -1,11 +1,12 @@
-import { Link, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp, useRoute } from "expo-router/react-navigation";
 import { JSX, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
+import PolicyLinks from "@/components/auth/PolicyLinks";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { markConsentResolved } from "@/navigation/introSession";
@@ -40,13 +41,22 @@ const ConsentScreen = (): JSX.Element | null => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [gateState, setGateState] = useState<GateState>("checking");
   const [showDeclineMessage, setShowDeclineMessage] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [acceptError, setAcceptError] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
-    getLocalConsentRecord().then((existingRecord) => {
-      if (isCancelled) return;
-      setGateState(existingRecord ? "skip" : "show");
-    });
+    getLocalConsentRecord()
+      .then((existingRecord) => {
+        if (isCancelled) return;
+        setGateState(existingRecord ? "skip" : "show");
+      })
+      .catch(() => {
+        // A storage read failure must never leave this stuck on "checking"
+        // forever (a permanently blank screen) or silently skip the gate -
+        // fall back to showing it, same as "no record found".
+        if (!isCancelled) setGateState("show");
+      });
     return () => {
       isCancelled = true;
     };
@@ -60,17 +70,27 @@ const ConsentScreen = (): JSX.Element | null => {
   }, [gateState, navigation, nextRoute]);
 
   const handleAccept = async (): Promise<void> => {
-    const localConsent = await recordLocalConsent();
+    if (isAccepting) return;
+    setIsAccepting(true);
+    let localConsent;
+    try {
+      localConsent = await recordLocalConsent();
+    } catch {
+      setIsAccepting(false);
+      setAcceptError(true);
+      return;
+    }
     markConsentResolved();
     if (isAuthenticated) {
-      try {
-        await userConsentRecord(localConsent);
-      } catch {
-        // Best-effort, same as AuthScreen's post-login sync - the local
-        // record is already saved either way, so this only risks the
-        // server-side row lagging behind until some other authenticated
-        // call happens to succeed.
-      }
+      // Fire-and-forget, same as AuthScreen's post-login sync - the local
+      // record is already saved either way, so a failure (or the request
+      // just hanging) only risks the server-side row lagging behind until
+      // some other authenticated call happens to succeed. Must not be
+      // awaited: this account is already authenticated and the local
+      // record now exists, so there's nothing left blocking navigation -
+      // awaiting a slow/unreachable server here would strand the user on
+      // the gate for no reason.
+      userConsentRecord(localConsent).catch(() => {});
     }
     navigation.replace(nextRoute);
   };
@@ -92,38 +112,22 @@ const ConsentScreen = (): JSX.Element | null => {
         ]}
         styles={{ container: styles.card }}
       >
-        {/*
-          These `/info/*` routes are real, public Expo Router pages - a
-          sibling of this isolated in-game navigation tree (see
-          mathematador-app/CLAUDE.md's "Screen flow & navigation"), not
-          gated by auth or consent, so linking out from here doesn't need
-          any access change of its own. Content is still a placeholder
-          pending #35 - the links exist so the reader can at least reach
-          the (soon-to-be-real) page while deciding whether to accept.
-          Slugs match #35's own naming exactly, so its eventual CMS-backed
-          implementation doesn't need to coordinate a rename with this
-          screen (or if it does, this file is the other place to update).
-        */}
-        <View style={styles.policyLinks}>
-          <Link href="/info/terms-and-conditions" style={styles.policyLink}>
-            Terms &amp; Conditions
-          </Link>
-          <Link href="/info/gdpr" style={styles.policyLink}>
-            Privacy Policy
-          </Link>
-          <Link href="/info/cookies-policy" style={styles.policyLink}>
-            Cookies Policy
-          </Link>
-          <Link href="/info/ai-participation" style={styles.policyLink}>
-            AI Participation
-          </Link>
-        </View>
+        <PolicyLinks />
         {showDeclineMessage && (
           <Text style={styles.declineText}>
             You need to accept to use Mathematador.
           </Text>
         )}
-        <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
+        {acceptError && (
+          <Text style={styles.declineText}>
+            Could not save your acceptance. Please try again.
+          </Text>
+        )}
+        <TouchableOpacity
+          style={[styles.acceptButton, isAccepting && styles.buttonDisabled]}
+          onPress={handleAccept}
+          disabled={isAccepting}
+        >
           <Text style={styles.acceptButtonText}>Accept & Continue</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDecline}>
@@ -139,25 +143,15 @@ const styles = StyleSheet.create({
     maxWidth: 420,
     padding: 20,
   },
-  policyLinks: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    columnGap: 12,
-    rowGap: 4,
-    marginBottom: 16,
-  },
-  policyLink: {
-    color: "#fff",
-    fontSize: 14,
-    textDecorationLine: "underline",
-  },
   acceptButton: {
     backgroundColor: "#704c21",
     paddingVertical: 14,
     borderRadius: 25,
     alignItems: "center",
     marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
   acceptButtonText: {
     color: "#fff",

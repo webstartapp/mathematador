@@ -510,6 +510,8 @@ components:
       properties:
         deviceId:
           type: string
+          minLength: 1
+          maxLength: 255
         consentedAt:
           # Deliberately plain `string`, not `format: date-time` - that
           # format makes orval emit `zod.iso.datetime(...)`, which needs
