@@ -61,6 +61,8 @@ module.exports = [
       "**/build/**",
       "server/build/**",
       "**/_generated/**",
+      "**/.next/**",
+      "content-editor/next-env.d.ts",
     ],
   },
 
@@ -286,6 +288,14 @@ module.exports = [
       },
     },
   },
+  {
+    files: ["content-editor/**/*.ts", "content-editor/**/*.tsx"],
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: require("path").join(__dirname, "content-editor"),
+      },
+    },
+  },
 
   // Migrations Configuration (allow console)
   {
@@ -321,6 +331,27 @@ module.exports = [
   // React Native App Configuration
   {
     files: ["mathematador-app/src/**/*.ts", "mathematador-app/src/**/*.tsx"],
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooksPlugin,
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    rules: {
+      "react/jsx-uses-react": "error",
+      "react/jsx-uses-vars": "error",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "error",
+      "no-undef": "error",
+    },
+  },
+
+  // Content Editor App Configuration (local-only Next.js tool, see its README)
+  {
+    files: ["content-editor/**/*.ts", "content-editor/**/*.tsx"],
     plugins: {
       react: reactPlugin,
       "react-hooks": reactHooksPlugin,
