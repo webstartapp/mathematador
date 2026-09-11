@@ -61,6 +61,26 @@ serverProcess.stderr.on("data", (chunk) => {
   process.stderr.write(`[server] ${chunk}`);
 });
 
+// content-editor (see its own README) is a local-only content-authoring
+// tool, not part of the game - but it's a real workspace like the other
+// two, so it gets started here too rather than needing a separate manual
+// step. Same background/piped treatment as the backend, for the same
+// reason: only Expo can own the real foreground TTY.
+const contentEditorProcess = spawnNpm(
+  ["run", "dev", "--workspace=content-editor"],
+  {
+    cwd: rootDir,
+    stdio: ["ignore", "pipe", "pipe"],
+  },
+);
+
+contentEditorProcess.stdout.on("data", (chunk) => {
+  process.stdout.write(`[content-editor] ${chunk}`);
+});
+contentEditorProcess.stderr.on("data", (chunk) => {
+  process.stderr.write(`[content-editor] ${chunk}`);
+});
+
 // On Windows, `shell: true` means each child is cmd.exe, and killing just
 // that does not cascade to its grandchildren (npm.cmd -> node -> nodemon's
 // own child process, for the server) - Windows doesn't propagate signals
@@ -85,6 +105,7 @@ const shutdown = (exitCode) => {
   }
   shuttingDown = true;
   killProcessTree(serverProcess);
+  killProcessTree(contentEditorProcess);
   killProcessTree(expoProcess);
   process.exit(exitCode);
 };
@@ -93,6 +114,15 @@ serverProcess.on("exit", (exitCode) => {
   if (!shuttingDown) {
     console.error(
       `[dev] Backend server exited unexpectedly (code ${exitCode}).`,
+    );
+    shutdown(exitCode ?? 1);
+  }
+});
+
+contentEditorProcess.on("exit", (exitCode) => {
+  if (!shuttingDown) {
+    console.error(
+      `[dev] content-editor exited unexpectedly (code ${exitCode}).`,
     );
     shutdown(exitCode ?? 1);
   }
