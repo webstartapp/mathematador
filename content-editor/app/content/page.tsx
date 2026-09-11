@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { JSX } from "react";
 
-import { listPageSlugs, readPage } from "@/lib/pagesRepo";
+import {
+  EMPTY_PAGE_UPDATED_AT,
+  listPageSlugs,
+  readPage,
+} from "@/lib/pagesRepo";
 
 interface PageListEntry {
   slug: string;
@@ -39,8 +43,16 @@ const ContentListPage = async (): Promise<JSX.Element> => {
         {entries.map((entry) => (
           <li key={entry.slug} style={{ marginBottom: 8 }}>
             <Link href={`/content/${entry.slug}`}>{entry.title}</Link>
-            {" — last updated "}
-            {new Date(entry.updatedAt).toLocaleString()}
+            {entry.updatedAt === EMPTY_PAGE_UPDATED_AT ? (
+              <span style={{ color: "#c0392b" }}>
+                {" — not yet created, click to add content"}
+              </span>
+            ) : (
+              <>
+                {" — last updated "}
+                {new Date(entry.updatedAt).toLocaleString()}
+              </>
+            )}
           </li>
         ))}
       </ul>
