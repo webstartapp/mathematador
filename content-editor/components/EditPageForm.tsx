@@ -1,14 +1,17 @@
 "use client";
 
-import { ChangeEvent, JSX, useState } from "react";
+import { ChangeEvent, JSX, useActionState, useState } from "react";
 
 import PagePreview from "@/components/PagePreview";
-import { PageContent, PageContentSchema } from "@/lib/pageContentSchema";
+import { savePageAction, SavePageState } from "@/lib/actions";
+import { PageContent } from "@/lib/pageContentSchema";
 
 interface EditPageFormProps {
   slug: string;
   initialPage: PageContent;
 }
+
+const initialActionState: SavePageState = { page: null, error: null };
 
 const inputStyle = {
   display: "block",
@@ -26,10 +29,11 @@ const EditPageForm = ({
   const [markdownContent, setMarkdownContent] = useState(
     initialPage.markdownContent,
   );
-  const [updatedAt, setUpdatedAt] = useState(initialPage.updatedAt);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [showSaved, setShowSaved] = useState(false);
+  const [state, formAction, isSaving] = useActionState(
+    savePageAction.bind(null, slug),
+    initialActionState,
+  );
+  const updatedAt = state.page?.updatedAt ?? initialPage.updatedAt;
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setTitle(event.target.value);
@@ -39,34 +43,6 @@ const EditPageForm = ({
     event: ChangeEvent<HTMLTextAreaElement>,
   ): void => {
     setMarkdownContent(event.target.value);
-  };
-
-  const handleSave = async (): Promise<void> => {
-    setIsSaving(true);
-    setSaveError(null);
-    setShowSaved(false);
-    try {
-      const response = await fetch(`/api/content/${slug}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, markdownContent }),
-      });
-      if (!response.ok) {
-        throw new Error(`Save failed with status ${response.status}`);
-      }
-      const parsedResponse = PageContentSchema.safeParse(await response.json());
-      if (!parsedResponse.success) {
-        throw new Error("Save response was not a valid page");
-      }
-      setUpdatedAt(parsedResponse.data.updatedAt);
-      setShowSaved(true);
-    } catch (caughtError) {
-      setSaveError(
-        caughtError instanceof Error ? caughtError.message : "Save failed",
-      );
-    } finally {
-      setIsSaving(false);
-    }
   };
 
   return (
@@ -79,30 +55,38 @@ const EditPageForm = ({
         Last saved: {new Date(updatedAt).toLocaleString()}
       </p>
 
-      <label style={{ display: "block", marginTop: 16 }}>
-        Title
-        <input value={title} onChange={handleTitleChange} style={inputStyle} />
-      </label>
+      <form action={formAction}>
+        <label style={{ display: "block", marginTop: 16 }}>
+          Title
+          <input
+            name="title"
+            value={title}
+            onChange={handleTitleChange}
+            style={inputStyle}
+          />
+        </label>
 
-      <label style={{ display: "block", marginTop: 16 }}>
-        Markdown content
-        <textarea
-          value={markdownContent}
-          onChange={handleContentChange}
-          rows={16}
-          style={{ ...inputStyle, fontFamily: "monospace" }}
-        />
-      </label>
+        <label style={{ display: "block", marginTop: 16 }}>
+          Markdown content
+          <textarea
+            name="markdownContent"
+            value={markdownContent}
+            onChange={handleContentChange}
+            rows={16}
+            style={{ ...inputStyle, fontFamily: "monospace" }}
+          />
+        </label>
 
-      <button
-        onClick={handleSave}
-        disabled={isSaving}
-        style={{ marginTop: 16, padding: "8px 16px" }}
-      >
-        {isSaving ? "Saving…" : "Save"}
-      </button>
-      {showSaved && <p style={{ color: "green" }}>Saved.</p>}
-      {saveError && <p style={{ color: "#c0392b" }}>{saveError}</p>}
+        <button
+          type="submit"
+          disabled={isSaving}
+          style={{ marginTop: 16, padding: "8px 16px" }}
+        >
+          {isSaving ? "Saving…" : "Save"}
+        </button>
+      </form>
+      {state.page && !state.error && <p style={{ color: "green" }}>Saved.</p>}
+      {state.error && <p style={{ color: "#c0392b" }}>{state.error}</p>}
 
       <h2 style={{ marginTop: 32 }}>Preview</h2>
       <PagePreview

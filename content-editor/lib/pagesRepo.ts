@@ -84,9 +84,14 @@ export const writePage = async (
     PAGES_DIRECTORY,
     `${slug}${MARKDOWN_EXTENSION}`,
   );
-  const markdownContent = update.markdownContent.endsWith("\n")
-    ? update.markdownContent
-    : `${update.markdownContent}\n`;
+  // Submitting a <form> normalizes textarea line breaks to CRLF per the
+  // HTML spec, regardless of OS - normalize back to LF before writing so
+  // saves never silently reintroduce CRLF into a file that's meant to keep
+  // clean, readable git diffs.
+  const normalizedMarkdown = update.markdownContent.replace(/\r\n/g, "\n");
+  const markdownContent = normalizedMarkdown.endsWith("\n")
+    ? normalizedMarkdown
+    : `${normalizedMarkdown}\n`;
 
   await Promise.all([
     fsPromises.writeFile(

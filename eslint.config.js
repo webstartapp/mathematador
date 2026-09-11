@@ -297,16 +297,6 @@ module.exports = [
     },
   },
 
-  // Next.js Route Handlers Configuration (GET/PUT/etc. exports are a
-  // framework-mandated naming convention, not something id-length should
-  // flag - see content-editor/app/api/**/route.ts)
-  {
-    files: ["content-editor/app/api/**/route.ts"],
-    rules: {
-      "id-length": "off",
-    },
-  },
-
   // Migrations Configuration (allow console)
   {
     files: ["server/src/migrations/**/*.ts"],
