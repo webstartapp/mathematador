@@ -119,7 +119,10 @@ const resolveRequestToken = async (
     headers,
     AUTHORIZATION_HEADER_NAME,
   );
-  const pinnedBearerMatch = /^Bearer (.+)$/.exec(
+  // The Bearer auth scheme name is case-insensitive per RFC 7235 - matching
+  // only exact-case "Bearer" would fall through to the live token for a
+  // pinned "bearer <token>" header, silently defeating the pin.
+  const pinnedBearerMatch = /^Bearer\s+(.+)$/i.exec(
     (existingAuthorizationKey && headers[existingAuthorizationKey]) || "",
   );
   if (pinnedBearerMatch) {
