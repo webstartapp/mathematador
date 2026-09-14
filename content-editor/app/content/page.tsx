@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { JSX } from "react";
 
+import BackLink from "@/components/BackLink";
+import Notice from "@/components/Notice";
+import PageContainer from "@/components/PageContainer";
 import {
   EMPTY_PAGE_UPDATED_AT,
   listPageSlugs,
@@ -29,10 +32,8 @@ const ContentListPage = async (): Promise<JSX.Element> => {
   const entries = await loadPageListEntries();
 
   return (
-    <main style={{ maxWidth: 640, margin: "0 auto", padding: 24 }}>
-      <p>
-        <a href="/">&larr; Back to dashboard</a>
-      </p>
+    <PageContainer>
+      <BackLink href="/" label="dashboard" />
       <h1>Public Page Content</h1>
       <p>
         Local-only tool for editing static public page content. Saving writes
@@ -44,9 +45,9 @@ const ContentListPage = async (): Promise<JSX.Element> => {
           <li key={entry.slug} style={{ marginBottom: 8 }}>
             <Link href={`/content/${entry.slug}`}>{entry.title}</Link>
             {entry.updatedAt === EMPTY_PAGE_UPDATED_AT ? (
-              <span style={{ color: "#c0392b" }}>
+              <Notice tone="error" inline>
                 {" — not yet created, click to add content"}
-              </span>
+              </Notice>
             ) : (
               <>
                 {" — last updated "}
@@ -56,7 +57,7 @@ const ContentListPage = async (): Promise<JSX.Element> => {
           </li>
         ))}
       </ul>
-    </main>
+    </PageContainer>
   );
 };
 

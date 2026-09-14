@@ -2,6 +2,9 @@
 
 import { ChangeEvent, JSX, useActionState, useState } from "react";
 
+import BackLink from "@/components/BackLink";
+import Notice from "@/components/Notice";
+import PageContainer from "@/components/PageContainer";
 import PagePreview from "@/components/PagePreview";
 import { savePageAction, SavePageState } from "@/lib/actions";
 import { PageContent } from "@/lib/pageContentSchema";
@@ -46,14 +49,12 @@ const EditPageForm = ({
   };
 
   return (
-    <main style={{ maxWidth: 900, margin: "0 auto", padding: 24 }}>
-      <p>
-        <a href="/content">&larr; Back to page list</a>
-      </p>
+    <PageContainer maxWidth={900}>
+      <BackLink href="/content" label="page list" />
       <h1>Editing: {slug}</h1>
-      <p style={{ color: "#888" }}>
+      <Notice tone="muted">
         Last saved: {new Date(updatedAt).toLocaleString()}
-      </p>
+      </Notice>
 
       <form action={formAction}>
         <label style={{ display: "block", marginTop: 16 }}>
@@ -85,8 +86,8 @@ const EditPageForm = ({
           {isSaving ? "Saving…" : "Save"}
         </button>
       </form>
-      {state.page && !state.error && <p style={{ color: "green" }}>Saved.</p>}
-      {state.error && <p style={{ color: "#c0392b" }}>{state.error}</p>}
+      {state.page && !state.error && <Notice tone="success">Saved.</Notice>}
+      {state.error && <Notice tone="error">{state.error}</Notice>}
 
       <h2 style={{ marginTop: 32 }}>Preview</h2>
       <PagePreview
@@ -94,7 +95,7 @@ const EditPageForm = ({
         markdownContent={markdownContent}
         updatedAt={updatedAt}
       />
-    </main>
+    </PageContainer>
   );
 };
 

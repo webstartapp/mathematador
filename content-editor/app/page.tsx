@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { JSX } from "react";
 
+import PageContainer from "@/components/PageContainer";
+
 interface DashboardSection {
   slug: string;
   title: string;
@@ -19,7 +21,7 @@ const SECTIONS: DashboardSection[] = [
 ];
 
 const HomePage = (): JSX.Element => (
-  <main style={{ maxWidth: 640, margin: "0 auto", padding: 24 }}>
+  <PageContainer>
     <h1>Mathematador Content Editor</h1>
     <p>
       Local-only tool for editing static content that gets bundled into the app
@@ -40,7 +42,7 @@ const HomePage = (): JSX.Element => (
         </li>
       ))}
     </ul>
-  </main>
+  </PageContainer>
 );
 
 export default HomePage;
