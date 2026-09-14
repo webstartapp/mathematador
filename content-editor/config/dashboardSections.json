@@ -1,0 +1,8 @@
+[
+  {
+    "slug": "content",
+    "title": "Public Page Content",
+    "description": "Terms & Conditions, GDPR, Cookies Policy, AI Participation - the static legal/info pages rendered at /info/[slug] in the app.",
+    "href": "/content"
+  }
+]

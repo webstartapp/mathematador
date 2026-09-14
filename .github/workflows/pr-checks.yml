@@ -34,5 +34,8 @@ jobs:
       - name: Build frontend app (Expo Web)
         run: npm run build --workspace=mathematador-app
 
+      - name: Build content editor (local-only tool, still kept CI-verified)
+        run: npm run build --workspace=content-editor
+
       - name: Run unit tests
         run: npm test
