@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -30,12 +30,20 @@ interface UserSettingsSync {
 // state on failure rather than blocking or erroring the calling screen).
 export const useSyncUserSettings = (): UserSettingsSync => {
   const dispatch = useDispatch<AppDispatch>();
+  // Guards against the mount-time GET resolving *after* the caller has
+  // already toggled a setting (e.g. a slow network) - without this, the
+  // stale server response would clobber the newer optimistic local value.
+  const hasLocalUpdateRef = useRef(false);
+  // Chains every write onto the previous one so rapid successive toggles
+  // reach the server - and get inserted as history rows - in call order,
+  // rather than as concurrent requests that can complete out of order.
+  const pendingWriteRef = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
     let isCancelled = false;
     userSettingsGetCurrent()
       .then((response) => {
-        if (!isCancelled && response?.data) {
+        if (!isCancelled && !hasLocalUpdateRef.current && response?.data) {
           dispatch(syncCurrentSettings(response.data));
         }
       })
@@ -52,14 +60,17 @@ export const useSyncUserSettings = (): UserSettingsSync => {
       // Optimistic local update regardless of the server call's outcome -
       // same shape as buyCosmetic/equipCosmetic's local-fallback reducers,
       // so a toggle never appears to silently fail for an offline user.
+      hasLocalUpdateRef.current = true;
       dispatch(SETTING_ACTIONS[settingKey](isEnabled));
-      userSettingsUpdate({
-        settingKey,
-        settingValue: isEnabled ? "true" : "false",
-      }).catch(() => {
-        // Local state already reflects the change; only server-side
-        // history is missing this write until a later call succeeds.
-      });
+      pendingWriteRef.current = pendingWriteRef.current.then(() =>
+        userSettingsUpdate({
+          settingKey,
+          settingValue: isEnabled ? "true" : "false",
+        }).catch(() => {
+          // Local state already reflects the change; only server-side
+          // history is missing this write until a later call succeeds.
+        }),
+      );
     },
     [dispatch],
   );

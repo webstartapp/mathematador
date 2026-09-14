@@ -78,6 +78,9 @@ export interface UserConsentRow {
 export interface UserSettingsHistoryRow {
   id: string;
   created: Date;
+  // bigint - node-postgres returns int8/bigserial columns as strings by
+  // default (a JS number can't safely represent the full bigint range).
+  sequence: string;
   user_id: string;
   setting_key: string;
   setting_value: string;

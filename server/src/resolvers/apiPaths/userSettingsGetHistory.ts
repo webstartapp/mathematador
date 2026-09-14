@@ -12,9 +12,18 @@ export const userSettingsGetHistory = restAPICall(
       return;
     }
 
+    // Capped - this is an append-only, ever-growing log with no pruning of
+    // its own, so an unbounded response isn't warranted for what's meant
+    // to be a human-readable recent-changes view, not a full audit export.
+    const HISTORY_ROW_LIMIT = 200;
+
     const historyRows = await knex("user_settings_history")
       .where({ user_id: userId })
-      .orderBy("created", "desc")
+      .orderBy([
+        { column: "created", order: "desc" },
+        { column: "sequence", order: "desc" }
+      ])
+      .limit(HISTORY_ROW_LIMIT)
       .select("setting_key", "setting_value", "created");
 
     response.status(200).json(mapSettingsHistoryRows(historyRows));

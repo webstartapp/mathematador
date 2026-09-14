@@ -14,11 +14,12 @@ export const userSettingsGetCurrent = restAPICall(
 
     // Latest row per setting_key - not a separate "current" table to keep
     // in sync, just the newest history row for each key this account has
-    // ever changed.
+    // ever changed. `sequence` (a monotonic counter, see the migration)
+    // breaks ties between rows that land in the same `created` instant.
     const currentRows = await knex("user_settings_history")
       .distinctOn("setting_key")
       .where({ user_id: userId })
-      .orderBy([{ column: "setting_key" }, { column: "created", order: "desc" }])
+      .orderBy([{ column: "setting_key" }, { column: "created", order: "desc" }, { column: "sequence", order: "desc" }])
       .select("setting_key", "setting_value", "created");
 
     response.status(200).json(mapSettingsHistoryRows(currentRows));
