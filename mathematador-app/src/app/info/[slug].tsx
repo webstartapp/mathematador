@@ -19,10 +19,24 @@ import { createTextShadow } from "@/helpers/createTextShadow";
 const InfoPageScreen = (): JSX.Element => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const router = useRouter();
-  const page = slug ? pagesBySlug[slug] : undefined;
+  const page = slug ? pagesBySlug.get(slug) : undefined;
 
   const handleBackToGame = (): void => {
     router.push("/");
+  };
+
+  // react-native-markdown-display's default link handling always calls
+  // Linking.openURL, which fails for a relative in-page link like
+  // "/info/gdpr" (no scheme to open) instead of navigating there - route
+  // same-app links through expo-router ourselves (returning false skips
+  // the library's own Linking.openURL call) and let genuinely external
+  // links (coi.gov.cz, policies.google.com, ...) fall through to it.
+  const handleLinkPress = (href: string): boolean => {
+    if (href.startsWith("/")) {
+      router.push(href);
+      return false;
+    }
+    return true;
   };
 
   return (
@@ -39,9 +53,14 @@ const InfoPageScreen = (): JSX.Element => {
         >
           {page ? (
             <>
-              <Markdown style={markdownStyles}>{page.markdownContent}</Markdown>
+              <Markdown style={markdownStyles} onLinkPress={handleLinkPress}>
+                {page.markdownContent}
+              </Markdown>
               <ThemedText variant="description" style={styles.updatedAt}>
-                Last updated: {new Date(page.updatedAt).toLocaleDateString()}
+                Last updated:{" "}
+                {new Date(page.updatedAt).toLocaleDateString(undefined, {
+                  timeZone: "UTC",
+                })}
               </ThemedText>
             </>
           ) : (

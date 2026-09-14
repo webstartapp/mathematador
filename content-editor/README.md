@@ -23,11 +23,14 @@ real server, not any runtime check inside the tool itself.
 ## Usage
 
 ```bash
-npm run dev --workspace=content-editor
+npm start --workspace=content-editor
 ```
 
 (or just `npm run dev` from the repo root, which starts this alongside the
-backend and the Expo app) then open <http://localhost:4077>.
+backend and the Expo app) then open <http://localhost:4077>. This always
+runs in Next's dev mode - the script is named `start` for convenience, not
+because there's a separate production build anyone runs; see "never built,
+deployed" above.
 
 - The dashboard shows each content section - currently just "Public Page
   Content".

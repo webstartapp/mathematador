@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { JSX } from "react";
 
 interface BackLinkProps {
@@ -8,9 +9,11 @@ interface BackLinkProps {
 // Every page below the dashboard needs a way back up the hierarchy - shared
 // so an unknown-page or error state always gets one for free, rather than
 // each new state needing its own copy of the link to stay navigable.
+// next/link (not a plain <a>, the only place in this tool that used one)
+// for a client-side transition, matching every other link here.
 const BackLink = ({ href, label }: BackLinkProps): JSX.Element => (
   <p>
-    <a href={href}>&larr; Back to {label}</a>
+    <Link href={href}>&larr; Back to {label}</Link>
   </p>
 );
 

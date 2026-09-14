@@ -65,6 +65,8 @@ Each workspace loads its own `.env` independently — `server/.env` (see `server
 
 Run `npx eslint <path>` on files you touch before considering a change done — `npm run lint` at the repo root is what CI actually runs. `pr-checks.yml` is deliberately minimal: install → lint → build (server, then app) → test → done. It does not run the OpenAPI-generate/diff check — keeping the generated code in sync with the spec is a developer responsibility, not a CI gate (see below).
 
+**When adding a new dependency (or bumping an existing one), default to its latest published version**, not a deliberately older "stable, well-known" pin chosen just to match training-data familiarity — check `npm view <package> version` rather than assuming. Only pin below latest for a concrete, specific reason (a real incompatibility found while working, not general unfamiliarity with a newer major version), and say so in a comment. If a tool's own install/scaffold output warns that a version is newer than your training data, read what it points you to (its docs, an `AGENTS.md`) and write against the real current API rather than downgrading to avoid that discomfort.
+
 ## Git / PR workflow
 
 Full policy is in [`agents/instructions.md`](agents/instructions.md) — summary:

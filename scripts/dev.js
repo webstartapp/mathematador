@@ -66,13 +66,10 @@ serverProcess.stderr.on("data", (chunk) => {
 // two, so it gets started here too rather than needing a separate manual
 // step. Same background/piped treatment as the backend, for the same
 // reason: only Expo can own the real foreground TTY.
-const contentEditorProcess = spawnNpm(
-  ["run", "dev", "--workspace=content-editor"],
-  {
-    cwd: rootDir,
-    stdio: ["ignore", "pipe", "pipe"],
-  },
-);
+const contentEditorProcess = spawnNpm(["start", "--workspace=content-editor"], {
+  cwd: rootDir,
+  stdio: ["ignore", "pipe", "pipe"],
+});
 
 contentEditorProcess.stdout.on("data", (chunk) => {
   process.stdout.write(`[content-editor] ${chunk}`);
@@ -120,11 +117,14 @@ serverProcess.on("exit", (exitCode) => {
 });
 
 contentEditorProcess.on("exit", (exitCode) => {
+  // Unlike the backend, content-editor is an optional local-only authoring
+  // tool the game doesn't need to run (see its own README) - a failure to
+  // start it (a bound port, a Next.js startup error) shouldn't take down
+  // the server/Expo processes someone is actually trying to develop with.
   if (!shuttingDown) {
     console.error(
-      `[dev] content-editor exited unexpectedly (code ${exitCode}).`,
+      `[dev] content-editor exited unexpectedly (code ${exitCode}). The game's own dev servers are unaffected.`,
     );
-    shutdown(exitCode ?? 1);
   }
 });
 

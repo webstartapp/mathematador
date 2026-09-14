@@ -36,7 +36,7 @@ We do **not** currently collect payment card details, precise location, or biome
 
 ## 4. Children's data
 
-Mathematador can be used by children. Under GDPR, the age at which a child can consent to data processing on their own behalf ranges from 13 to 16 depending on the EU member state (16 in the Czech Republic); below that age, a parent or guardian must consent on the child's behalf. If you are a parent or guardian and believe your child has created an account or provided us with personal data without appropriate consent, please contact us at **mathematador@gmail.com** and we will review the account and delete the data unless we have another lawful basis to retain it.
+Mathematador can be used by children. Under GDPR, the age at which a child can consent to data processing on their own behalf ranges from 13 to 16 depending on the EU member state (15 in the Czech Republic, per Act No. 110/2019 Coll., Section 7); below that age, a parent or guardian must consent on the child's behalf. If you are a parent or guardian and believe your child has created an account or provided us with personal data without appropriate consent, please contact us at **mathematador@gmail.com** and we will review the account and delete the data unless we have another lawful basis to retain it.
 
 We design the Service to collect the minimum data needed to provide it, and - as described in Section 5 - we do not currently serve behavioral or personalized advertising to any user, and would not do so to a user we know or believe to be a child.
 

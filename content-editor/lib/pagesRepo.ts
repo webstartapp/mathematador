@@ -4,12 +4,14 @@ import path from "path";
 import knownPageTitlesJson from "@/config/knownPages.json";
 import { PageContent, PageContentSchema } from "@/lib/pageContentSchema";
 
-// Widens the JSON import's literal-keys type (inferred from the four exact
-// keys in the file) to a plain string-indexed record, so it can be looked
-// up by an arbitrary route param below without TypeScript rejecting the
-// index - a typed declaration, not a type assertion (this repo's lint
-// config bans `as`/`<T>` assertions).
-const knownPageTitles: Record<string, string> = knownPageTitlesJson;
+// A Map (rather than a plain object literal, which the JSON import already
+// is) has no prototype lookup at all, so a slug that collides with an
+// Object.prototype property name (e.g. /content/toString) can never pass
+// the `.has()` checks below via an inherited property, nor read back an
+// inherited function as if it were a real title.
+const knownPageTitles: Map<string, string> = new Map(
+  Object.entries(knownPageTitlesJson),
+);
 
 export type { PageContent };
 
@@ -42,7 +44,7 @@ const PageMetadataSchema = PageContentSchema.omit({ markdownContent: true });
 // both that file and the real registry - this tool alone can't make a new
 // page show up in the actual game.
 export const listPageSlugs = async (): Promise<string[]> =>
-  Object.keys(knownPageTitles);
+  Array.from(knownPageTitles.keys());
 
 // Sentinel `updatedAt` for a known page whose files don't exist (or don't
 // parse) yet, so callers - the list page in particular - can tell "empty,
@@ -51,7 +53,8 @@ export const listPageSlugs = async (): Promise<string[]> =>
 export const EMPTY_PAGE_UPDATED_AT = new Date(0).toISOString();
 
 export const readPage = async (slug: string): Promise<PageContent | null> => {
-  if (!(slug in knownPageTitles)) {
+  const knownTitle = knownPageTitles.get(slug);
+  if (knownTitle === undefined) {
     return null;
   }
 
@@ -78,7 +81,7 @@ export const readPage = async (slug: string): Promise<PageContent | null> => {
   }
 
   return {
-    title: knownPageTitles[slug],
+    title: knownTitle,
     markdownContent: "",
     updatedAt: EMPTY_PAGE_UPDATED_AT,
   };
@@ -89,6 +92,19 @@ export interface PageContentUpdate {
   markdownContent: string;
 }
 
+// Writes to a sibling .tmp file first, then renames it into place -
+// rename is atomic on the same filesystem, so a crash or a failed write
+// mid-way can never leave the real file half-written/truncated the way a
+// direct writeFile could.
+const atomicWriteFile = async (
+  filePath: string,
+  contents: string,
+): Promise<void> => {
+  const tempPath = `${filePath}.tmp`;
+  await fsPromises.writeFile(tempPath, contents, "utf8");
+  await fsPromises.rename(tempPath, filePath);
+};
+
 // Edit-only, deliberately: writing a slug outside config/knownPages.json
 // throws rather than silently creating an arbitrary new page - this tool
 // has no add/remove-page UI, and a wholly new slug wouldn't render in the
@@ -97,7 +113,7 @@ export const writePage = async (
   slug: string,
   update: PageContentUpdate,
 ): Promise<PageContent> => {
-  if (!(slug in knownPageTitles)) {
+  if (!knownPageTitles.has(slug)) {
     throw new Error(`Unknown page slug: ${slug}`);
   }
 
@@ -117,12 +133,11 @@ export const writePage = async (
     : `${normalizedMarkdown}\n`;
 
   await Promise.all([
-    fsPromises.writeFile(
+    atomicWriteFile(
       metadataPath,
       `${JSON.stringify({ title: update.title, updatedAt }, null, 2)}\n`,
-      "utf8",
     ),
-    fsPromises.writeFile(markdownPath, markdownContent, "utf8"),
+    atomicWriteFile(markdownPath, markdownContent),
   ]);
 
   return { title: update.title, markdownContent, updatedAt };

@@ -1,7 +1,8 @@
 "use client";
 
 import { JSX, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface PagePreviewProps {
   slug: string;
@@ -29,6 +30,26 @@ const tabButtonStyle = (isActive: boolean): object => ({
 // always runs on this fixed port (see root CLAUDE.md) alongside this tool.
 const GAME_APP_ORIGIN = "http://localhost:4075";
 
+// This page's own content links to the other three pages (e.g.
+// /info/gdpr) using paths that only resolve inside mathematador-app, not
+// this Next.js app - left as plain <a> tags, clicking one here would
+// either 404 in content-editor itself or (worse) navigate this tab away
+// entirely, discarding unsaved edits. Resolves an in-game-looking link
+// against the real app's origin and opens every link in a new tab instead,
+// so this preview is never a dead end or a data-loss trap.
+const PreviewLink: Components["a"] = ({ href, children, ...rest }) => (
+  <a
+    {...rest}
+    href={href?.startsWith("/") ? `${GAME_APP_ORIGIN}${href}` : href}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    {children}
+  </a>
+);
+
+const previewComponents: Components = { a: PreviewLink };
+
 const PagePreview = ({
   slug,
   markdownContent,
@@ -55,7 +76,12 @@ const PagePreview = ({
 
       {activeTab === "raw" && (
         <div style={{ border: "1px solid #ddd", padding: 16, borderRadius: 8 }}>
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={previewComponents}
+          >
+            {markdownContent}
+          </ReactMarkdown>
         </div>
       )}
 

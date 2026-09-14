@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 4077",
+    "start": "next dev --turbopack -p 4077",
     "build": "next build --turbopack",
-    "start": "next start -p 4077",
     "lint": "cd .. && eslint content-editor",
     "test": "jest"
   },
@@ -13,11 +12,12 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.1",
     "next": "16.3.4",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "typescript": "^7.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
