@@ -7,12 +7,13 @@ import {
   setSoundEnabled,
   syncCurrentSettings,
 } from "@/redux/slices/settingsSlice";
-import { AppDispatch, store } from "@/redux/store";
+import { AppDispatch } from "@/redux/store";
 import {
   userSettingsGetCurrent,
   userSettingsUpdate,
 } from "@/src/_generated/api";
 import { UserSettingKey } from "@/src/_generated/model";
+import { getAuthToken } from "@/utils/api-client";
 
 const SETTING_ACTIONS = {
   sound_enabled: setSoundEnabled,
@@ -62,20 +63,27 @@ export const useSyncUserSettings = (): UserSettingsSync => {
       // so a toggle never appears to silently fail for an offline user.
       hasLocalUpdateRef.current = true;
       dispatch(SETTING_ACTIONS[settingKey](isEnabled));
-      // Bound to the account that requested it - queued behind an earlier
-      // write, this call may not actually reach the network until after a
-      // different account has since logged in (its own token now attached
-      // to outgoing requests), which would otherwise silently append this
-      // stale toggle to the wrong account's history.
-      const originatingUserId = store.getState().user.id;
+      // Captured now, synchronously with the toggle, rather than re-read
+      // whenever this write reaches the front of the queue - pins the
+      // eventual network request to the account active at the moment of
+      // the toggle. Queued behind an earlier write, this call might not
+      // reach the network until after a different account has since
+      // logged in; without pinning, customInstance would attach whatever
+      // token is live *then*, silently appending this stale toggle to the
+      // wrong account's history.
+      const pinnedAuthToken = getAuthToken();
       pendingWriteRef.current = pendingWriteRef.current.then(async () => {
-        if (store.getState().user.id !== originatingUserId) {
+        const authToken = await pinnedAuthToken;
+        if (!authToken) {
           return;
         }
-        await userSettingsUpdate({
-          settingKey,
-          settingValue: isEnabled ? "true" : "false",
-        }).catch(() => {
+        await userSettingsUpdate(
+          {
+            settingKey,
+            settingValue: isEnabled ? "true" : "false",
+          },
+          { headers: { Authorization: `Bearer ${authToken}` } },
+        ).catch(() => {
           // Local state already reflects the change; only server-side
           // history is missing this write until a later call succeeds.
         });

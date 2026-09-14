@@ -31,7 +31,11 @@ const PERSISTED_TOKEN_KEY = "auth_token";
 // persisted id, which deleted the just-stored token outright. Actual
 // invalidation (on a confirmed 401, or logout) already happens explicitly
 // below and has no dependency on this lookup.
-const getAuthToken = async (): Promise<string | null> => {
+// Exported so a caller that needs its request pinned to a specific session
+// (rather than whichever token happens to be live when the request actually
+// reaches the network - see the Authorization override below) can capture
+// this value itself at the moment that matters to it.
+export const getAuthToken = async (): Promise<string | null> => {
   return AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
 };
 
@@ -94,11 +98,21 @@ export const customInstance = async <T>(
   requestUrl: string,
   options: RequestInit,
 ): Promise<T> => {
-  const token = await getAuthToken();
   const headers = normalizeHeaders(options.headers);
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  // A caller-supplied Authorization header wins over the live token - this
+  // is how a request gets pinned to a specific session (e.g. one enqueued
+  // before a later account switch) instead of picking up whatever's
+  // currently stored by the time this async function actually runs.
+  const pinnedBearerMatch = /^Bearer (.+)$/.exec(
+    headers["Authorization"] || "",
+  );
+  let token = pinnedBearerMatch ? pinnedBearerMatch[1] : null;
+  if (!token) {
+    token = await getAuthToken();
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
   }
 
   const response = await fetch(`${BASE_URL}${requestUrl}`, {
