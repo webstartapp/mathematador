@@ -37,7 +37,15 @@ const GAME_APP_ORIGIN = "http://localhost:4075";
 // entirely, discarding unsaved edits. Resolves an in-game-looking link
 // against the real app's origin and opens every link in a new tab instead,
 // so this preview is never a dead end or a data-loss trap.
-const PreviewLink: Components["a"] = ({ href, children, ...rest }) => (
+// react-markdown passes its own internal HAST `node` as an extra prop to
+// custom renderers - destructured out here (and named, not spread) so it
+// never reaches the native <a> as an invalid DOM attribute.
+const PreviewLink: Components["a"] = ({
+  href,
+  children,
+  node: _node,
+  ...rest
+}) => (
   <a
     {...rest}
     href={href?.startsWith("/") ? `${GAME_APP_ORIGIN}${href}` : href}

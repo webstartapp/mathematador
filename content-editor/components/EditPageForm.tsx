@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, JSX, useActionState, useState } from "react";
+import { ChangeEvent, JSX, useActionState, useEffect, useState } from "react";
 
 import BackLink from "@/components/BackLink";
 import Notice from "@/components/Notice";
@@ -40,6 +40,21 @@ const EditPageForm = ({
   const updatedAt = savedPage.updatedAt;
   const hasUnsavedChanges =
     title !== savedPage.title || markdownContent !== savedPage.markdownContent;
+
+  // writePage normalizes the markdown it writes (e.g. adds a trailing
+  // newline if missing), so the saved copy can differ slightly from what
+  // the textarea held at submit time. Re-sync local state to the
+  // canonical saved version whenever a save actually succeeds (state.page
+  // becomes a new object) - otherwise hasUnsavedChanges above would never
+  // clear, permanently hiding "Saved." and treating untouched content as
+  // dirty. A failed save leaves state.page referentially unchanged (see
+  // actions.ts), so this deliberately does not fire then.
+  useEffect(() => {
+    if (state.page) {
+      setTitle(state.page.title);
+      setMarkdownContent(state.page.markdownContent);
+    }
+  }, [state.page]);
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setTitle(event.target.value);
