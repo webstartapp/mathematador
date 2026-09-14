@@ -19,6 +19,9 @@ import { userGoogleLogin } from "@/resolvers/apiPaths/userGoogleLogin";
 import { userLogin } from "@/resolvers/apiPaths/userLogin";
 import { userLoginPassword } from "@/resolvers/apiPaths/userLoginPassword";
 import { userRegister } from "@/resolvers/apiPaths/userRegister";
+import { userSettingsGetCurrent } from "@/resolvers/apiPaths/userSettingsGetCurrent";
+import { userSettingsGetHistory } from "@/resolvers/apiPaths/userSettingsGetHistory";
+import { userSettingsUpdate } from "@/resolvers/apiPaths/userSettingsUpdate";
 
 const router = Router();
 
@@ -39,6 +42,12 @@ router.post("/user/google-login", userGoogleLogin);
 router.put("/user/login", requireAuth, userLoginPassword);
 
 router.post("/user/consent", requireAuth, userConsentRecord);
+
+router.get("/user/settings", requireAuth, userSettingsGetCurrent);
+
+router.get("/user/settings/history", requireAuth, userSettingsGetHistory);
+
+router.post("/user/settings", requireAuth, userSettingsUpdate);
 
 // --- Authenticated Challenge Routes ---
 router.post("/challenges/:operationId", requireAuth, challengeStartNew);

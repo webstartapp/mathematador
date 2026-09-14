@@ -116,6 +116,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConsentRecord'
+  /user/settings:
+    get:
+      operationId: user_settings_get_current
+      summary: Get the current (latest per key) value of every setting this account has ever changed
+      responses:
+        '200':
+          description: The account's current settings - only keys that have been changed at least once appear here
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSetting'
+    post:
+      operationId: user_settings_update
+      summary: Append a new value for a setting (a fresh history row, never an update-in-place)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSettingsUpdateBody'
+      responses:
+        '200':
+          description: The newly-appended setting row
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSetting'
+  /user/settings/history:
+    get:
+      operationId: user_settings_get_history
+      summary: Get every change ever made to this account's settings, newest first
+      responses:
+        '200':
+          description: Full settings change history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSetting'
   /user/forgotten-password:
     post:
       operationId: user_forgotten_password
@@ -525,6 +567,40 @@ components:
       required:
         - deviceId
         - consentedAt
+    UserSettingKey:
+      type: string
+      enum:
+        - ads_consent
+        - gdpr_consent
+        - sound_enabled
+    UserSetting:
+      type: object
+      properties:
+        settingKey:
+          $ref: '#/components/schemas/UserSettingKey'
+        settingValue:
+          # Plain string (e.g. "true"/"false" for these three booleans),
+          # not typed further - same reasoning as ConsentRecord.consentedAt
+          # above: keeps orval's zod codegen on the version this repo can
+          # actually build with, and leaves room for a future non-boolean
+          # setting without a schema change.
+          type: string
+        changedAt:
+          type: string
+      required:
+        - settingKey
+        - settingValue
+        - changedAt
+    UserSettingsUpdateBody:
+      type: object
+      properties:
+        settingKey:
+          $ref: '#/components/schemas/UserSettingKey'
+        settingValue:
+          type: string
+      required:
+        - settingKey
+        - settingValue
     SubscriptionType:
       type: string
       enum:

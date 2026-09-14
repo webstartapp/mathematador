@@ -22,7 +22,9 @@ import type {
   RegisterCredentials,
   Subscription,
   SubscriptionCreate,
-  UserProfile
+  UserProfile,
+  UserSetting,
+  UserSettingsUpdateBody
 } from './model';
 
 
@@ -51,8 +53,16 @@ export const userForgotten = async (credentialsEmail: CredentialsEmail, options?
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserForgottenUrl(),
   {
@@ -100,8 +110,16 @@ export const userLogin = async (credentials: Credentials, options?: RequestInit)
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserLoginUrl(),
   {
@@ -149,8 +167,16 @@ export const userLoginPassword = async (credentialsPassword: CredentialsPassword
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserLoginPasswordUrl(),
   {
@@ -198,8 +224,16 @@ export const userRegister = async (registerCredentials: RegisterCredentials, opt
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserRegisterUrl(),
   {
@@ -247,8 +281,16 @@ export const userGoogleLogin = async (googleIdToken: GoogleIdToken, options?: Re
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserGoogleLoginUrl(),
   {
@@ -296,8 +338,16 @@ export const userCheckEmail = async (credentialsEmail: CredentialsEmail, options
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserCheckEmailUrl(),
   {
@@ -345,8 +395,16 @@ export const userConsentRecord = async (consentRecord: ConsentRecord, options?: 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserConsentRecordUrl(),
   {
@@ -362,6 +420,149 @@ const res = await fetch(getUserConsentRecordUrl(),
 
   const data: userConsentRecordResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as userConsentRecordResponse
+}
+
+
+
+export type userSettingsGetCurrentResponse200 = {
+  data: UserSetting[]
+  status: 200
+}
+
+export type userSettingsGetCurrentResponseSuccess = (userSettingsGetCurrentResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userSettingsGetCurrentResponse = (userSettingsGetCurrentResponseSuccess)
+
+export const getUserSettingsGetCurrentUrl = () => {
+
+
+
+
+  return `/user/settings`
+}
+
+/**
+ * @summary Get the current (latest per key) value of every setting this account has ever changed
+ */
+export const userSettingsGetCurrent = async ( options?: RequestInit): Promise<userSettingsGetCurrentResponse> => {
+
+  const res = await fetch(getUserSettingsGetCurrentUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: userSettingsGetCurrentResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userSettingsGetCurrentResponse
+}
+
+
+
+export type userSettingsUpdateResponse200 = {
+  data: UserSetting
+  status: 200
+}
+
+export type userSettingsUpdateResponseSuccess = (userSettingsUpdateResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userSettingsUpdateResponse = (userSettingsUpdateResponseSuccess)
+
+export const getUserSettingsUpdateUrl = () => {
+
+
+
+
+  return `/user/settings`
+}
+
+/**
+ * @summary Append a new value for a setting (a fresh history row, never an update-in-place)
+ */
+export const userSettingsUpdate = async (userSettingsUpdateBody: UserSettingsUpdateBody, options?: RequestInit): Promise<userSettingsUpdateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+const res = await fetch(getUserSettingsUpdateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(userSettingsUpdateBody)
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: userSettingsUpdateResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userSettingsUpdateResponse
+}
+
+
+
+export type userSettingsGetHistoryResponse200 = {
+  data: UserSetting[]
+  status: 200
+}
+
+export type userSettingsGetHistoryResponseSuccess = (userSettingsGetHistoryResponse200) & {
+  headers: Headers;
+};
+;
+
+export type userSettingsGetHistoryResponse = (userSettingsGetHistoryResponseSuccess)
+
+export const getUserSettingsGetHistoryUrl = () => {
+
+
+
+
+  return `/user/settings/history`
+}
+
+/**
+ * @summary Get every change ever made to this account's settings, newest first
+ */
+export const userSettingsGetHistory = async ( options?: RequestInit): Promise<userSettingsGetHistoryResponse> => {
+
+  const res = await fetch(getUserSettingsGetHistoryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: userSettingsGetHistoryResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as userSettingsGetHistoryResponse
 }
 
 
@@ -394,8 +595,16 @@ export const userForgottenPassword = async (credentialsEmail: CredentialsEmail, 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getUserForgottenPasswordUrl(),
   {
@@ -444,8 +653,16 @@ export const challengeStartNew = async (operationId: 'addition' | 'subtraction' 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getChallengeStartNewUrl(operationId),
   {
@@ -584,8 +801,16 @@ export const challengeUpdateResult = async (operationId: 'addition' | 'subtracti
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getChallengeUpdateResultUrl(operationId,id),
   {
@@ -633,8 +858,16 @@ export const subscriptionUpdate = async (subscriptionCreate: SubscriptionCreate,
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getSubscriptionUpdateUrl(),
   {
@@ -811,8 +1044,16 @@ export const cosmeticsBuy = async (cosmeticsBuyBody: CosmeticsBuyBody, options?:
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getCosmeticsBuyUrl(),
   {
@@ -860,8 +1101,16 @@ export const cosmeticsEquip = async (cosmeticsEquipBody: CosmeticsEquipBody, opt
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
     if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
   };
 const res = await fetch(getCosmeticsEquipUrl(),
   {
