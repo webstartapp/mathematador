@@ -7,7 +7,7 @@ import {
   setSoundEnabled,
   syncCurrentSettings,
 } from "@/redux/slices/settingsSlice";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, store } from "@/redux/store";
 import {
   userSettingsGetCurrent,
   userSettingsUpdate,
@@ -62,15 +62,24 @@ export const useSyncUserSettings = (): UserSettingsSync => {
       // so a toggle never appears to silently fail for an offline user.
       hasLocalUpdateRef.current = true;
       dispatch(SETTING_ACTIONS[settingKey](isEnabled));
-      pendingWriteRef.current = pendingWriteRef.current.then(() =>
-        userSettingsUpdate({
+      // Bound to the account that requested it - queued behind an earlier
+      // write, this call may not actually reach the network until after a
+      // different account has since logged in (its own token now attached
+      // to outgoing requests), which would otherwise silently append this
+      // stale toggle to the wrong account's history.
+      const originatingUserId = store.getState().user.id;
+      pendingWriteRef.current = pendingWriteRef.current.then(async () => {
+        if (store.getState().user.id !== originatingUserId) {
+          return;
+        }
+        await userSettingsUpdate({
           settingKey,
           settingValue: isEnabled ? "true" : "false",
         }).catch(() => {
           // Local state already reflects the change; only server-side
           // history is missing this write until a later call succeeds.
-        }),
-      );
+        });
+      });
     },
     [dispatch],
   );
