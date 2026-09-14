@@ -1,7 +1,15 @@
 import { promises as fsPromises } from "fs";
 import path from "path";
 
+import knownPageTitlesJson from "@/config/knownPages.json";
 import { PageContent, PageContentSchema } from "@/lib/pageContentSchema";
+
+// Widens the JSON import's literal-keys type (inferred from the four exact
+// keys in the file) to a plain string-indexed record, so it can be looked
+// up by an arbitrary route param below without TypeScript rejecting the
+// index - a typed declaration, not a type assertion (this repo's lint
+// config bans `as`/`<T>` assertions).
+const knownPageTitles: Record<string, string> = knownPageTitlesJson;
 
 export type { PageContent };
 
@@ -26,22 +34,15 @@ const PageMetadataSchema = PageContentSchema.omit({ markdownContent: true });
 // registry `mathematador-app/src/content/pages/index.ts` actually imports
 // (that file can't be read directly from here - it statically imports .md
 // files through a Metro-only transform content-editor's plain Node/Next.js
-// runtime doesn't have). This list - not "whatever .json/.md files happen
-// to currently exist on disk" - is the source of truth for which slugs are
-// editable, so a page whose files were accidentally deleted stays
-// reachable and recoverable here instead of 404ing forever. Adding a truly
-// new page (a fifth slug) needs a matching entry added to both this map and
-// that real registry - this tool alone can't make a new page show up in
-// the actual game.
-const KNOWN_PAGE_TITLES: Record<string, string> = {
-  "terms-and-conditions": "Terms & Conditions",
-  gdpr: "Privacy Policy (GDPR)",
-  "cookies-policy": "Cookies Policy",
-  "ai-participation": "AI Participation",
-};
-
+// runtime doesn't have). config/knownPages.json - not "whatever .json/.md
+// files happen to currently exist on disk" - is the source of truth for
+// which slugs are editable, so a page whose files were accidentally
+// deleted stays reachable and recoverable here instead of 404ing forever.
+// Adding a truly new page (a fifth slug) needs a matching entry added to
+// both that file and the real registry - this tool alone can't make a new
+// page show up in the actual game.
 export const listPageSlugs = async (): Promise<string[]> =>
-  Object.keys(KNOWN_PAGE_TITLES);
+  Object.keys(knownPageTitles);
 
 // Sentinel `updatedAt` for a known page whose files don't exist (or don't
 // parse) yet, so callers - the list page in particular - can tell "empty,
@@ -50,7 +51,7 @@ export const listPageSlugs = async (): Promise<string[]> =>
 export const EMPTY_PAGE_UPDATED_AT = new Date(0).toISOString();
 
 export const readPage = async (slug: string): Promise<PageContent | null> => {
-  if (!(slug in KNOWN_PAGE_TITLES)) {
+  if (!(slug in knownPageTitles)) {
     return null;
   }
 
@@ -77,7 +78,7 @@ export const readPage = async (slug: string): Promise<PageContent | null> => {
   }
 
   return {
-    title: KNOWN_PAGE_TITLES[slug],
+    title: knownPageTitles[slug],
     markdownContent: "",
     updatedAt: EMPTY_PAGE_UPDATED_AT,
   };
@@ -88,15 +89,15 @@ export interface PageContentUpdate {
   markdownContent: string;
 }
 
-// Edit-only, deliberately: writing a slug outside KNOWN_PAGE_TITLES throws
-// rather than silently creating an arbitrary new page - this tool has no
-// add/remove-page UI, and a wholly new slug wouldn't render in the real
-// game anyway without also being added to its static registry.
+// Edit-only, deliberately: writing a slug outside config/knownPages.json
+// throws rather than silently creating an arbitrary new page - this tool
+// has no add/remove-page UI, and a wholly new slug wouldn't render in the
+// real game anyway without also being added to its static registry.
 export const writePage = async (
   slug: string,
   update: PageContentUpdate,
 ): Promise<PageContent> => {
-  if (!(slug in KNOWN_PAGE_TITLES)) {
+  if (!(slug in knownPageTitles)) {
     throw new Error(`Unknown page slug: ${slug}`);
   }
 

@@ -2,23 +2,7 @@ import Link from "next/link";
 import { JSX } from "react";
 
 import PageContainer from "@/components/PageContainer";
-
-interface DashboardSection {
-  slug: string;
-  title: string;
-  description: string;
-  href: string;
-}
-
-const SECTIONS: DashboardSection[] = [
-  {
-    slug: "content",
-    title: "Public Page Content",
-    description:
-      "Terms & Conditions, GDPR, Cookies Policy, AI Participation - the static legal/info pages rendered at /info/[slug] in the app.",
-    href: "/content",
-  },
-];
+import dashboardSections from "@/config/dashboardSections.json";
 
 const HomePage = (): JSX.Element => (
   <PageContainer>
@@ -28,7 +12,7 @@ const HomePage = (): JSX.Element => (
       at build time. Pick a section below.
     </p>
     <ul style={{ listStyle: "none", padding: 0 }}>
-      {SECTIONS.map((section) => (
+      {dashboardSections.map((section) => (
         <li key={section.slug} style={{ marginBottom: 20 }}>
           <Link
             href={section.href}
