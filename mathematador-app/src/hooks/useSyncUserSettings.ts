@@ -71,7 +71,12 @@ export const useSyncUserSettings = (): UserSettingsSync => {
       // logged in; without pinning, customInstance would attach whatever
       // token is live *then*, silently appending this stale toggle to the
       // wrong account's history.
-      const pinnedAuthToken = getAuthToken();
+      // .catch() here (not just on the eventual userSettingsUpdate call
+      // below) matters: an uncaught rejection would leave pendingWriteRef
+      // permanently rejected, and every later write chained via .then()
+      // onto a rejected promise skips its body entirely - one failed
+      // token read would otherwise silently stop all future writes.
+      const pinnedAuthToken = getAuthToken().catch(() => null);
       pendingWriteRef.current = pendingWriteRef.current.then(async () => {
         const authToken = await pinnedAuthToken;
         if (!authToken) {
