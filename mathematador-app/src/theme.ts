@@ -1,12 +1,16 @@
 /* eslint-disable max-lines */
-// Single source of truth for every style in mathematador-app. `styles` is
-// the one flat exported stylesheet - every key lives directly on it (no
-// per-screen/per-component nesting), so two unrelated screens that happen
-// to both want a "card" or a "title" get distinctly-named flat keys
-// (settingsCard vs authCard) rather than two same-named keys buried in
-// two different nested objects. `colors`/`spacing`/`radii`/`typography`/
-// `textShadows` stay separate: they're raw design tokens consumed inline
-// (e.g. an Ionicons `color` prop), not styles themselves.
+// Single source of truth for every style in mathematador-app. Exactly two
+// things leave this file: `styles`, the one flat stylesheet (every key a
+// direct top-level entry, no per-screen/per-component nesting - two
+// screens that both want a "card" get distinctly-named flat keys,
+// settingsCard vs authCard, rather than two same-named keys buried in two
+// different nested objects), and `colors`, the raw color token table -
+// kept separate because it's consumed directly as prop values (an
+// Ionicons `color` prop, an ActivityIndicator `color` prop), not as a
+// style object. spacing/radii/typography/textShadows exist purely as
+// internal building blocks for `styles` below and are deliberately NOT
+// exported - nothing outside this file should ever need a raw spacing
+// number or font size on its own.
 // eslint.config.js enforces this: StyleSheet.create() is banned in every
 // other .tsx file in this workspace (see its "Single shared stylesheet"
 // block), so a new style has nowhere to go but a new flat key here.
@@ -48,7 +52,7 @@ export const colors = {
 // Covers the real spacing values found across the app; the rarer odd ones
 // (5, 6, 10, 14, 15, 25, 30) snap to their nearest neighbor rather than
 // each keeping its own one-off step.
-export const spacing = {
+const spacing = {
   xxs: 2,
   xs: 4,
   sm: 8,
@@ -63,7 +67,7 @@ export const spacing = {
 
 // Same snapping approach for the rare one-offs (3 -> xs, 10 -> sm,
 // 21 -> xl, 30 -> xxl).
-export const radii = {
+const radii = {
   xs: 4,
   sm: 8,
   md: 12,
@@ -73,7 +77,7 @@ export const radii = {
   pill: 50,
 } as const;
 
-export const typography = {
+const typography = {
   size: {
     xs: 11,
     sm: 12,
@@ -102,7 +106,7 @@ export const typography = {
 // The de facto standard - six files independently declared this exact
 // call before this file existed. `soft` is ComboPopup's one deliberate
 // outlier (a softer, more diffuse glow for its animated popup text).
-export const textShadows = {
+const textShadows = {
   standard: createTextShadow("black", 2, 2, 5),
   soft: createTextShadow("rgba(0, 0, 0, 0.75)", -1, 1, 10),
 };
@@ -110,50 +114,6 @@ export const textShadows = {
 // Not exported - a brevity alias used only while building the styles
 // below (nothing outside this file needs the fragment on its own).
 const cardTextShadow = textShadows.standard;
-
-// react-native-markdown-display consumes this as a plain object with a
-// fixed, library-dictated shape (body/heading1/.../fence) - never through
-// StyleSheet.create, and its keys can't be renamed to fit the flat
-// `styles` object below without info/[slug].tsx reconstructing that exact
-// shape at the call site anyway. Kept as its own small export for that
-// reason, not because it's exempt from the "one stylesheet" rule in spirit.
-export const infoPageMarkdownStyles = {
-  body: {
-    color: colors.white,
-    fontSize: typography.size.md,
-    lineHeight: 24,
-    textShadowColor: "black",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
-  },
-  heading1: {
-    fontSize: typography.size.xxl,
-    marginTop: 18,
-    marginBottom: spacing.sm,
-  },
-  heading2: {
-    fontSize: typography.size.xl,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  heading3: { fontSize: typography.size.lg, marginTop: 14, marginBottom: 6 },
-  strong: { fontWeight: "bold" as const },
-  em: { fontStyle: "italic" as const },
-  link: { textDecorationLine: "underline" as const },
-  hr: { backgroundColor: colors.wood.border },
-  table: { borderColor: colors.wood.border },
-  thead: { borderColor: colors.wood.border },
-  tr: { borderColor: colors.wood.border },
-  th: { borderColor: colors.wood.border },
-  td: { borderColor: colors.wood.border },
-  blockquote: {
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
-    borderColor: colors.wood.border,
-  },
-  code_inline: { color: colors.nearBlack },
-  code_block: { color: colors.nearBlack },
-  fence: { color: colors.nearBlack },
-};
 
 // The one flat stylesheet - every key below is a direct, top-level key on
 // this single object. Shared cross-screen patterns come first (reused by
@@ -789,6 +749,47 @@ export const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     ...cardTextShadow,
   },
+  // react-native-markdown-display's `style` prop needs a plain object
+  // shaped exactly {body, heading1, ..., fence} - a shape it dictates,
+  // not one we can rename to fit a StyleSheet.create key directly. These
+  // stay as flat, prefixed entries here like everything else; info/
+  // [slug].tsx assembles the small library-shaped object it actually
+  // needs from these at the call site (a plain object literal, not a
+  // second StyleSheet.create - still nothing outside this file holds a
+  // style value of its own).
+  infoPageMarkdownBody: {
+    color: colors.white,
+    fontSize: typography.size.md,
+    lineHeight: 24,
+    textShadowColor: "black",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 5,
+  },
+  infoPageMarkdownHeading1: {
+    fontSize: typography.size.xxl,
+    marginTop: 18,
+    marginBottom: spacing.sm,
+  },
+  infoPageMarkdownHeading2: {
+    fontSize: typography.size.xl,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  infoPageMarkdownHeading3: {
+    fontSize: typography.size.lg,
+    marginTop: 14,
+    marginBottom: 6,
+  },
+  infoPageMarkdownStrong: { fontWeight: "bold" },
+  infoPageMarkdownEm: { fontStyle: "italic" },
+  infoPageMarkdownLink: { textDecorationLine: "underline" },
+  infoPageMarkdownRule: { backgroundColor: colors.wood.border },
+  infoPageMarkdownTableBorder: { borderColor: colors.wood.border },
+  infoPageMarkdownBlockquote: {
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    borderColor: colors.wood.border,
+  },
+  infoPageMarkdownCode: { color: colors.nearBlack },
 
   // ---- screens/AuthScreen.tsx ----
   authCard: {
@@ -1384,6 +1385,13 @@ export const styles = StyleSheet.create({
   challengeGameContainer: {
     flex: 1,
     paddingTop: spacing.sm,
+  },
+  // The "minigame not found" fallback message (a config/id mismatch, not
+  // a normal state - see root CLAUDE.md's Gauntlet/Daily gotcha).
+  challengeMinigameNotFoundText: {
+    color: colors.white,
+    textAlign: "center",
+    marginTop: spacing.giant,
   },
 
   // ---- components/common/Header.tsx (GameHeader) ----

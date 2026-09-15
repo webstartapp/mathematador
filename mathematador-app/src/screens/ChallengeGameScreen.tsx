@@ -29,7 +29,7 @@ import { minigames } from "@/configs/minigames";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import { OperationId } from "@/src/_generated/model";
-import { colors, spacing, styles } from "@/theme";
+import { colors, styles } from "@/theme";
 import {
   Challenge,
   ChalengeResult,
@@ -346,13 +346,7 @@ const ChallengeGameScreen = (): JSX.Element => {
   if (!MinigameComponent) {
     return (
       <Layout>
-        <Text
-          style={{
-            color: colors.white,
-            textAlign: "center",
-            marginTop: spacing.giant,
-          }}
-        >
+        <Text style={styles.challengeMinigameNotFoundText}>
           Minigame component not found.
         </Text>
       </Layout>

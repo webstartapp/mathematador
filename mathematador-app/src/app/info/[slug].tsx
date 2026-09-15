@@ -8,7 +8,31 @@ import Button from "@/components/common/Button";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
 import { pagesBySlug } from "@/content/pages";
-import { infoPageMarkdownStyles as markdownStyles, styles } from "@/theme";
+import { styles } from "@/theme";
+
+// react-native-markdown-display's `style` prop needs this exact shape
+// (body/heading1/.../fence, its own naming, not renameable) - assembled
+// here from theme.ts's flat infoPageMarkdown* keys rather than each of
+// those being its own StyleSheet.create call.
+const markdownStyles = {
+  body: styles.infoPageMarkdownBody,
+  heading1: styles.infoPageMarkdownHeading1,
+  heading2: styles.infoPageMarkdownHeading2,
+  heading3: styles.infoPageMarkdownHeading3,
+  strong: styles.infoPageMarkdownStrong,
+  em: styles.infoPageMarkdownEm,
+  link: styles.infoPageMarkdownLink,
+  hr: styles.infoPageMarkdownRule,
+  table: styles.infoPageMarkdownTableBorder,
+  thead: styles.infoPageMarkdownTableBorder,
+  tr: styles.infoPageMarkdownTableBorder,
+  th: styles.infoPageMarkdownTableBorder,
+  td: styles.infoPageMarkdownTableBorder,
+  blockquote: styles.infoPageMarkdownBlockquote,
+  code_inline: styles.infoPageMarkdownCode,
+  code_block: styles.infoPageMarkdownCode,
+  fence: styles.infoPageMarkdownCode,
+};
 
 const InfoPageScreen = (): JSX.Element => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
