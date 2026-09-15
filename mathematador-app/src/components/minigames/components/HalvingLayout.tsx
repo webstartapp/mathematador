@@ -1,7 +1,8 @@
 import { FC, ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
+import { halvingLayoutStyles as localStyles } from "@/theme";
 
 type HalvingLayoutProps = {
   UpperComponent: ReactNode;
@@ -35,23 +36,5 @@ const HalvingLayout: FC<HalvingLayoutProps> = ({
     </View>
   );
 };
-
-const localStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  upper: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  lower: {
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-});
 
 export default HalvingLayout;

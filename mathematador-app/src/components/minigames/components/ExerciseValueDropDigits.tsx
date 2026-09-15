@@ -1,9 +1,10 @@
 import { FC, useEffect, useMemo, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import ExerciseValuePreview from "@/components/minigames/components/ExerciseValuePreview";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
+import { exerciseValueDropDigitsStyles as styles } from "@/theme";
 
 type ExerciseValueDropDigitsProps = {
   value: number | string;
@@ -56,11 +57,5 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  resultValue: {
-    marginLeft: 10,
-  },
-});
 
 export default ExerciseValueDropDigits;

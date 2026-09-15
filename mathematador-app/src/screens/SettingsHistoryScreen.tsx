@@ -1,7 +1,7 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { JSX } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet } from "react-native";
+import { ActivityIndicator, ScrollView } from "react-native";
 
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
@@ -13,7 +13,7 @@ import {
   useSettingsHistoryPage,
 } from "@/hooks/useSettingsHistoryPage";
 import { UserSetting } from "@/src/_generated/model";
-import { cardTextShadow, colors, spacing } from "@/theme";
+import { colors, settingsHistoryScreenStyles as styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type SettingsHistoryScreenNavigationProp = StackNavigationProp<
@@ -97,36 +97,5 @@ const SettingsHistoryScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
-  // Layout.tsx's own outer ScrollView constrains its content container to
-  // height: "100%" rather than letting it grow, so it can't scroll content
-  // taller than the viewport on its own (TiendaScreen works around the same
-  // limitation with its own nested ScrollView) - bounded so a long history
-  // list scrolls internally instead of clipping rows or pushing the Back
-  // button off-screen.
-  historyList: {
-    maxHeight: 400,
-    width: "100%",
-  },
-  historyListContent: {
-    paddingBottom: spacing.sm,
-  },
-  loadMoreButton: {
-    marginTop: spacing.xs,
-  },
-  loader: {
-    marginVertical: spacing.xxxl,
-  },
-  message: {
-    textAlign: "center",
-    marginVertical: spacing.xxl,
-    ...cardTextShadow,
-  },
-});
 
 export default SettingsHistoryScreen;

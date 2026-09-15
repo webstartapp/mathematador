@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { textShadows, typography, usageStyles } from "@/theme";
+import { comboPopupStyles as styles } from "@/theme";
 
 const AUTO_DISMISS_DELAY_MS = 1500;
 
@@ -56,22 +56,5 @@ const ComboPopup = ({ comboText }: ComboPopupProps): JSX.Element => {
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 150,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 10,
-  },
-  text: {
-    ...usageStyles.goldText,
-    fontSize: 30,
-    fontWeight: typography.weight.black,
-    ...textShadows.soft,
-  },
-});
 
 export default ComboPopup;

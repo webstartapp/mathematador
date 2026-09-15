@@ -313,6 +313,27 @@ module.exports = [
     },
   },
 
+  // Single shared stylesheet (mathematador-app/src/theme.ts is the only
+  // place allowed to call StyleSheet.create - every screen/component
+  // imports its styles from there instead of declaring its own). Scoped to
+  // .tsx (every component/screen) rather than .ts, which naturally excludes
+  // theme.ts itself without needing a separate override.
+  {
+    files: ["mathematador-app/src/**/*.tsx"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        ...baseRestrictedSyntax,
+        {
+          selector:
+            "CallExpression[callee.object.name='StyleSheet'][callee.property.name='create']",
+          message:
+            "Do not declare styles locally - add them to mathematador-app/src/theme.ts (the single shared stylesheet) and import from there.",
+        },
+      ],
+    },
+  },
+
   // Test Files Configuration (adds Jest globals)
   {
     files: [

@@ -1,8 +1,8 @@
 import { Link } from "expo-router";
 import { JSX } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
-import { colors, spacing, typography } from "@/theme";
+import { policyLinksStyles as styles } from "@/theme";
 
 // These `/info/*` routes are real, public Expo Router pages - a sibling of
 // the isolated in-game navigation tree (see mathematador-app/CLAUDE.md's
@@ -29,21 +29,5 @@ const PolicyLinks = (): JSX.Element => (
     </Link>
   </View>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    columnGap: spacing.md,
-    rowGap: spacing.xs,
-    marginBottom: spacing.lg,
-  },
-  link: {
-    color: colors.white,
-    fontSize: typography.size.base,
-    textDecorationLine: "underline",
-  },
-});
 
 export default PolicyLinks;

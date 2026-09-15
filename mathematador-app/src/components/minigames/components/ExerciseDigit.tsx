@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
-import { colors, spacing, typography, usageStyles } from "@/theme";
+import { exerciseDigitStyles as styles } from "@/theme";
 
 export type ExerciseDigitProps = {
   value?: string;
@@ -52,41 +52,5 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  unknownDigitContainer: {
-    ...usageStyles.woodTile,
-    borderColor: colors.white,
-    backgroundColor: colors.wood.dark,
-    padding: spacing.xs,
-    margin: spacing.xxs,
-    minWidth: 75,
-    height: 75,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  digitContainer: {
-    ...usageStyles.woodTile,
-    padding: spacing.xs,
-    margin: spacing.xxs,
-    minWidth: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  targetableDigitContainer: {
-    borderColor: colors.gold,
-  },
-  unknownDigit: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-  },
-  digit: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-  },
-});
 
 export default ExeriseDigit;

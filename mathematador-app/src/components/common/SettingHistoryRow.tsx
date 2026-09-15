@@ -1,5 +1,5 @@
 import { FC, JSX } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
 import {
@@ -9,7 +9,7 @@ import {
   SETTING_KEY_LABELS,
 } from "@/helpers/settingLabels";
 import { UserSetting } from "@/src/_generated/model";
-import { cardTextShadow, colors, spacing, typography } from "@/theme";
+import { settingHistoryRowStyles as styles } from "@/theme";
 
 interface SettingHistoryRowProps {
   entry: UserSetting;
@@ -37,43 +37,5 @@ const SettingHistoryRow: FC<SettingHistoryRowProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.wood.border,
-    paddingVertical: spacing.md,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  label: {
-    textAlign: "left",
-    ...cardTextShadow,
-  },
-  date: {
-    color: colors.white,
-    fontSize: typography.size.sm,
-    marginTop: spacing.xs,
-    ...cardTextShadow,
-  },
-  device: {
-    color: colors.white,
-    fontSize: typography.size.xs,
-    marginTop: spacing.xxs,
-    ...cardTextShadow,
-  },
-  value: {
-    color: colors.white,
-    fontWeight: typography.weight.bold,
-    fontSize: typography.size.base,
-    ...cardTextShadow,
-  },
-});
 
 export default SettingHistoryRow;

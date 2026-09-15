@@ -5,7 +5,7 @@ import {
 } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, useMemo, useRef, FC, JSX } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -14,6 +14,7 @@ import { RootState } from "@/redux/store";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
 import { setHeaderRef } from "@/src/hooks/RefManager";
 import { levelOperationUp, levelUserUp } from "@/src/redux/slices/userSlice";
+import { gameHeaderStyles as styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type HeaderProps = {
@@ -126,24 +127,3 @@ const GameHeader: FC<HeaderProps> = ({
 };
 
 export default GameHeader;
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 10,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  statsContainer: { flex: 1, paddingHorizontal: 10 },
-  level: { fontSize: 16, fontWeight: "bold", color: "#333" },
-  progressBar: { height: 6, borderRadius: 3, marginVertical: 5 },
-  xpText: { fontSize: 12, color: "#666" },
-  iconContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: 60,
-  },
-});

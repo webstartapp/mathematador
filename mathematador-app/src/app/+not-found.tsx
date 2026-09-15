@@ -1,10 +1,10 @@
 import { Link, Stack } from "expo-router";
 import { JSX } from "react";
-import { StyleSheet } from "react-native";
 import { View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
+import { notFoundScreenStyles as styles } from "@/theme";
 
 const NotFoundScreen = (): JSX.Element => {
   return (
@@ -21,16 +21,3 @@ const NotFoundScreen = (): JSX.Element => {
 };
 
 export default NotFoundScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-});

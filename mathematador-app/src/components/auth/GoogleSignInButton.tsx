@@ -1,6 +1,8 @@
 /* global google */
 import { FC, JSX, useEffect } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, View } from "react-native";
+
+import { googleSignInButtonStyles as styles } from "@/theme";
 
 const GOOGLE_SCRIPT_ID = "google-identity-services-script";
 const GOOGLE_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
@@ -64,12 +66,5 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({
 
   return <View id={BUTTON_CONTAINER_ID} style={styles.container} />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    marginBottom: 16,
-  },
-});
 
 export default GoogleSignInButton;

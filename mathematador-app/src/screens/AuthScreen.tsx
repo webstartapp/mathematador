@@ -2,7 +2,6 @@
 import { JSX, useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -24,7 +23,7 @@ import {
   userLogin,
   userRegister,
 } from "@/src/_generated/api";
-import { colors, radii, spacing, typography } from "@/theme";
+import { authScreenStyles as styles, colors } from "@/theme";
 import { ApiRequestError } from "@/utils/api-client";
 import { getLocalConsentRecord } from "@/utils/consent";
 
@@ -339,59 +338,5 @@ const AuthScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    maxWidth: 420,
-    padding: spacing.xl,
-  },
-  fieldGroup: {
-    marginBottom: spacing.lg,
-  },
-  fieldLabel: {
-    color: colors.white,
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  input: {
-    height: 48,
-    backgroundColor: colors.white,
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.md,
-    fontSize: typography.size.md,
-  },
-  errorText: {
-    color: colors.danger,
-    marginBottom: spacing.lg,
-    textAlign: "center",
-  },
-  submitButton: {
-    backgroundColor: colors.wood.dark,
-    paddingVertical: 14,
-    borderRadius: radii.xxl,
-    alignItems: "center",
-    marginTop: spacing.sm,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    color: colors.white,
-    fontWeight: typography.weight.bold,
-    fontSize: typography.size.md,
-  },
-  linkText: {
-    color: colors.white,
-    textAlign: "center",
-    marginTop: spacing.lg,
-    textDecorationLine: "underline",
-  },
-  dividerText: {
-    color: "rgba(255,255,255,0.8)",
-    textAlign: "center",
-    marginTop: spacing.lg,
-    marginBottom: spacing.md,
-  },
-});
 
 export default AuthScreen;

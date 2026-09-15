@@ -1,7 +1,7 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation, RouteProp } from "expo-router/react-navigation";
 import { JSX } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { useSelector } from "react-redux";
 
 import Button from "@/components/common/Button";
@@ -9,6 +9,7 @@ import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { operations } from "@/configs/operations";
 import { RootState } from "@/redux/store";
+import { chalengeSelectScreenStyles as styles } from "@/theme";
 import { Challenge } from "@/types/Chalenge";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -103,48 +104,5 @@ const ChalengeSelect = ({ route }: Props): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  subTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginTop: 24,
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  currentChallengeContainer: {
-    marginBottom: 25,
-    marginTop: 25,
-  },
-  challengeBoxContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    width: "100%",
-    flexBasis: "100%",
-    flexGrow: 1,
-  },
-  challengeText: {
-    fontSize: 18,
-    fontWeight: "500",
-  },
-  challengeBox: {
-    flex: 1,
-    marginBottom: 20,
-    borderRadius: 8,
-    minWidth: 200,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
 
 export default ChalengeSelect;

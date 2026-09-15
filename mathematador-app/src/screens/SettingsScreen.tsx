@@ -1,7 +1,7 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { JSX } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
 import Button from "@/components/common/Button";
@@ -11,13 +11,7 @@ import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useUpdateUserSetting } from "@/hooks/useSyncUserSettings";
 import { setMusicEnabled, setSoundEnabled } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
-import {
-  cardTextShadow,
-  colors,
-  spacing,
-  typography,
-  usageStyles,
-} from "@/theme";
+import { settingsScreenStyles as styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type SettingsScreenNavigationProp = StackNavigationProp<
@@ -91,30 +85,5 @@ const SettingsScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
-  sectionLabel: {
-    color: colors.white,
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.bold,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    alignSelf: "flex-start",
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    ...cardTextShadow,
-  },
-  historyButton: {
-    ...usageStyles.goldButton,
-    marginTop: spacing.lg,
-  },
-  historyButtonText: {
-    ...usageStyles.goldButtonText,
-  },
-});
 
 export default SettingsScreen;

@@ -2,7 +2,7 @@ import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp, useRoute } from "expo-router/react-navigation";
 import { JSX, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
@@ -13,7 +13,7 @@ import { markConsentResolved } from "@/navigation/introSession";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { selectIsAuthenticated } from "@/redux/selectors/auth";
 import { userConsentRecord } from "@/src/_generated/api";
-import { colors, radii, spacing, typography } from "@/theme";
+import { consentScreenStyles as styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 import { getLocalConsentRecord, recordLocalConsent } from "@/utils/consent";
 
@@ -140,38 +140,5 @@ const ConsentScreen = (): JSX.Element | null => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    maxWidth: 420,
-    padding: spacing.xl,
-  },
-  acceptButton: {
-    backgroundColor: colors.wood.dark,
-    paddingVertical: 14,
-    borderRadius: radii.xxl,
-    alignItems: "center",
-    marginTop: spacing.sm,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  acceptButtonText: {
-    color: colors.white,
-    fontWeight: typography.weight.bold,
-    fontSize: typography.size.md,
-  },
-  declineLink: {
-    color: colors.white,
-    textAlign: "center",
-    marginTop: spacing.lg,
-    textDecorationLine: "underline",
-  },
-  declineText: {
-    color: colors.danger,
-    marginBottom: spacing.lg,
-    textAlign: "center",
-  },
-});
 
 export default ConsentScreen;

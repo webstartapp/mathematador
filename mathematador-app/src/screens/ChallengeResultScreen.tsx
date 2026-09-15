@@ -2,12 +2,13 @@ import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp } from "expo-router/react-navigation";
 import { JSX } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { operations } from "@/configs/operations";
+import { challengeResultScreenStyles as styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
@@ -104,10 +105,3 @@ const ChallengeResultScreen = ({
 };
 
 export default ChallengeResultScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-});

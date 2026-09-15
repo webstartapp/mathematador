@@ -6,7 +6,6 @@ import { useState, JSX } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -18,7 +17,7 @@ import ThemedText from "@/components/texts/ThemedText";
 import { RootState } from "@/redux/store";
 import { challengeStartNew } from "@/src/_generated/api";
 import { Challenge as ApiChallenge } from "@/src/_generated/model";
-import { colors, radii, spacing, typography, usageStyles } from "@/theme";
+import { colors, gauntletScreenStyles as styles } from "@/theme";
 import { Challenge as LocalChallenge, Exercise } from "@/types/Chalenge";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -319,140 +318,5 @@ const GauntletScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.xl,
-    paddingTop: 15,
-    paddingBottom: spacing.sm,
-    width: "100%",
-  },
-  backBtn: {
-    padding: spacing.sm,
-    backgroundColor: colors.overlay.medium,
-    borderRadius: radii.xl,
-  },
-  title: {
-    fontSize: typography.size.xl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: spacing.sm,
-  },
-  scrollContainer: {
-    padding: spacing.xl,
-    paddingBottom: spacing.xxxl,
-  },
-  glassPanel: {
-    ...usageStyles.overlayCardSubtle,
-    ...usageStyles.cardDropShadow,
-    padding: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    color: colors.white,
-    fontSize: typography.size.md,
-    fontWeight: typography.weight.bold,
-    marginBottom: spacing.md,
-    letterSpacing: 0.5,
-  },
-  loadoutGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  loadoutItem: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-    paddingVertical: spacing.sm,
-    borderRadius: radii.sm,
-    marginHorizontal: spacing.xs,
-  },
-  loadoutLabel: {
-    color: "rgba(255, 255, 255, 0.5)",
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.medium,
-    marginBottom: 4,
-  },
-  loadoutValue: {
-    color: "rgba(255, 255, 255, 0.3)",
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.bold,
-  },
-  activeCosmetic: {
-    color: colors.gold,
-  },
-  modeHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: spacing.sm,
-  },
-  modeTitle: {
-    color: colors.white,
-    fontSize: typography.size.xl,
-    fontWeight: typography.weight.bold,
-  },
-  modeSubtitle: {
-    color: "rgba(255, 255, 255, 0.6)",
-    fontSize: 13,
-    marginTop: 2,
-  },
-  rulesText: {
-    color: "rgba(255, 255, 255, 0.5)",
-    fontSize: typography.size.sm,
-    marginVertical: spacing.sm,
-  },
-  startButton: {
-    ...usageStyles.goldButton,
-    paddingVertical: spacing.md,
-    borderRadius: radii.xxl,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: spacing.sm,
-  },
-  startButtonText: {
-    ...usageStyles.goldButtonText,
-    fontSize: typography.size.base,
-    letterSpacing: 1,
-  },
-  btnDisabled: {
-    opacity: 0.5,
-  },
-  leaderboardRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.overlay.subtle,
-  },
-  rank: {
-    width: 30,
-    fontSize: typography.size.md,
-    color: colors.white,
-    fontWeight: typography.weight.bold,
-  },
-  player: {
-    flex: 1,
-    color: colors.white,
-    fontSize: typography.size.base,
-    fontWeight: typography.weight.medium,
-  },
-  score: {
-    color: colors.gold,
-    fontSize: typography.size.base,
-    fontWeight: typography.weight.bold,
-  },
-  myRow: {
-    backgroundColor: colors.overlay.subtle,
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.sm,
-    borderBottomWidth: 0,
-  },
-});
 
 export default GauntletScreen;

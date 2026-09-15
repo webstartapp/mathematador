@@ -1,8 +1,8 @@
 import { FC, JSX } from "react";
-import { StyleSheet, Switch, View } from "react-native";
+import { Switch, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { cardTextShadow, colors, spacing } from "@/theme";
+import { colors, settingToggleRowStyles as styles } from "@/theme";
 
 interface SettingToggleRowProps {
   label: string;
@@ -38,30 +38,5 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.wood.border,
-    paddingVertical: spacing.md,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  label: {
-    textAlign: "left",
-    ...cardTextShadow,
-  },
-  description: {
-    color: colors.white,
-    marginTop: spacing.xs,
-    ...cardTextShadow,
-  },
-});
 
 export default SettingToggleRow;

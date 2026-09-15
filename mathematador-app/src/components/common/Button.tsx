@@ -1,12 +1,8 @@
 import { FC, JSX } from "react";
-import {
-  TouchableOpacity,
-  StyleSheet,
-  GestureResponderEvent,
-} from "react-native";
+import { TouchableOpacity, GestureResponderEvent } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { colors, radii, spacing } from "@/theme";
+import { buttonStyles as styles } from "@/theme";
 
 interface ButtonProps {
   title: string;
@@ -29,20 +25,5 @@ const Button: FC<ButtonProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    // Close to (but distinct from) colors.wood.dark - the same near-brown
-    // used independently in AuthScreen.tsx/ConsentScreen.tsx for solid CTA
-    // buttons, unified onto the one wood-family token.
-    backgroundColor: colors.wood.dark,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xxl,
-    borderRadius: radii.xxl,
-    alignItems: "center",
-    marginVertical: spacing.sm,
-  },
-  text: {},
-});
 
 export default Button;

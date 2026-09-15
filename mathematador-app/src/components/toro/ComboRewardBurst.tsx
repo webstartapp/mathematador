@@ -1,5 +1,5 @@
 import { JSX, useEffect, useMemo, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -7,6 +7,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+
+import { comboRewardBurstStyles as styles } from "@/theme";
 
 const PARTICLE_COUNT = 14;
 const PARTICLE_EMOJIS = ["🌸", "🪙", "🌺", "🪙", "✨"];
@@ -103,21 +105,5 @@ const ComboRewardBurst = ({ burstKey }: ComboRewardBurstProps): JSX.Element => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 20,
-  },
-  particle: {
-    position: "absolute",
-    top: 0,
-    fontSize: 26,
-  },
-});
 
 export default ComboRewardBurst;

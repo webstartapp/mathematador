@@ -1,8 +1,9 @@
 import { Stack } from "expo-router";
 import { JSX } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import RequireAdmin from "@/components/auth/RequireAdmin";
+import { adminScreenStyles as styles } from "@/theme";
 
 const AdminScreen = (): JSX.Element => {
   return (
@@ -21,24 +22,3 @@ const AdminScreen = (): JSX.Element => {
 };
 
 export default AdminScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: "#1a1a1a",
-  },
-  body: {
-    fontSize: 16,
-    color: "#555",
-    textAlign: "center",
-  },
-});

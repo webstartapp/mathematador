@@ -1,5 +1,7 @@
 import { FC, JSX, ReactNode } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import { View, Animated } from "react-native";
+
+import { layoutStyles as styles } from "@/theme";
 
 interface LayoutProps {
   children: ReactNode;
@@ -17,29 +19,5 @@ const Layout: FC<LayoutProps> = ({ children }): JSX.Element => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  scroller: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  container: {
-    flex: 1,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  fixed: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
 
 export default Layout;

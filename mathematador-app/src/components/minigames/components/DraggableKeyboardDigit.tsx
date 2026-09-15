@@ -4,12 +4,11 @@ import {
   GestureResponderEvent,
   PanResponder,
   PanResponderGestureState,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 
-import { colors, radii, typography } from "@/theme";
+import { draggableKeyboardDigitStyles as styles } from "@/theme";
 
 const TAP_MOVEMENT_THRESHOLD = 6;
 
@@ -123,32 +122,3 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  draggable: {
-    userSelect: "none",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "100%",
-  },
-  draggableItem: {
-    backgroundColor: colors.wood.base,
-    borderRadius: radii.pill,
-    justifyContent: "center",
-    alignItems: "center",
-    userSelect: "none",
-    borderWidth: 3,
-    borderColor: "transparent",
-  },
-  selectedDraggableItem: {
-    borderColor: colors.gold,
-    backgroundColor: colors.wood.highlight,
-  },
-  draggableText: {
-    color: colors.white,
-    fontSize: typography.size.xxxl,
-    fontWeight: typography.weight.bold,
-  },
-});

@@ -2,7 +2,6 @@ import { FC } from "react";
 import {
   GestureResponderEvent,
   PanResponderGestureState,
-  StyleSheet,
   View,
 } from "react-native";
 
@@ -10,30 +9,7 @@ import { DraggableKeyboardDigit } from "@/components/minigames/components/Dragga
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
-import { colors, usageStyles } from "@/theme";
-
-const styles = StyleSheet.create({
-  draggableWrapper: {
-    ...usageStyles.woodTile,
-    // Square tile, dark border - a deliberately different combo from
-    // woodTile's default (light border, xs radius), unlike CenteredDesk
-    // and ExerciseDigit which use woodTile/woodPanel as-is.
-    borderColor: colors.wood.dark,
-    borderRadius: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    userSelect: "none",
-  },
-  keyboardContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    width: "100%",
-    height: "100%",
-    gap: 0,
-  },
-});
+import { draggableKeyboardStyles as styles } from "@/theme";
 
 const digits = Array.from({ length: 10 }, (_ignored, index) =>
   index === 9 ? 0 : index + 1,

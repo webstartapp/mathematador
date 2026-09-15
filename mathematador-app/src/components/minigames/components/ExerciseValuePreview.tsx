@@ -1,11 +1,12 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import ExeriseDigit, {
   ExerciseDigitProps,
 } from "@/components/minigames/components/ExerciseDigit";
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
+import { exerciseValuePreviewStyles as styles } from "@/theme";
 
 interface ExerciseValuePreviewProps extends ExerciseDigitProps {
   onDigitPress?: (inputIndex: number) => void;
@@ -99,9 +100,3 @@ const ExerciseValuePreview: FC<ExerciseValuePreviewProps> = ({
 };
 
 export default ExerciseValuePreview;
-
-const styles = StyleSheet.create({
-  numberContainer: {
-    flexDirection: "row",
-  },
-});

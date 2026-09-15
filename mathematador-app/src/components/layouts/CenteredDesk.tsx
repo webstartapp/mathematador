@@ -1,49 +1,8 @@
 import { FC, ReactNode } from "react";
-import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { TextStyle, View, ViewStyle } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import {
-  cardTextShadow,
-  colors,
-  spacing,
-  typography,
-  usageStyles,
-} from "@/theme";
-
-const localStyles = StyleSheet.create({
-  container: {
-    ...usageStyles.woodPanel,
-    color: colors.white,
-    width: "100%",
-  },
-  wrapper: {},
-  title: {
-    fontSize: typography.size.hero,
-    marginBottom: spacing.sm,
-    color: colors.white,
-    ...cardTextShadow,
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-  },
-  subtitle: {
-    fontSize: typography.size.xxxl,
-    marginBottom: spacing.xxs,
-    color: colors.white,
-    ...cardTextShadow,
-    textAlign: "center",
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-  },
-  description: {
-    fontSize: typography.size.lg,
-    marginBottom: spacing.xxs,
-    color: colors.white,
-    ...cardTextShadow,
-    textAlign: "justify",
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-  },
-});
+import { centeredDeskStyles as localStyles } from "@/theme";
 
 type CenteredDeskStyleOverrides = Partial<{
   wrapper: ViewStyle;

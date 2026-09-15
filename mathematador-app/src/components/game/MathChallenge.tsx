@@ -1,7 +1,7 @@
 import { useState, FC, JSX } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput } from "react-native";
 
-import { colors, radii, spacing, typography } from "@/theme";
+import { mathChallengeStyles as styles } from "@/theme";
 
 interface MathChallengeProps {
   question: string;
@@ -38,27 +38,5 @@ const MathChallenge: FC<MathChallengeProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.xl,
-    alignItems: "center",
-  },
-  question: {
-    fontSize: typography.size.xxxl,
-    marginBottom: spacing.lg,
-  },
-  input: {
-    width: "80%",
-    borderWidth: 1,
-    // Close to (but distinct from) colors.success - unified onto the same
-    // green token rather than keeping its own near-duplicate shade.
-    borderColor: colors.success,
-    borderRadius: radii.sm,
-    padding: spacing.sm,
-    fontSize: typography.size.lg,
-    textAlign: "center",
-  },
-});
 
 export default MathChallenge;

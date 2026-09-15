@@ -11,7 +11,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
@@ -29,7 +29,7 @@ import { minigames } from "@/configs/minigames";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import { OperationId } from "@/src/_generated/model";
-import { colors, radii, spacing, typography, usageStyles } from "@/theme";
+import { challengeGameScreenStyles as styles, colors, spacing } from "@/theme";
 import {
   Challenge,
   ChalengeResult,
@@ -391,110 +391,5 @@ const ChallengeGameScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.xl,
-    paddingTop: 15,
-    paddingBottom: spacing.sm,
-    width: "100%",
-  },
-  timerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    ...usageStyles.overlayCardMedium,
-    borderRadius: radii.xl,
-    paddingVertical: 6,
-    paddingHorizontal: spacing.md,
-  },
-  timerText: {
-    color: colors.white,
-    fontWeight: typography.weight.bold,
-    marginLeft: 6,
-    fontSize: typography.size.md,
-  },
-  frozenText: {
-    color: colors.cyan,
-  },
-  lowTimeText: {
-    color: colors.danger,
-  },
-  inspirationBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 215, 0, 0.2)",
-    borderWidth: 1,
-    borderColor: colors.gold,
-    borderRadius: radii.md,
-    paddingVertical: spacing.xxs,
-    paddingHorizontal: spacing.sm,
-  },
-  inspirationText: {
-    color: colors.gold,
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.bold,
-    marginLeft: 4,
-  },
-  toroPanel: {
-    ...usageStyles.overlayCardSubtle,
-    marginHorizontal: spacing.xl,
-    marginVertical: spacing.sm,
-    borderRadius: radii.lg,
-    padding: 14,
-  },
-  inspiredPanel: {
-    borderColor: colors.gold,
-    backgroundColor: "rgba(255, 215, 0, 0.05)",
-  },
-  toroHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.sm,
-  },
-  toroEmoji: {
-    fontSize: typography.size.hero,
-  },
-  toroTitle: {
-    color: colors.white,
-    fontSize: typography.size.base,
-    fontWeight: typography.weight.bold,
-    marginBottom: 4,
-  },
-  coopBar: {
-    height: spacing.xs,
-    borderRadius: radii.xs,
-    backgroundColor: colors.overlay.medium,
-  },
-  toroActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  toroBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.overlay.strong,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.sm,
-    marginHorizontal: spacing.xs,
-  },
-  toroBtnDisabled: {
-    opacity: 0.4,
-  },
-  toroBtnText: {
-    color: colors.white,
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.bold,
-    marginLeft: 6,
-  },
-  gameContainer: {
-    flex: 1,
-    paddingTop: spacing.sm,
-  },
-});
 
 export default ChallengeGameScreen;
