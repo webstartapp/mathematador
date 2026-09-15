@@ -316,10 +316,21 @@ module.exports = [
   // Single shared stylesheet (mathematador-app/src/theme.ts is the only
   // place allowed to call StyleSheet.create - every screen/component
   // imports its styles from there instead of declaring its own). Scoped to
-  // .tsx (every component/screen) rather than .ts, which naturally excludes
-  // theme.ts itself without needing a separate override.
+  // both .ts and .tsx (a plain helper file could call StyleSheet.create
+  // just as easily as a component), with theme.ts itself explicitly
+  // excluded since it's the one legitimate caller.
+  //
+  // This only catches the plain `StyleSheet.create(...)` and
+  // `SomeNamespace.StyleSheet.create(...)` forms. It can't catch someone
+  // renaming the import (`import { StyleSheet as SS } from "react-native"`)
+  // - no-restricted-syntax works on AST shape, not import bindings, and a
+  // selector broad enough to catch a renamed call (matching any
+  // `X.create(...)`) would false-positive on unrelated `.create()` calls
+  // elsewhere. Catching that would need a custom scope-aware rule, which
+  // isn't worth it while nothing in this codebase aliases the import.
   {
-    files: ["mathematador-app/src/**/*.tsx"],
+    files: ["mathematador-app/src/**/*.ts", "mathematador-app/src/**/*.tsx"],
+    ignores: ["mathematador-app/src/theme.ts"],
     rules: {
       "no-restricted-syntax": [
         "error",
@@ -327,6 +338,12 @@ module.exports = [
         {
           selector:
             "CallExpression[callee.object.name='StyleSheet'][callee.property.name='create']",
+          message:
+            "Do not declare styles locally - add them to mathematador-app/src/theme.ts (the single shared stylesheet) and import from there.",
+        },
+        {
+          selector:
+            "CallExpression[callee.object.property.name='StyleSheet'][callee.property.name='create']",
           message:
             "Do not declare styles locally - add them to mathematador-app/src/theme.ts (the single shared stylesheet) and import from there.",
         },

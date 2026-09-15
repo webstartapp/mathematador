@@ -309,7 +309,9 @@ export const styles = StyleSheet.create({
 
   // ---- components/minigames/components/ExerciseValueDropDigits.tsx ----
   exerciseDropResultValue: {
-    marginLeft: spacing.sm,
+    // Literal 10, not spacing.sm (8) or spacing.md (12) - halfway between
+    // both tokens, so snapping to either would be a real layout change.
+    marginLeft: 10,
   },
 
   // ---- components/minigames/components/ExerciseValuePreview.tsx ----
