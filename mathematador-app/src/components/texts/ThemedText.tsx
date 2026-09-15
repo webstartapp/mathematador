@@ -1,25 +1,27 @@
 import { ReactNode } from "react";
 import { StyleSheet, Text, TextProps, TextStyle } from "react-native";
 
+import { colors, typography } from "@/theme";
+
 const applyStylesFN = <T extends string>(
   styles: Record<T, TextStyle>,
 ): Record<T, TextStyle> => styles;
 
 const themedStyles = applyStylesFN({
   title: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.xxxl,
+    fontWeight: typography.weight.bold,
     textAlign: "center",
   },
   subtitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "500",
+    color: colors.white,
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.medium,
   },
   description: {
     color: "#333",
-    fontSize: 14,
+    fontSize: typography.size.base,
   },
 });
 const alternativeStyles = applyStylesFN({

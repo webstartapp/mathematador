@@ -29,6 +29,7 @@ import {
   cosmeticsEquip,
 } from "@/src/_generated/api";
 import { Cosmetic, CosmeticType } from "@/src/_generated/model";
+import { colors, radii, spacing, typography, usageStyles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type CosmeticItem = {
@@ -122,12 +123,12 @@ const getCosmeticIconInfo = (
   color: string;
 } => {
   if (type === "cape") {
-    return { icon: "shield-outline", color: "#E6007A" };
+    return { icon: "shield-outline", color: colors.magenta };
   }
   if (type === "flare") {
-    return { icon: "sparkles-outline", color: "#00FFFF" };
+    return { icon: "sparkles-outline", color: colors.cyan };
   }
-  return { icon: "shirt-outline", color: "#FFD700" };
+  return { icon: "shirt-outline", color: colors.gold };
 };
 
 interface CosmeticCardProps {
@@ -215,7 +216,7 @@ const CosmeticCard = ({
           }
         >
           {isActionLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={colors.white} />
           ) : (
             <Text style={styles.btnText}>{getButtonText()}</Text>
           )}
@@ -244,7 +245,11 @@ const renderContent = ({
 }: RenderContentProps): JSX.Element => {
   if (loading) {
     return (
-      <ActivityIndicator size="large" color="#FFD700" style={styles.loader} />
+      <ActivityIndicator
+        size="large"
+        color={colors.gold}
+        style={styles.loader}
+      />
     );
   }
 
@@ -383,7 +388,7 @@ const TiendaScreen = (): JSX.Element => {
           style={styles.backBtn}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Ionicons name="arrow-back" size={24} color={colors.white} />
         </TouchableOpacity>
         <ThemedText variant="title" style={styles.title}>
           Tienda de Torero
@@ -433,64 +438,62 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.xl,
     paddingTop: 15,
-    paddingBottom: 10,
+    paddingBottom: spacing.sm,
     width: "100%",
   },
   backBtn: {
-    padding: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 20,
+    padding: spacing.sm,
+    backgroundColor: colors.overlay.medium,
+    borderRadius: radii.xl,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
     flex: 1,
     textAlign: "center",
-    marginHorizontal: 10,
+    marginHorizontal: spacing.sm,
   },
   coinsWrapper: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255, 215, 0, 0.2)",
     borderWidth: 1.5,
-    borderColor: "#FFD700",
-    borderRadius: 20,
+    borderColor: colors.gold,
+    borderRadius: radii.xl,
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     boxShadow: [
       { offsetX: 0, offsetY: 0, blurRadius: 5, color: "rgba(255,215,0,0.3)" },
     ],
   },
   coinsEmoji: {
-    fontSize: 18,
+    fontSize: typography.size.lg,
     marginRight: 4,
   },
   coinsCount: {
-    color: "#FFD700",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: colors.gold,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.md,
   },
   tabBar: {
     flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    ...usageStyles.overlayCardSubtle,
+    marginHorizontal: spacing.xl,
+    marginVertical: spacing.sm,
+    borderRadius: radii.xxl,
     padding: 4,
   },
   tab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: spacing.sm,
     alignItems: "center",
-    borderRadius: 21,
+    borderRadius: radii.xl,
   },
   tabActive: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: colors.overlay.strong,
     boxShadow: [
       {
         offsetX: 0,
@@ -502,39 +505,34 @@ const styles = StyleSheet.create({
   },
   tabText: {
     color: "rgba(255, 255, 255, 0.6)",
-    fontWeight: "600",
-    fontSize: 12,
+    fontWeight: typography.weight.semibold,
+    fontSize: typography.size.sm,
     letterSpacing: 1,
   },
   tabTextActive: {
-    color: "#fff",
+    color: colors.white,
   },
   scrollContainer: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: spacing.xl,
+    paddingBottom: spacing.xxxl,
   },
   loader: {
-    marginTop: 50,
+    marginTop: spacing.giant,
   },
   emptyText: {
     color: "rgba(255, 255, 255, 0.5)",
     textAlign: "center",
-    marginTop: 50,
-    fontSize: 16,
+    marginTop: spacing.giant,
+    fontSize: typography.size.md,
   },
   card: {
-    backgroundColor: "rgba(255, 255, 255, 0.06)",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    padding: 16,
-    marginBottom: 16,
-    boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(0,0,0,0.15)" },
-    ],
+    ...usageStyles.overlayCardSubtle,
+    ...usageStyles.cardDropShadow,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
   },
   cardEquipped: {
-    borderColor: "#FFD700",
+    borderColor: colors.gold,
     backgroundColor: "rgba(255, 215, 0, 0.05)",
     // Matches `card`'s offsetY:4 - previously this only overrode
     // shadowColor/Opacity/Radius and inherited card's shadowOffset since
@@ -557,78 +555,77 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    backgroundColor: colors.overlay.subtle,
   },
   cardInfo: {
-    marginLeft: 16,
+    marginLeft: spacing.lg,
     flex: 1,
   },
   cardTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.bold,
   },
   lockText: {
-    color: "#FF3B30",
+    color: colors.danger,
     fontSize: 13,
     marginTop: 4,
-    fontWeight: "500",
+    fontWeight: typography.weight.medium,
   },
   unlockedText: {
-    color: "#4CD964",
+    color: colors.success,
     fontSize: 13,
     marginTop: 4,
-    fontWeight: "500",
+    fontWeight: typography.weight.medium,
   },
   cardFooter: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 16,
+    marginTop: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: "rgba(255, 255, 255, 0.08)",
-    paddingTop: 12,
+    paddingTop: spacing.md,
   },
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   coinSymbol: {
-    fontSize: 18,
+    fontSize: typography.size.lg,
     marginRight: 4,
   },
   priceText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
   },
   actionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.xl,
     alignItems: "center",
     justifyContent: "center",
     minWidth: 100,
   },
   btnBuy: {
-    backgroundColor: "#FFD700",
+    ...usageStyles.goldButton,
   },
   btnEquip: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: colors.overlay.strong,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.3)",
   },
   btnEquipped: {
-    backgroundColor: "#4CD964",
+    backgroundColor: colors.success,
   },
   btnDisabled: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderColor: "rgba(255, 255, 255, 0.05)",
+    backgroundColor: colors.overlay.subtle,
+    borderColor: colors.overlay.subtle,
   },
   btnText: {
-    color: "#1a1a1a",
-    fontWeight: "bold",
-    fontSize: 14,
+    ...usageStyles.goldButtonText,
+    fontSize: typography.size.base,
   },
 });
 

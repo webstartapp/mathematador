@@ -2,12 +2,7 @@ import { FC, JSX } from "react";
 import { StyleSheet, Switch, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
-
-// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
-// exact tan/gold card (#d49b57) - the black halo is what makes flat
-// white text legible on it.
-const rowTextShadow = createTextShadow("black", 2, 2, 5);
+import { cardTextShadow, colors, spacing } from "@/theme";
 
 interface SettingToggleRowProps {
   label: string;
@@ -37,8 +32,8 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: "rgba(255, 255, 255, 0.3)", true: "#4CD964" }}
-        thumbColor="#fff"
+        trackColor={{ false: "rgba(255, 255, 255, 0.3)", true: colors.success }}
+        thumbColor={colors.white}
       />
     </View>
   );
@@ -51,21 +46,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     borderBottomWidth: 1,
-    borderBottomColor: "#B47b37",
-    paddingVertical: 12,
+    borderBottomColor: colors.wood.border,
+    paddingVertical: spacing.md,
   },
   textContainer: {
     flex: 1,
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   label: {
     textAlign: "left",
-    ...rowTextShadow,
+    ...cardTextShadow,
   },
   description: {
-    color: "#fff",
-    marginTop: 4,
-    ...rowTextShadow,
+    color: colors.white,
+    marginTop: spacing.xs,
+    ...cardTextShadow,
   },
 });
 

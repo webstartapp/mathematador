@@ -18,6 +18,7 @@ import ThemedText from "@/components/texts/ThemedText";
 import { RootState } from "@/redux/store";
 import { challengeStartNew } from "@/src/_generated/api";
 import { Challenge as ApiChallenge } from "@/src/_generated/model";
+import { colors, radii, spacing, typography, usageStyles } from "@/theme";
 import { Challenge as LocalChallenge, Exercise } from "@/types/Chalenge";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -94,7 +95,7 @@ const renderHeader = (
       style={styles.backBtn}
       onPress={() => navigation.goBack()}
     >
-      <Ionicons name="arrow-back" size={24} color="#fff" />
+      <Ionicons name="arrow-back" size={24} color={colors.white} />
     </TouchableOpacity>
     <ThemedText variant="title" style={styles.title}>
       Coliseo de los Números
@@ -158,7 +159,7 @@ const ArenaCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
         <Text style={styles.modeTitle}>La Gran Corrida</Text>
         <Text style={styles.modeSubtitle}>Endless mixed math sprint</Text>
       </View>
-      <Ionicons name="flash-outline" size={32} color="#FFD700" />
+      <Ionicons name="flash-outline" size={32} color={colors.gold} />
     </View>
     <Text style={styles.rulesText}>
       ⏱️ 45 Seconds | ❌ 2 Allowed Mistakes | 🏆 High Rewards
@@ -169,7 +170,7 @@ const ArenaCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
       onPress={onPress}
     >
       {startingMode === "gauntlet" ? (
-        <ActivityIndicator color="#1a1a1a" />
+        <ActivityIndicator color={colors.nearBlack} />
       ) : (
         <Text style={styles.startButtonText}>ENTER ARENA (GAUNTLET)</Text>
       )}
@@ -186,7 +187,7 @@ const DailyCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
           Every player gets the same equations
         </Text>
       </View>
-      <Ionicons name="calendar-outline" size={32} color="#E6007A" />
+      <Ionicons name="calendar-outline" size={32} color={colors.magenta} />
     </View>
     <Text style={styles.rulesText}>
       ⏱️ 90 Seconds | 💀 1 Life (0 Mistakes) | 🪙 50 Completion Reward + 5%
@@ -195,16 +196,16 @@ const DailyCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
     <TouchableOpacity
       style={[
         styles.startButton,
-        { backgroundColor: "#E6007A" },
+        { backgroundColor: colors.magenta },
         startingMode ? styles.btnDisabled : null,
       ]}
       disabled={startingMode !== null}
       onPress={onPress}
     >
       {startingMode === "daily_challenge" ? (
-        <ActivityIndicator color="#fff" />
+        <ActivityIndicator color={colors.white} />
       ) : (
-        <Text style={[styles.startButtonText, { color: "#fff" }]}>
+        <Text style={[styles.startButtonText, { color: colors.white }]}>
           START DAILY CHALLENGE
         </Text>
       )}
@@ -324,44 +325,39 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.xl,
     paddingTop: 15,
-    paddingBottom: 10,
+    paddingBottom: spacing.sm,
     width: "100%",
   },
   backBtn: {
-    padding: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 20,
+    padding: spacing.sm,
+    backgroundColor: colors.overlay.medium,
+    borderRadius: radii.xl,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: typography.size.xl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
     flex: 1,
     textAlign: "center",
-    marginHorizontal: 10,
+    marginHorizontal: spacing.sm,
   },
   scrollContainer: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: spacing.xl,
+    paddingBottom: spacing.xxxl,
   },
   glassPanel: {
-    backgroundColor: "rgba(255, 255, 255, 0.06)",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    padding: 16,
-    marginBottom: 20,
-    boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(0,0,0,0.15)" },
-    ],
+    ...usageStyles.overlayCardSubtle,
+    ...usageStyles.cardDropShadow,
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 12,
+    color: colors.white,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
+    marginBottom: spacing.md,
     letterSpacing: 0.5,
   },
   loadoutGrid: {
@@ -372,34 +368,34 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.2)",
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginHorizontal: 4,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.sm,
+    marginHorizontal: spacing.xs,
   },
   loadoutLabel: {
     color: "rgba(255, 255, 255, 0.5)",
-    fontSize: 12,
-    fontWeight: "500",
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.medium,
     marginBottom: 4,
   },
   loadoutValue: {
     color: "rgba(255, 255, 255, 0.3)",
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
   },
   activeCosmetic: {
-    color: "#FFD700",
+    color: colors.gold,
   },
   modeHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   modeTitle: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.xl,
+    fontWeight: typography.weight.bold,
   },
   modeSubtitle: {
     color: "rgba(255, 255, 255, 0.6)",
@@ -408,21 +404,20 @@ const styles = StyleSheet.create({
   },
   rulesText: {
     color: "rgba(255, 255, 255, 0.5)",
-    fontSize: 12,
-    marginVertical: 10,
+    fontSize: typography.size.sm,
+    marginVertical: spacing.sm,
   },
   startButton: {
-    backgroundColor: "#FFD700",
-    paddingVertical: 12,
-    borderRadius: 25,
+    ...usageStyles.goldButton,
+    paddingVertical: spacing.md,
+    borderRadius: radii.xxl,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: spacing.sm,
   },
   startButtonText: {
-    color: "#1a1a1a",
-    fontWeight: "bold",
-    fontSize: 14,
+    ...usageStyles.goldButtonText,
+    fontSize: typography.size.base,
     letterSpacing: 1,
   },
   btnDisabled: {
@@ -431,31 +426,31 @@ const styles = StyleSheet.create({
   leaderboardRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.05)",
+    borderBottomColor: colors.overlay.subtle,
   },
   rank: {
     width: 30,
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "bold",
+    fontSize: typography.size.md,
+    color: colors.white,
+    fontWeight: typography.weight.bold,
   },
   player: {
     flex: 1,
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "500",
+    color: colors.white,
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.medium,
   },
   score: {
-    color: "#FFD700",
-    fontSize: 14,
-    fontWeight: "bold",
+    color: colors.gold,
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.bold,
   },
   myRow: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    backgroundColor: colors.overlay.subtle,
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.sm,
     borderBottomWidth: 0,
   },
 });

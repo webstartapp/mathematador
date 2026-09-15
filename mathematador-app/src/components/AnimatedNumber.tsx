@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, JSX } from "react";
 import { Animated, View, StyleSheet } from "react-native";
 
+import { colors } from "@/theme";
+
 type AnimatedNumberProps = {
   startValue: number;
   targetValue: number;
@@ -44,7 +46,7 @@ const AnimatedNumber = ({
 
 const styles = StyleSheet.create({
   whiteText: {
-    color: "#FFFFFF",
+    color: colors.white,
   },
 });
 

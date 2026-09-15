@@ -13,6 +13,7 @@ import { markConsentResolved } from "@/navigation/introSession";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { selectIsAuthenticated } from "@/redux/selectors/auth";
 import { userConsentRecord } from "@/src/_generated/api";
+import { colors, radii, spacing, typography } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 import { getLocalConsentRecord, recordLocalConsent } from "@/utils/consent";
 
@@ -143,32 +144,32 @@ const ConsentScreen = (): JSX.Element | null => {
 const styles = StyleSheet.create({
   card: {
     maxWidth: 420,
-    padding: 20,
+    padding: spacing.xl,
   },
   acceptButton: {
-    backgroundColor: "#704c21",
+    backgroundColor: colors.wood.dark,
     paddingVertical: 14,
-    borderRadius: 25,
+    borderRadius: radii.xxl,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   acceptButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: colors.white,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.md,
   },
   declineLink: {
-    color: "#fff",
+    color: colors.white,
     textAlign: "center",
-    marginTop: 16,
+    marginTop: spacing.lg,
     textDecorationLine: "underline",
   },
   declineText: {
-    color: "#FF3B30",
-    marginBottom: 16,
+    color: colors.danger,
+    marginBottom: spacing.lg,
     textAlign: "center",
   },
 });

@@ -9,6 +9,8 @@ import {
   View,
 } from "react-native";
 
+import { colors, radii, typography } from "@/theme";
+
 const TAP_MOVEMENT_THRESHOLD = 6;
 
 interface DraggableKeyboardDigitProps {
@@ -132,8 +134,8 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   draggableItem: {
-    backgroundColor: "#d49b57",
-    borderRadius: 50,
+    backgroundColor: colors.wood.base,
+    borderRadius: radii.pill,
     justifyContent: "center",
     alignItems: "center",
     userSelect: "none",
@@ -141,12 +143,12 @@ const styles = StyleSheet.create({
     borderColor: "transparent",
   },
   selectedDraggableItem: {
-    borderColor: "#FFD700",
-    backgroundColor: "#e8b06f",
+    borderColor: colors.gold,
+    backgroundColor: colors.wood.highlight,
   },
   draggableText: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.xxxl,
+    fontWeight: typography.weight.bold,
   },
 });

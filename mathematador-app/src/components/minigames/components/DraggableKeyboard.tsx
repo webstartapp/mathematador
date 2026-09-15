@@ -10,12 +10,16 @@ import { DraggableKeyboardDigit } from "@/components/minigames/components/Dragga
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
+import { colors, usageStyles } from "@/theme";
 
 const styles = StyleSheet.create({
   draggableWrapper: {
-    backgroundColor: "#d49b57",
-    borderWidth: 5,
-    borderColor: "#744b17",
+    ...usageStyles.woodTile,
+    // Square tile, dark border - a deliberately different combo from
+    // woodTile's default (light border, xs radius), unlike CenteredDesk
+    // and ExerciseDigit which use woodTile/woodPanel as-is.
+    borderColor: colors.wood.dark,
+    borderRadius: 0,
     justifyContent: "center",
     alignItems: "center",
     userSelect: "none",

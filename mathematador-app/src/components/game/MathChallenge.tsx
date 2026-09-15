@@ -1,6 +1,8 @@
 import { useState, FC, JSX } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 
+import { colors, radii, spacing, typography } from "@/theme";
+
 interface MathChallengeProps {
   question: string;
   onSubmit: (answer: string) => void;
@@ -39,20 +41,22 @@ const MathChallenge: FC<MathChallengeProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: spacing.xl,
     alignItems: "center",
   },
   question: {
-    fontSize: 24,
-    marginBottom: 15,
+    fontSize: typography.size.xxxl,
+    marginBottom: spacing.lg,
   },
   input: {
     width: "80%",
     borderWidth: 1,
-    borderColor: "#4CAF50",
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 18,
+    // Close to (but distinct from) colors.success - unified onto the same
+    // green token rather than keeping its own near-duplicate shade.
+    borderColor: colors.success,
+    borderRadius: radii.sm,
+    padding: spacing.sm,
+    fontSize: typography.size.lg,
     textAlign: "center",
   },
 });

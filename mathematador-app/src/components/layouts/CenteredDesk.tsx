@@ -2,46 +2,46 @@ import { FC, ReactNode } from "react";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
-
-const bodyTextShadow = createTextShadow("black", 2, 2, 5);
+import {
+  cardTextShadow,
+  colors,
+  spacing,
+  typography,
+  usageStyles,
+} from "@/theme";
 
 const localStyles = StyleSheet.create({
   container: {
-    borderRadius: 10,
-    borderColor: "#E4Ab67",
-    borderWidth: 5,
-    backgroundColor: "#d49b57",
-    color: "#fff",
+    ...usageStyles.woodPanel,
+    color: colors.white,
     width: "100%",
-    boxShadow: [{ offsetX: 2, offsetY: 2, blurRadius: 0, color: "#B47b37" }],
   },
   wrapper: {},
   title: {
-    fontSize: 30,
-    marginBottom: 10,
-    color: "white",
-    ...bodyTextShadow,
-    paddingLeft: 10,
-    paddingRight: 10,
+    fontSize: typography.size.hero,
+    marginBottom: spacing.sm,
+    color: colors.white,
+    ...cardTextShadow,
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
   },
   subtitle: {
-    fontSize: 24,
-    marginBottom: 5,
-    color: "white",
-    ...bodyTextShadow,
+    fontSize: typography.size.xxxl,
+    marginBottom: spacing.xxs,
+    color: colors.white,
+    ...cardTextShadow,
     textAlign: "center",
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
   },
   description: {
-    fontSize: 18,
-    marginBottom: 5,
-    color: "white",
-    ...bodyTextShadow,
+    fontSize: typography.size.lg,
+    marginBottom: spacing.xxs,
+    color: colors.white,
+    ...cardTextShadow,
     textAlign: "justify",
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
   },
 });
 

@@ -14,7 +14,7 @@ import Button from "@/components/common/Button";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
 import { pagesBySlug } from "@/content/pages";
-import { createTextShadow } from "@/helpers/createTextShadow";
+import { cardTextShadow, colors, spacing, typography } from "@/theme";
 
 const InfoPageScreen = (): JSX.Element => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -77,15 +77,6 @@ const InfoPageScreen = (): JSX.Element => {
 
 export default InfoPageScreen;
 
-// Same recipe CenteredDesk.tsx already uses for its own title/description
-// text on this exact tan/gold card (#d49b57) - not decorative flourish: flat
-// white-on-#d49b57 measures ~2.4:1 contrast (WCAG AA needs 4.5:1 for body
-// text), and this black halo is what actually makes it legible. Confirmed
-// live - dropping it (an earlier version of this file did, reasoning a
-// heavy shadow would hurt long-form readability) made the page hard to
-// read, backwards from the intent.
-const cardTextShadow = createTextShadow("black", 2, 2, 5);
-
 const styles = StyleSheet.create({
   background: {
     flex: 1,
@@ -94,23 +85,23 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: "center",
-    padding: 24,
+    padding: spacing.xxl,
   },
   card: {
     maxWidth: 720,
-    padding: 20,
-    marginVertical: 40,
+    padding: spacing.xl,
+    marginVertical: spacing.huge,
   },
   description: {
     textAlign: "center",
     ...cardTextShadow,
   },
   updatedAt: {
-    color: "#fff",
-    fontSize: 13,
+    color: colors.white,
+    fontSize: typography.size.sm,
     fontStyle: "italic",
-    marginTop: 12,
-    marginBottom: 8,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
     ...cardTextShadow,
   },
 });
@@ -131,30 +122,38 @@ type MarkdownStyleMap = Record<string, TextStyle | ViewStyle>;
 // the triplet, just with a harmless deprecation warning in the console.
 const markdownStyles: MarkdownStyleMap = {
   body: {
-    color: "#fff",
-    fontSize: 16,
+    color: colors.white,
+    fontSize: typography.size.md,
     lineHeight: 24,
     textShadowColor: "black",
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 5,
   },
-  heading1: { fontSize: 22, marginTop: 18, marginBottom: 8 },
-  heading2: { fontSize: 20, marginTop: 16, marginBottom: 8 },
-  heading3: { fontSize: 18, marginTop: 14, marginBottom: 6 },
+  heading1: {
+    fontSize: typography.size.xxl,
+    marginTop: 18,
+    marginBottom: spacing.sm,
+  },
+  heading2: {
+    fontSize: typography.size.xl,
+    marginTop: spacing.lg,
+    marginBottom: spacing.sm,
+  },
+  heading3: { fontSize: typography.size.lg, marginTop: 14, marginBottom: 6 },
   strong: { fontWeight: "bold" },
   em: { fontStyle: "italic" },
   link: { textDecorationLine: "underline" },
-  hr: { backgroundColor: "#B47b37" },
-  table: { borderColor: "#B47b37" },
-  thead: { borderColor: "#B47b37" },
-  tr: { borderColor: "#B47b37" },
-  th: { borderColor: "#B47b37" },
-  td: { borderColor: "#B47b37" },
+  hr: { backgroundColor: colors.wood.border },
+  table: { borderColor: colors.wood.border },
+  thead: { borderColor: colors.wood.border },
+  tr: { borderColor: colors.wood.border },
+  th: { borderColor: colors.wood.border },
+  td: { borderColor: colors.wood.border },
   blockquote: {
     backgroundColor: "rgba(0, 0, 0, 0.35)",
-    borderColor: "#B47b37",
+    borderColor: colors.wood.border,
   },
-  code_inline: { color: "#1a1a1a" },
-  code_block: { color: "#1a1a1a" },
-  fence: { color: "#1a1a1a" },
+  code_inline: { color: colors.nearBlack },
+  code_block: { color: colors.nearBlack },
+  fence: { color: colors.nearBlack },
 };

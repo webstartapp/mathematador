@@ -2,7 +2,6 @@ import { FC, JSX } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
 import {
   formatDeviceId,
   formatSettingChangedAt,
@@ -10,11 +9,7 @@ import {
   SETTING_KEY_LABELS,
 } from "@/helpers/settingLabels";
 import { UserSetting } from "@/src/_generated/model";
-
-// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
-// exact tan/gold card (#d49b57) - the black halo is what makes flat
-// white text legible on it.
-const rowTextShadow = createTextShadow("black", 2, 2, 5);
+import { cardTextShadow, colors, spacing, typography } from "@/theme";
 
 interface SettingHistoryRowProps {
   entry: UserSetting;
@@ -50,34 +45,34 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     borderBottomWidth: 1,
-    borderBottomColor: "#B47b37",
-    paddingVertical: 12,
+    borderBottomColor: colors.wood.border,
+    paddingVertical: spacing.md,
   },
   textContainer: {
     flex: 1,
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   label: {
     textAlign: "left",
-    ...rowTextShadow,
+    ...cardTextShadow,
   },
   date: {
-    color: "#fff",
-    fontSize: 12,
-    marginTop: 4,
-    ...rowTextShadow,
+    color: colors.white,
+    fontSize: typography.size.sm,
+    marginTop: spacing.xs,
+    ...cardTextShadow,
   },
   device: {
-    color: "#fff",
-    fontSize: 11,
-    marginTop: 2,
-    ...rowTextShadow,
+    color: colors.white,
+    fontSize: typography.size.xs,
+    marginTop: spacing.xxs,
+    ...cardTextShadow,
   },
   value: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 14,
-    ...rowTextShadow,
+    color: colors.white,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.base,
+    ...cardTextShadow,
   },
 });
 

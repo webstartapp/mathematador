@@ -2,6 +2,8 @@ import { Link } from "expo-router";
 import { JSX } from "react";
 import { StyleSheet, View } from "react-native";
 
+import { colors, spacing, typography } from "@/theme";
+
 // These `/info/*` routes are real, public Expo Router pages - a sibling of
 // the isolated in-game navigation tree (see mathematador-app/CLAUDE.md's
 // "Screen flow & navigation"), not gated by auth or consent, so linking out
@@ -33,13 +35,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    columnGap: 12,
-    rowGap: 4,
-    marginBottom: 16,
+    columnGap: spacing.md,
+    rowGap: spacing.xs,
+    marginBottom: spacing.lg,
   },
   link: {
-    color: "#fff",
-    fontSize: 14,
+    color: colors.white,
+    fontSize: typography.size.base,
     textDecorationLine: "underline",
   },
 });

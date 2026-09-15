@@ -6,6 +6,7 @@ import {
 } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
+import { colors, radii, spacing } from "@/theme";
 
 interface ButtonProps {
   title: string;
@@ -31,12 +32,15 @@ const Button: FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#704c21",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
+    // Close to (but distinct from) colors.wood.dark - the same near-brown
+    // used independently in AuthScreen.tsx/ConsentScreen.tsx for solid CTA
+    // buttons, unified onto the one wood-family token.
+    backgroundColor: colors.wood.dark,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xxl,
+    borderRadius: radii.xxl,
     alignItems: "center",
-    marginVertical: 10,
+    marginVertical: spacing.sm,
   },
   text: {},
 });

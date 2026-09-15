@@ -8,23 +8,18 @@ import Layout from "@/components/common/Layout";
 import SettingHistoryRow from "@/components/common/SettingHistoryRow";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
 import {
   HistoryLoadState,
   useSettingsHistoryPage,
 } from "@/hooks/useSettingsHistoryPage";
 import { UserSetting } from "@/src/_generated/model";
+import { cardTextShadow, colors, spacing } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type SettingsHistoryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "SettingsHistory"
 >;
-
-// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
-// exact tan/gold card (#d49b57) - the black halo is what makes flat
-// white text legible on it.
-const cardTextShadow = createTextShadow("black", 2, 2, 5);
 
 const renderContent = (
   loadState: HistoryLoadState,
@@ -33,7 +28,11 @@ const renderContent = (
 ): JSX.Element => {
   if (loadState === "loading") {
     return (
-      <ActivityIndicator size="large" color="#fff" style={styles.loader} />
+      <ActivityIndicator
+        size="large"
+        color={colors.white}
+        style={styles.loader}
+      />
     );
   }
 
@@ -102,7 +101,7 @@ const SettingsHistoryScreen = (): JSX.Element => {
 const styles = StyleSheet.create({
   card: {
     maxWidth: 480,
-    padding: 20,
+    padding: spacing.xl,
   },
   // Layout.tsx's own outer ScrollView constrains its content container to
   // height: "100%" rather than letting it grow, so it can't scroll content
@@ -115,17 +114,17 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   historyListContent: {
-    paddingBottom: 8,
+    paddingBottom: spacing.sm,
   },
   loadMoreButton: {
-    marginTop: 4,
+    marginTop: spacing.xs,
   },
   loader: {
-    marginVertical: 30,
+    marginVertical: spacing.xxxl,
   },
   message: {
     textAlign: "center",
-    marginVertical: 20,
+    marginVertical: spacing.xxl,
     ...cardTextShadow,
   },
 });

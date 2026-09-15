@@ -6,6 +6,7 @@ import {
   getNextComboMilestone,
   getPreviousComboMilestone,
 } from "@/components/toro/comboMilestones";
+import { colors, spacing } from "@/theme";
 
 interface ComboMeterProps {
   streak: number;
@@ -31,8 +32,8 @@ const ComboMeter = ({ streak }: ComboMeterProps): JSX.Element => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 20,
-    marginBottom: 10,
+    marginHorizontal: spacing.xl,
+    marginBottom: spacing.sm,
   },
   label: {
     color: "#FFB347",
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   bar: {
     height: 6,
     borderRadius: 3,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: colors.overlay.medium,
   },
 });
 

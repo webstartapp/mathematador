@@ -11,6 +11,7 @@ import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSyncUserSettings } from "@/hooks/useSyncUserSettings";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { RootState } from "@/redux/store";
+import { colors } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
@@ -45,13 +46,13 @@ const HomeScreen = (): JSX.Element => {
         <Button
           title="Coliseo (Gauntlet & Daily)"
           onPress={() => navigation.navigate("Gauntlet")}
-          style={{ backgroundColor: "#E6007A" }}
+          style={{ backgroundColor: colors.magenta }}
         />
         <Button
           title="Tienda de Torero"
           onPress={() => navigation.navigate("Tienda")}
-          style={{ backgroundColor: "#FFD700" }}
-          textStyle={{ color: "#1a1a1a" }}
+          style={{ backgroundColor: colors.gold }}
+          textStyle={{ color: colors.nearBlack }}
         />
         <Button
           title="Settings"

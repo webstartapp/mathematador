@@ -2,6 +2,7 @@ import { FC } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
+import { colors, spacing, typography, usageStyles } from "@/theme";
 
 export type ExerciseDigitProps = {
   value?: string;
@@ -54,41 +55,37 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
 
 const styles = StyleSheet.create({
   unknownDigitContainer: {
-    borderColor: "#FFFFFF",
-    borderWidth: 5,
-    backgroundColor: "#744b17",
-    borderRadius: 4,
-    padding: 5,
-    margin: 2,
+    ...usageStyles.woodTile,
+    borderColor: colors.white,
+    backgroundColor: colors.wood.dark,
+    padding: spacing.xs,
+    margin: spacing.xxs,
     minWidth: 75,
     height: 75,
     justifyContent: "center",
     alignItems: "center",
   },
   digitContainer: {
-    borderColor: "#E4Ab67",
-    borderWidth: 5,
-    backgroundColor: "#d49b57",
-    borderRadius: 4,
-    padding: 5,
-    margin: 2,
+    ...usageStyles.woodTile,
+    padding: spacing.xs,
+    margin: spacing.xxs,
     minWidth: 50,
     height: 50,
     justifyContent: "center",
     alignItems: "center",
   },
   targetableDigitContainer: {
-    borderColor: "#FFD700",
+    borderColor: colors.gold,
   },
   unknownDigit: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
   },
   digit: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
   },
 });
 

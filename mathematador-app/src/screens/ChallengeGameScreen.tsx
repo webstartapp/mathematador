@@ -29,6 +29,7 @@ import { minigames } from "@/configs/minigames";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import { OperationId } from "@/src/_generated/model";
+import { colors, radii, spacing, typography, usageStyles } from "@/theme";
 import {
   Challenge,
   ChalengeResult,
@@ -157,7 +158,9 @@ const ChallengeTopBar = ({
       <Ionicons
         name={isFrozen ? "snow-outline" : "timer-outline"}
         size={20}
-        color={isFrozen ? "#00FFFF" : timeLeft <= 10 ? "#FF3B30" : "#fff"}
+        color={
+          isFrozen ? colors.cyan : timeLeft <= 10 ? colors.danger : colors.white
+        }
       />
       <Text
         style={[
@@ -173,7 +176,7 @@ const ChallengeTopBar = ({
     {/* Toro Inspiration Badge */}
     {isToroInspired && (
       <View style={styles.inspirationBadge}>
-        <Ionicons name="flame" size={14} color="#FFD700" />
+        <Ionicons name="flame" size={14} color={colors.gold} />
         <Text style={styles.inspirationText}>Inspired (2x XP)</Text>
       </View>
     )}
@@ -206,7 +209,7 @@ const ToroPanel = ({
         <Text style={styles.toroTitle}>Toro Cooperation</Text>
         <ProgressBar
           progress={cooperation / 100}
-          color="#FFD700"
+          color={colors.gold}
           style={styles.coopBar}
         />
       </View>
@@ -221,7 +224,7 @@ const ToroPanel = ({
         disabled={cooperation < 100}
         onPress={handleToroHint}
       >
-        <Ionicons name="bulb-outline" size={16} color="#fff" />
+        <Ionicons name="bulb-outline" size={16} color={colors.white} />
         <Text style={styles.toroBtnText}>Toro Hint</Text>
       </TouchableOpacity>
 
@@ -233,7 +236,7 @@ const ToroPanel = ({
         <Ionicons
           name={isFrozen ? "snow" : "hourglass-outline"}
           size={16}
-          color="#fff"
+          color={colors.white}
         />
         <Text style={styles.toroBtnText}>
           {isFrozen ? "Frozen (3s)" : "Toro Focus"}
@@ -336,7 +339,13 @@ const ChallengeGameScreen = (): JSX.Element => {
   if (!MinigameComponent) {
     return (
       <Layout>
-        <Text style={{ color: "#fff", textAlign: "center", marginTop: 50 }}>
+        <Text
+          style={{
+            color: colors.white,
+            textAlign: "center",
+            marginTop: spacing.giant,
+          }}
+        >
           Minigame component not found.
         </Text>
       </Layout>
@@ -388,78 +397,76 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.xl,
     paddingTop: 15,
-    paddingBottom: 10,
+    paddingBottom: spacing.sm,
     width: "100%",
   },
   timerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 20,
+    ...usageStyles.overlayCardMedium,
+    borderRadius: radii.xl,
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
   },
   timerText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: colors.white,
+    fontWeight: typography.weight.bold,
     marginLeft: 6,
-    fontSize: 16,
+    fontSize: typography.size.md,
   },
   frozenText: {
-    color: "#00FFFF",
+    color: colors.cyan,
   },
   lowTimeText: {
-    color: "#FF3B30",
+    color: colors.danger,
   },
   inspirationBadge: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255, 215, 0, 0.2)",
     borderWidth: 1,
-    borderColor: "#FFD700",
-    borderRadius: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    borderColor: colors.gold,
+    borderRadius: radii.md,
+    paddingVertical: spacing.xxs,
+    paddingHorizontal: spacing.sm,
   },
   inspirationText: {
-    color: "#FFD700",
-    fontSize: 12,
-    fontWeight: "bold",
+    color: colors.gold,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
     marginLeft: 4,
   },
   toroPanel: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    ...usageStyles.overlayCardSubtle,
+    marginHorizontal: spacing.xl,
+    marginVertical: spacing.sm,
+    borderRadius: radii.lg,
     padding: 14,
   },
   inspiredPanel: {
-    borderColor: "#FFD700",
+    borderColor: colors.gold,
     backgroundColor: "rgba(255, 215, 0, 0.05)",
   },
   toroHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: spacing.sm,
   },
   toroEmoji: {
-    fontSize: 32,
+    fontSize: typography.size.hero,
   },
   toroTitle: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.base,
+    fontWeight: typography.weight.bold,
     marginBottom: 4,
   },
   coopBar: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    height: spacing.xs,
+    borderRadius: radii.xs,
+    backgroundColor: colors.overlay.medium,
   },
   toroActions: {
     flexDirection: "row",
@@ -470,23 +477,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    paddingVertical: 8,
-    borderRadius: 10,
-    marginHorizontal: 4,
+    backgroundColor: colors.overlay.strong,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.sm,
+    marginHorizontal: spacing.xs,
   },
   toroBtnDisabled: {
     opacity: 0.4,
   },
   toroBtnText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
+    color: colors.white,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
     marginLeft: 6,
   },
   gameContainer: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: spacing.sm,
   },
 });
 

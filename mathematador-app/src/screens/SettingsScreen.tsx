@@ -8,10 +8,16 @@ import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import SettingToggleRow from "@/components/common/SettingToggleRow";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
-import { createTextShadow } from "@/helpers/createTextShadow";
 import { useUpdateUserSetting } from "@/hooks/useSyncUserSettings";
 import { setMusicEnabled, setSoundEnabled } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
+import {
+  cardTextShadow,
+  colors,
+  spacing,
+  typography,
+  usageStyles,
+} from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type SettingsScreenNavigationProp = StackNavigationProp<
@@ -86,34 +92,28 @@ const SettingsScreen = (): JSX.Element => {
   );
 };
 
-// Same recipe CenteredDesk.tsx already uses for its own title/description
-// text on this exact tan/gold card (#d49b57) - flat white-on-#d49b57 alone
-// doesn't meet contrast guidelines, the black halo is what makes it legible
-// (see InfoPageScreen.tsx, which established this pattern first).
-const cardTextShadow = createTextShadow("black", 2, 2, 5);
-
 const styles = StyleSheet.create({
   card: {
     maxWidth: 480,
-    padding: 20,
+    padding: spacing.xl,
   },
   sectionLabel: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "700",
+    color: colors.white,
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
     letterSpacing: 1,
     textTransform: "uppercase",
     alignSelf: "flex-start",
-    marginTop: 12,
-    marginBottom: 8,
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
     ...cardTextShadow,
   },
   historyButton: {
-    backgroundColor: "#FFD700",
-    marginTop: 16,
+    ...usageStyles.goldButton,
+    marginTop: spacing.lg,
   },
   historyButtonText: {
-    color: "#1a1a1a",
+    ...usageStyles.goldButtonText,
   },
 });
 

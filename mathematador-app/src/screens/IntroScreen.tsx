@@ -11,6 +11,7 @@ import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSessionVerification } from "@/hooks/useSessionVerification";
 import { markIntroPlayed } from "@/navigation/introSession";
+import { colors, radii, spacing, typography } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type IntroScreenNavigationProp = StackNavigationProp<
@@ -127,17 +128,17 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: "absolute",
-    bottom: 40,
-    right: 24,
+    bottom: spacing.huge,
+    right: spacing.xxl,
     backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    borderRadius: radii.xl,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xl,
   },
   skipText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: colors.white,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.md,
   },
 });
 

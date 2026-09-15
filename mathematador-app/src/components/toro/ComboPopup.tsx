@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { createTextShadow } from "@/helpers/createTextShadow";
+import { textShadows, typography, usageStyles } from "@/theme";
 
 const AUTO_DISMISS_DELAY_MS = 1500;
 
@@ -67,10 +67,10 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   text: {
+    ...usageStyles.goldText,
     fontSize: 30,
-    fontWeight: "900",
-    color: "#FFD700",
-    ...createTextShadow("rgba(0, 0, 0, 0.75)", -1, 1, 10),
+    fontWeight: typography.weight.black,
+    ...textShadows.soft,
   },
 });
 
