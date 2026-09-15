@@ -12,7 +12,13 @@ export const useOleSound = (): (() => void) => {
   );
 
   const playOleSound = useCallback((): void => {
-    if (!soundEnabled) return;
+    // Explicit === false (not a falsy check): a device that already had
+    // app data persisted before soundEnabled existed rehydrates with this
+    // field simply absent (redux-persist replaces the whole slice object
+    // rather than merging in new fields), which is `undefined` at runtime
+    // despite the type - that should behave as the intended default
+    // (enabled), not as silently muted.
+    if (soundEnabled === false) return;
     player.seekTo(0);
     player.play();
   }, [player, soundEnabled]);

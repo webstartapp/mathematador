@@ -362,7 +362,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: "A JWT from POST /user/login (or /user/register, /user/google-login) sent as `Authorization: Bearer <token>` - see requireAuth in server/src/middlewares/auth.ts. Tokens have no expiry."
+      description: "A JWT from POST /user/login (or /user/register, /user/google-login) sent as `Authorization: Bearer <token>` - see requireAuth in server/src/middlewares/auth.ts. Tokens expire after 30 days (see signToken in server/src/utils/JWT.ts)."
   parameters:
     OperationId:
       name: operationId
