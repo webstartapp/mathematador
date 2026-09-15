@@ -21,20 +21,23 @@ const KNOWN_THIRD_PARTY_WARNINGS = [
 // catching its returned promise (node_modules/expo-audio/build/
 // AudioPlayer.web.js, node_modules/expo-video/build/VideoPlayer.web.js) -
 // there's no promise reference in this app's own code (menuMusicEngine.ts,
-// IntroScreen.tsx) to attach a .catch() to. Two distinct browser rejections
-// come out of that same gap: NotAllowedError when audio autoplay is
-// blocked pre-interaction, and AbortError when the browser's power-saving
-// policy interrupts a video-only autoplay. Nothing is actually broken by
-// either: menuMusicEngine.ts already treats "requested but not yet
-// playing" as expected and retries once the user interacts, and
+// IntroScreen.tsx) to attach a .catch() to. Three distinct browser
+// rejections come out of that same gap: NotAllowedError when audio
+// autoplay is blocked pre-interaction, AbortError when the browser's
+// power-saving policy interrupts a video-only autoplay, and AbortError
+// when the <video> element itself is removed from the document mid-request
+// (e.g. IntroScreen unmounting right after its play() call, on navigating
+// away as soon as login completes - confirmed live). Nothing is actually
+// broken by any of these: menuMusicEngine.ts already treats "requested but
+// not yet playing" as expected and retries once the user interacts, and
 // IntroScreen.tsx's own statusChange listener reacts to the player's real
-// state rather than this promise - both are web-only console noise for an
-// expected condition, not a real error.
-// Duck-typed name/message string checks, not `instanceof Error`: both
+// state rather than this promise - all three are web-only console noise
+// for an expected condition, not a real error.
+// Duck-typed name/message string checks, not `instanceof Error`: all three
 // rejections are actually DOMException instances (the standard type for
 // media-element errors), and DOMException deliberately does not inherit
 // from Error in browser implementations - an `instanceof Error` guard here
-// silently never matches either one, which is exactly what let this
+// silently never matches any of them, which is exactly what let this
 // specific rejection keep appearing live even after this filter shipped.
 const isBenignAutoplayRejection = (
   rejectionName: string,
@@ -43,7 +46,8 @@ const isBenignAutoplayRejection = (
   (rejectionName === "NotAllowedError" &&
     rejectionMessage.includes("interact with the document first")) ||
   (rejectionName === "AbortError" &&
-    rejectionMessage.includes("paused to save power"));
+    (rejectionMessage.includes("paused to save power") ||
+      rejectionMessage.includes("removed from the document")));
 
 export const silenceKnownUnhandledRejections = (): void => {
   if (typeof window === "undefined") {

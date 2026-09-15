@@ -23,17 +23,31 @@ const generateDeviceId = (): string => {
   return `device-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 };
 
+// Memoizes the in-flight lookup/creation itself (not just its eventual
+// result) at module scope - without this, two calls racing before the
+// first one's AsyncStorage.setItem lands (e.g. two settings toggles fired
+// in quick succession on a brand-new install) would each find no existing
+// id, each generate their OWN new uuid, and each write theirs last-write-
+// wins, leaving concurrent writes tagged with different device ids for
+// what is actually the same device.
+let deviceIdPromise: Promise<string> | null = null;
+
 // Stable per-device id, generated once and reused for the life of the
 // install - referenced by the consent record below so the server can tell
 // which device originally recorded a given account's consent.
-export const getOrCreateDeviceId = async (): Promise<string> => {
-  const existingDeviceId = await AsyncStorage.getItem(DEVICE_ID_KEY);
-  if (existingDeviceId) {
-    return existingDeviceId;
+export const getOrCreateDeviceId = (): Promise<string> => {
+  if (!deviceIdPromise) {
+    deviceIdPromise = (async (): Promise<string> => {
+      const existingDeviceId = await AsyncStorage.getItem(DEVICE_ID_KEY);
+      if (existingDeviceId) {
+        return existingDeviceId;
+      }
+      const newDeviceId = generateDeviceId();
+      await AsyncStorage.setItem(DEVICE_ID_KEY, newDeviceId);
+      return newDeviceId;
+    })();
   }
-  const newDeviceId = generateDeviceId();
-  await AsyncStorage.setItem(DEVICE_ID_KEY, newDeviceId);
-  return newDeviceId;
+  return deviceIdPromise;
 };
 
 export const getLocalConsentRecord =

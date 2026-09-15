@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     ...rowTextShadow,
   },
   device: {
-    color: "rgba(255, 255, 255, 0.7)",
+    color: "#fff",
     fontSize: 11,
     marginTop: 2,
     ...rowTextShadow,

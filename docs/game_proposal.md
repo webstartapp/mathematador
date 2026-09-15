@@ -59,7 +59,7 @@ Earned coins are used to buy and equip cosmetics in the shop:
 *   **Trajes de Luces (Suits of Lights)**: Torero suits with glowing, matrix-like equation patterns.
 *   **Flares**: Custom entry animations and music when starting a challenge.
 
-> ✅ **Implemented** as *Tienda de Torero* (`TiendaScreen.tsx`). Currently seeded with 4 items (2 capes, 2 suits — see §4); no `flare`-type items are seeded yet even though the schema and UI both support the type. The shop purchase/equip loop is real; equipped items show in a static loadout preview on the Gauntlet screen, but capes/suits don't yet render as the described dynamic in-game animations (spinning Fibonacci spiral, matrix rain, etc.) on the challenge screen itself — today they're a name/price/level-gate with no equipped-state effect on gameplay visuals.
+> ✅ **Implemented** as *Tienda de Torero* (`TiendaScreen.tsx`). Currently seeded with 6 items (2 capes, 2 suits, 2 flares — see §4). The shop purchase/equip loop is real; equipped items show in a static loadout preview on the Gauntlet screen, but capes/suits don't yet render as the described dynamic in-game animations (spinning Fibonacci spiral, matrix rain, etc.) on the challenge screen itself — today they're a name/price/level-gate with no equipped-state effect on gameplay visuals.
 
 ---
 

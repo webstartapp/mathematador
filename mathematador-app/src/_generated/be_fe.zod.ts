@@ -932,10 +932,13 @@ type UserSettingsHistoryPageOutput = zod.output<typeof UserSettingsHistoryPage>;
  */
 
 
+export const userSettingsUpdateBodyDeviceIdMax = 255;
+
+
 export const UserSettingsUpdateBody = zod.object({
   "settingKey": zod.enum(['ads_consent', 'gdpr_consent']),
   "settingValue": zod.string(),
-  "deviceId": zod.string()
+  "deviceId": zod.string().min(1).max(userSettingsUpdateBodyDeviceIdMax)
 })
 
 type UserSettingsUpdateBody = zod.input<typeof UserSettingsUpdateBody>;

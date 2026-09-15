@@ -27,7 +27,12 @@ exports.up = async function (knex) {
   await knex.schema.createTable("subscriptions", (table) => {
     table.uuid("id").primary().notNullable().defaultTo(knex.raw("uuid_generate_v4()"));
     table.timestamp("created").defaultTo(knex.fn.now());
-    table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable();
+    // unique - one subscription row per user, enforced at the DB level so
+    // two concurrent subscriptionUpdate calls for a brand-new user can't
+    // both pass the check-then-insert race and each insert their own row
+    // (subscriptionUpdate.ts's insert().onConflict("user_id") relies on
+    // this constraint existing to upsert atomically instead).
+    table.uuid("user_id").references("id").inTable("users").onDelete("CASCADE").notNullable().unique();
     table.string("type").notNullable(); // "addsFree" or "full"
     table.boolean("auto_renew").notNullable().defaultTo(true);
   });

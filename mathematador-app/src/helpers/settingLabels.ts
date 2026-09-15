@@ -22,11 +22,17 @@ const DEVICE_ID_DISPLAY_LENGTH = 8;
 // common case, and the most useful answer to "did I do this?"); otherwise
 // a shortened id - the full uuid is meant for the server-side audit trail,
 // not for a human reading this list, but enough characters to tell two
-// other devices apart from each other.
+// other devices apart from each other. Taken from the END of the id, not
+// the start: consent.ts's fallback generator (used when crypto.randomUUID
+// is unavailable) produces ids shaped `device-<timestamp>-<random>`, so
+// every such id shares the same literal "device-" prefix and near-identical
+// leading timestamp digits - slicing from the front would show the same
+// characters for every device. The trailing characters (random for both
+// the crypto.randomUUID and fallback formats) actually distinguish them.
 export const formatDeviceId = (
   entryDeviceId: string,
   currentDeviceId: string | null,
 ): string =>
   entryDeviceId === currentDeviceId
     ? "This device"
-    : `Device ${entryDeviceId.slice(0, DEVICE_ID_DISPLAY_LENGTH)}`;
+    : `Device ${entryDeviceId.slice(-DEVICE_ID_DISPLAY_LENGTH)}`;

@@ -16,7 +16,12 @@ export const withUserSettingsLock = async <ReturnValueType>(
   action: (transactionObject: Knex.Transaction) => Promise<ReturnValueType>
 ): Promise<ReturnValueType> => {
   return rawKnex.transaction(async (transactionObject: Knex.Transaction) => {
-    await transactionObject.raw("SELECT pg_advisory_xact_lock(hashtext(?))", [userId]);
+    // hashtextextended (64-bit), not hashtext (32-bit): a 32-bit hash has a
+    // large enough collision chance across many accounts that two unrelated
+    // users' writes could start serializing against each other as account
+    // count grows, turning this into a throughput bottleneck rather than
+    // the narrow per-account lock it's meant to be.
+    await transactionObject.raw("SELECT pg_advisory_xact_lock(hashtextextended(?, 0))", [userId]);
     return action(transactionObject);
   });
 };

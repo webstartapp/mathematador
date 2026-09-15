@@ -14,31 +14,23 @@ export const subscriptionUpdate = restAPICall(
       return;
     }
 
-    // Check if subscription exists
-    const existingSub = await knex("subscriptions").where({ user_id: userId }).first();
-
-    let subscriptionRecord;
-    if (existingSub) {
-      // Update
-      const [updatedSub] = await knex("subscriptions")
-        .where({ id: existingSub.id })
-        .update({
-          type,
-          auto_renew: autoRenew
-        })
-        .returning("*");
-      subscriptionRecord = updatedSub;
-    } else {
-      // Create new
-      const [newSub] = await knex("subscriptions")
-        .insert({
-          user_id: userId,
-          type,
-          auto_renew: autoRenew
-        })
-        .returning("*");
-      subscriptionRecord = newSub;
-    }
+    // Atomic upsert (not a check-then-insert/update) - the previous
+    // check-then-branch had a race where two concurrent calls for a brand
+    // new user could both see no existing row and both insert one; the
+    // subscriptions.user_id unique constraint plus onConflict here makes
+    // this a single atomic statement instead.
+    const [subscriptionRecord] = await knex("subscriptions")
+      .insert({
+        user_id: userId,
+        type,
+        auto_renew: autoRenew
+      })
+      .onConflict("user_id")
+      .merge({
+        type,
+        auto_renew: autoRenew
+      })
+      .returning("*");
 
     response.status(200).json({
       id: subscriptionRecord.id,

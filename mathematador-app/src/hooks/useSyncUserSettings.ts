@@ -115,18 +115,24 @@ export const useSyncUserSettings = (): void => {
 
   useEffect(() => {
     let isCancelled = false;
-    // Reset at the start of every fresh mount's GET, not left permanently
-    // true after the first-ever toggle - hasLocalUpdate only needs to
-    // track "did a toggle happen since THIS GET started", not "has any
-    // toggle ever happened in this browser tab's lifetime". Without this
-    // reset, a single toggle anywhere in the session's history would
-    // permanently stop every later Home mount (e.g. a second account
-    // logging in on the same device) from ever syncing server settings
-    // again. isCancelled (below, closed over per-effect-instance) still
-    // separately guards a still-in-flight previous mount's GET from
-    // dispatching after a newer mount has already reset this flag.
-    hasLocalUpdate = false;
-    userSettingsGetCurrent()
+    // Waits for any write already queued at mount time before resetting
+    // the flag and fetching - without this, a remount (e.g. a second
+    // account logging in on the same device right after a toggle) could
+    // reset hasLocalUpdate and have the GET land *before* the earlier
+    // toggle's still-in-flight POST does, dispatching a stale server
+    // response that clobbers the not-yet-persisted optimistic value.
+    // Reset happens after the wait, not left permanently true after the
+    // first-ever toggle - hasLocalUpdate only needs to track "did a toggle
+    // happen since THIS GET started", not "has any toggle ever happened in
+    // this browser tab's lifetime". isCancelled (below, closed over per-
+    // effect-instance) still separately guards a still-in-flight previous
+    // mount's GET from dispatching after a newer mount has already reset
+    // this flag.
+    waitForPendingUserSettingsWrites()
+      .then(() => {
+        hasLocalUpdate = false;
+        return userSettingsGetCurrent();
+      })
       .then((response) => {
         if (!isCancelled && !hasLocalUpdate && response?.data) {
           dispatch(syncCurrentSettings(response.data));
