@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 import ExerciseValueDropDigits from "@/components/minigames/components/ExerciseValueDropDigits";
 import ExerciseValuePreview from "@/components/minigames/components/ExerciseValuePreview";
@@ -9,6 +9,7 @@ import {
   Exercise as ExerciseType,
   ExerciseInputPosition,
 } from "@/src/types/Chalenge";
+import { styles } from "@/theme";
 
 interface ExerciseProps {
   exerciseId: number;
@@ -124,30 +125,3 @@ export const Exercise: FC<ExerciseProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  exerciseWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  exercisePreviewContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    userSelect: "none",
-    flexWrap: "wrap",
-  },
-  exerciseValues: {
-    flexDirection: "row",
-    alignItems: "center",
-    userSelect: "none",
-  },
-  exerciseValue: {
-    flexDirection: "row",
-    alignItems: "center",
-    userSelect: "none",
-  },
-});

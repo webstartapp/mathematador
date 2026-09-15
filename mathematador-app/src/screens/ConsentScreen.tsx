@@ -2,7 +2,7 @@ import { useNavigation } from "expo-router";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { RouteProp, useRoute } from "expo-router/react-navigation";
 import { JSX, useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
@@ -13,6 +13,7 @@ import { markConsentResolved } from "@/navigation/introSession";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { selectIsAuthenticated } from "@/redux/selectors/auth";
 import { userConsentRecord } from "@/src/_generated/api";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 import { getLocalConsentRecord, recordLocalConsent } from "@/utils/consent";
 
@@ -112,65 +113,35 @@ const ConsentScreen = (): JSX.Element | null => {
         descriptions={[
           "Mathematador uses your data to personalize ads and keep the game free, and processes it in line with GDPR. You must accept both to play.",
         ]}
-        styles={{ container: styles.card }}
+        styles={{ container: styles.consentCard }}
       >
         <PolicyLinks />
         {showDeclineMessage && (
-          <Text style={styles.declineText}>
+          <Text style={styles.consentDeclineText}>
             You need to accept to use Mathematador.
           </Text>
         )}
         {acceptError && (
-          <Text style={styles.declineText}>
+          <Text style={styles.consentDeclineText}>
             Could not save your acceptance. Please try again.
           </Text>
         )}
         <TouchableOpacity
-          style={[styles.acceptButton, isAccepting && styles.buttonDisabled]}
+          style={[
+            styles.consentAcceptButton,
+            isAccepting && styles.consentButtonDisabled,
+          ]}
           onPress={handleAccept}
           disabled={isAccepting}
         >
-          <Text style={styles.acceptButtonText}>Accept & Continue</Text>
+          <Text style={styles.consentAcceptButtonText}>Accept & Continue</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDecline}>
-          <Text style={styles.declineLink}>Decline</Text>
+          <Text style={styles.consentDeclineLink}>Decline</Text>
         </TouchableOpacity>
       </CenteredDesk>
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    maxWidth: 420,
-    padding: 20,
-  },
-  acceptButton: {
-    backgroundColor: "#704c21",
-    paddingVertical: 14,
-    borderRadius: 25,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  acceptButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  declineLink: {
-    color: "#fff",
-    textAlign: "center",
-    marginTop: 16,
-    textDecorationLine: "underline",
-  },
-  declineText: {
-    color: "#FF3B30",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-});
 
 export default ConsentScreen;

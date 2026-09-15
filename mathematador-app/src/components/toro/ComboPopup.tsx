@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { createTextShadow } from "@/helpers/createTextShadow";
+import { styles } from "@/theme";
 
 const AUTO_DISMISS_DELAY_MS = 1500;
 
@@ -50,28 +50,15 @@ const ComboPopup = ({ comboText }: ComboPopupProps): JSX.Element => {
 
   return (
     <Animated.View
-      style={[styles.overlay, { pointerEvents: "none" }, animatedStyle]}
+      style={[
+        styles.comboPopupOverlay,
+        { pointerEvents: "none" },
+        animatedStyle,
+      ]}
     >
-      <Text style={styles.text}>{displayText}</Text>
+      <Text style={styles.comboPopupText}>{displayText}</Text>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 150,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 10,
-  },
-  text: {
-    fontSize: 30,
-    fontWeight: "900",
-    color: "#FFD700",
-    ...createTextShadow("rgba(0, 0, 0, 0.75)", -1, 1, 10),
-  },
-});
 
 export default ComboPopup;

@@ -2,13 +2,14 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { JSX } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { Operation, operations } from "@/configs/operations";
 import { RootState } from "@/redux/store";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
@@ -32,7 +33,7 @@ const OperationprogressItem = ({
   return (
     <TouchableOpacity
       key={operation.operationId}
-      style={styles.operationButton}
+      style={styles.opSelectButton}
       onPress={() => handleOperationPress(operation.operationId)}
     >
       <CenteredDesk
@@ -64,7 +65,7 @@ const OperationSelectionScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.container}>
+      <View style={styles.opSelectContainer}>
         <CenteredDesk
           title="Select Chalenge"
           styles={{
@@ -73,7 +74,7 @@ const OperationSelectionScreen = (): JSX.Element => {
             },
           }}
         />
-        <View style={styles.grid} id="im-grid">
+        <View style={styles.opSelectGrid} id="im-grid">
           {operations.map((operation) => (
             <OperationprogressItem
               key={operation.operationId}
@@ -86,43 +87,5 @@ const OperationSelectionScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  grid: {
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignContent: "flex-start",
-    flexDirection: "row",
-  },
-  operationButton: {
-    width: "100%",
-    maxWidth: 400,
-    minWidth: 200,
-  },
-  operationLabel: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-  },
-  operationSymbol: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  operationDescription: {
-    fontSize: 14,
-    color: "#333",
-  },
-});
 
 export default OperationSelectionScreen;

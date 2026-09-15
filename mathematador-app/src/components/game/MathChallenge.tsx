@@ -1,5 +1,7 @@
 import { useState, FC, JSX } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput } from "react-native";
+
+import { styles } from "@/theme";
 
 interface MathChallengeProps {
   question: string;
@@ -22,10 +24,10 @@ const MathChallenge: FC<MathChallengeProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.question}>{question}</Text>
+    <View style={styles.mathChallengeContainer}>
+      <Text style={styles.mathChallengeQuestion}>{question}</Text>
       <TextInput
-        style={styles.input}
+        style={styles.mathChallengeInput}
         value={answer}
         onChangeText={handleChange}
         keyboardType="numeric"
@@ -36,25 +38,5 @@ const MathChallenge: FC<MathChallengeProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    alignItems: "center",
-  },
-  question: {
-    fontSize: 24,
-    marginBottom: 15,
-  },
-  input: {
-    width: "80%",
-    borderWidth: 1,
-    borderColor: "#4CAF50",
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 18,
-    textAlign: "center",
-  },
-});
 
 export default MathChallenge;

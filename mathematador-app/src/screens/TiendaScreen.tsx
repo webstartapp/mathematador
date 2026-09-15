@@ -6,7 +6,6 @@ import { useEffect, JSX, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -29,6 +28,7 @@ import {
   cosmeticsEquip,
 } from "@/src/_generated/api";
 import { Cosmetic, CosmeticType } from "@/src/_generated/model";
+import { colors, styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type CosmeticItem = {
@@ -122,12 +122,12 @@ const getCosmeticIconInfo = (
   color: string;
 } => {
   if (type === "cape") {
-    return { icon: "shield-outline", color: "#E6007A" };
+    return { icon: "shield-outline", color: colors.magenta };
   }
   if (type === "flare") {
-    return { icon: "sparkles-outline", color: "#00FFFF" };
+    return { icon: "sparkles-outline", color: colors.cyan };
   }
-  return { icon: "shirt-outline", color: "#FFD700" };
+  return { icon: "shirt-outline", color: colors.gold };
 };
 
 interface CosmeticCardProps {
@@ -154,12 +154,12 @@ const CosmeticCard = ({
 
   const getButtonStyle = (): object => {
     if (isLocked || (user.coins < item.price && !isOwned)) {
-      return styles.btnDisabled;
+      return styles.tiendaBtnDisabled;
     }
     if (isOwned) {
-      return isEquipped ? styles.btnEquipped : styles.btnEquip;
+      return isEquipped ? styles.tiendaBtnEquipped : styles.tiendaBtnEquip;
     }
-    return styles.btnBuy;
+    return styles.tiendaBtnBuy;
   };
 
   const getButtonText = (): string => {
@@ -172,24 +172,26 @@ const CosmeticCard = ({
   return (
     <View
       style={[
-        styles.card,
-        isEquipped && styles.cardEquipped,
-        isLocked && styles.cardLocked,
+        styles.overlayCardSubtle,
+        styles.cardDropShadow,
+        styles.tiendaCard,
+        isEquipped && styles.tiendaCardEquipped,
+        isLocked && styles.tiendaCardLocked,
       ]}
     >
-      <View style={styles.cardHeader}>
-        <View style={[styles.iconContainer, { borderColor: iconColor }]}>
+      <View style={styles.tiendaCardHeader}>
+        <View style={[styles.tiendaIconContainer, { borderColor: iconColor }]}>
           <Ionicons name={itemIcon} size={32} color={iconColor} />
         </View>
-        <View style={styles.cardInfo}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
+        <View style={styles.tiendaCardInfo}>
+          <Text style={styles.tiendaCardTitle}>{item.name}</Text>
           {isLocked ? (
-            <Text style={styles.lockText}>
+            <Text style={styles.tiendaLockText}>
               <Ionicons name="lock-closed" size={12} /> Lvl {item.requiredLevel}{" "}
               Required
             </Text>
           ) : (
-            <Text style={styles.unlockedText}>
+            <Text style={styles.tiendaUnlockedText}>
               <Ionicons name="checkmark-circle-outline" size={12} /> Level{" "}
               {item.requiredLevel}
             </Text>
@@ -197,16 +199,16 @@ const CosmeticCard = ({
         </View>
       </View>
 
-      <View style={styles.cardFooter}>
+      <View style={styles.tiendaCardFooter}>
         {!isOwned && (
-          <View style={styles.priceContainer}>
-            <Text style={styles.coinSymbol}>🪙</Text>
-            <Text style={styles.priceText}>{item.price}</Text>
+          <View style={styles.tiendaPriceContainer}>
+            <Text style={styles.tiendaCoinSymbol}>🪙</Text>
+            <Text style={styles.tiendaPriceText}>{item.price}</Text>
           </View>
         )}
 
         <TouchableOpacity
-          style={[styles.actionButton, getButtonStyle()]}
+          style={[styles.tiendaActionButton, getButtonStyle()]}
           disabled={
             isLocked || (user.coins < item.price && !isOwned) || isActionLoading
           }
@@ -215,9 +217,9 @@ const CosmeticCard = ({
           }
         >
           {isActionLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={colors.white} />
           ) : (
-            <Text style={styles.btnText}>{getButtonText()}</Text>
+            <Text style={styles.tiendaBtnText}>{getButtonText()}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -244,13 +246,19 @@ const renderContent = ({
 }: RenderContentProps): JSX.Element => {
   if (loading) {
     return (
-      <ActivityIndicator size="large" color="#FFD700" style={styles.loader} />
+      <ActivityIndicator
+        size="large"
+        color={colors.gold}
+        style={styles.tiendaLoader}
+      />
     );
   }
 
   if (filteredItems.length === 0) {
     return (
-      <Text style={styles.emptyText}>No items available in this category.</Text>
+      <Text style={styles.tiendaEmptyText}>
+        No items available in this category.
+      </Text>
     );
   }
 
@@ -378,34 +386,37 @@ const TiendaScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.header}>
+      <View style={styles.screenHeader}>
         <TouchableOpacity
-          style={styles.backBtn}
+          style={styles.headerBackButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Ionicons name="arrow-back" size={24} color={colors.white} />
         </TouchableOpacity>
-        <ThemedText variant="title" style={styles.title}>
+        <ThemedText variant="title" style={styles.tiendaTitle}>
           Tienda de Torero
         </ThemedText>
-        <View style={styles.coinsWrapper}>
-          <Text style={styles.coinsEmoji}>🪙</Text>
-          <Text style={styles.coinsCount}>{user.coins}</Text>
+        <View style={styles.tiendaCoinsWrapper}>
+          <Text style={styles.tiendaCoinsEmoji}>🪙</Text>
+          <Text style={styles.tiendaCoinsCount}>{user.coins}</Text>
         </View>
       </View>
 
       {/* Categories Tabs */}
-      <View style={styles.tabBar}>
+      <View style={[styles.overlayCardSubtle, styles.tiendaTabBar]}>
         {COSMETIC_CATEGORIES.map((category) => (
           <TouchableOpacity
             key={category}
-            style={[styles.tab, activeTab === category && styles.tabActive]}
+            style={[
+              styles.tiendaTab,
+              activeTab === category && styles.tiendaTabActive,
+            ]}
             onPress={() => setActiveTab(category)}
           >
             <Text
               style={[
-                styles.tabText,
-                activeTab === category && styles.tabTextActive,
+                styles.tiendaTabText,
+                activeTab === category && styles.tiendaTabTextActive,
               ]}
             >
               {category.toUpperCase()}S
@@ -427,209 +438,5 @@ const TiendaScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 10,
-    width: "100%",
-  },
-  backBtn: {
-    padding: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: 10,
-  },
-  coinsWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 215, 0, 0.2)",
-    borderWidth: 1.5,
-    borderColor: "#FFD700",
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    boxShadow: [
-      { offsetX: 0, offsetY: 0, blurRadius: 5, color: "rgba(255,215,0,0.3)" },
-    ],
-  },
-  coinsEmoji: {
-    fontSize: 18,
-    marginRight: 4,
-  },
-  coinsCount: {
-    color: "#FFD700",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  tabBar: {
-    flexDirection: "row",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 21,
-  },
-  tabActive: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    boxShadow: [
-      {
-        offsetX: 0,
-        offsetY: 2,
-        blurRadius: 3,
-        color: "rgba(255,255,255,0.1)",
-      },
-    ],
-  },
-  tabText: {
-    color: "rgba(255, 255, 255, 0.6)",
-    fontWeight: "600",
-    fontSize: 12,
-    letterSpacing: 1,
-  },
-  tabTextActive: {
-    color: "#fff",
-  },
-  scrollContainer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  loader: {
-    marginTop: 50,
-  },
-  emptyText: {
-    color: "rgba(255, 255, 255, 0.5)",
-    textAlign: "center",
-    marginTop: 50,
-    fontSize: 16,
-  },
-  card: {
-    backgroundColor: "rgba(255, 255, 255, 0.06)",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    padding: 16,
-    marginBottom: 16,
-    boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(0,0,0,0.15)" },
-    ],
-  },
-  cardEquipped: {
-    borderColor: "#FFD700",
-    backgroundColor: "rgba(255, 215, 0, 0.05)",
-    // Matches `card`'s offsetY:4 - previously this only overrode
-    // shadowColor/Opacity/Radius and inherited card's shadowOffset since
-    // boxShadow replaces the whole shadow as one style key, not four.
-    boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 8, color: "rgba(255,215,0,0.1)" },
-    ],
-  },
-  cardLocked: {
-    opacity: 0.6,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 2,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-  },
-  cardInfo: {
-    marginLeft: 16,
-    flex: 1,
-  },
-  cardTitle: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  lockText: {
-    color: "#FF3B30",
-    fontSize: 13,
-    marginTop: 4,
-    fontWeight: "500",
-  },
-  unlockedText: {
-    color: "#4CD964",
-    fontSize: 13,
-    marginTop: 4,
-    fontWeight: "500",
-  },
-  cardFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.08)",
-    paddingTop: 12,
-  },
-  priceContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  coinSymbol: {
-    fontSize: 18,
-    marginRight: 4,
-  },
-  priceText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  actionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 100,
-  },
-  btnBuy: {
-    backgroundColor: "#FFD700",
-  },
-  btnEquip: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.3)",
-  },
-  btnEquipped: {
-    backgroundColor: "#4CD964",
-  },
-  btnDisabled: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    borderColor: "rgba(255, 255, 255, 0.05)",
-  },
-  btnText: {
-    color: "#1a1a1a",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-});
 
 export default TiendaScreen;

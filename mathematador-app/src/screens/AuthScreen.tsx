@@ -2,7 +2,6 @@
 import { JSX, useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -24,6 +23,7 @@ import {
   userLogin,
   userRegister,
 } from "@/src/_generated/api";
+import { colors, styles } from "@/theme";
 import { ApiRequestError } from "@/utils/api-client";
 import { getLocalConsentRecord } from "@/utils/consent";
 
@@ -73,15 +73,15 @@ const LabeledField = ({
   keyboardType = "default",
   secureTextEntry = false,
 }: LabeledFieldProps): JSX.Element => (
-  <View style={styles.fieldGroup}>
-    <Text style={styles.fieldLabel}>{label}</Text>
+  <View style={styles.authFieldGroup}>
+    <Text style={styles.authFieldLabel}>{label}</Text>
     <TextInput
       value={value}
       onChangeText={onChangeText}
       autoCapitalize={autoCapitalize}
       keyboardType={keyboardType}
       secureTextEntry={secureTextEntry}
-      style={styles.input}
+      style={styles.authInput}
       accessibilityLabel={label}
     />
   </View>
@@ -298,7 +298,7 @@ const AuthScreen = (): JSX.Element => {
             : undefined
         }
         subtitles={step !== "email" ? [email] : undefined}
-        styles={{ container: styles.card }}
+        styles={{ container: styles.authCard }}
       >
         <AuthStepFields
           step={step}
@@ -311,26 +311,31 @@ const AuthScreen = (): JSX.Element => {
           confirmPassword={confirmPassword}
           setConfirmPassword={setConfirmPassword}
         />
-        {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
+        {errorMessage && (
+          <Text style={styles.authErrorText}>{errorMessage}</Text>
+        )}
         <TouchableOpacity
-          style={[styles.submitButton, isSubmitting && styles.buttonDisabled]}
+          style={[
+            styles.authSubmitButton,
+            isSubmitting && styles.authButtonDisabled,
+          ]}
           disabled={isSubmitting}
           onPress={stepHandlers[step]}
         >
           {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.submitButtonText}>{stepLabels[step]}</Text>
+            <Text style={styles.authSubmitButtonText}>{stepLabels[step]}</Text>
           )}
         </TouchableOpacity>
         {step !== "email" && (
           <TouchableOpacity onPress={resetToEmailStep}>
-            <Text style={styles.linkText}>Use a different email</Text>
+            <Text style={styles.authLinkText}>Use a different email</Text>
           </TouchableOpacity>
         )}
         {step === "email" && (
           <>
-            <Text style={styles.dividerText}>or</Text>
+            <Text style={styles.authDividerText}>or</Text>
             <GoogleSignInButton onCredential={handleGoogleCredential} />
           </>
         )}
@@ -338,59 +343,5 @@ const AuthScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    maxWidth: 420,
-    padding: 20,
-  },
-  fieldGroup: {
-    marginBottom: 16,
-  },
-  fieldLabel: {
-    color: "#fff",
-    fontSize: 13,
-    marginBottom: 4,
-  },
-  input: {
-    height: 48,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
-  },
-  errorText: {
-    color: "#FF3B30",
-    marginBottom: 16,
-    textAlign: "center",
-  },
-  submitButton: {
-    backgroundColor: "#704c21",
-    paddingVertical: 14,
-    borderRadius: 25,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  linkText: {
-    color: "#fff",
-    textAlign: "center",
-    marginTop: 16,
-    textDecorationLine: "underline",
-  },
-  dividerText: {
-    color: "rgba(255,255,255,0.8)",
-    textAlign: "center",
-    marginTop: 16,
-    marginBottom: 12,
-  },
-});
 
 export default AuthScreen;

@@ -5,7 +5,7 @@ import {
 } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, useMemo, useRef, FC, JSX } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -14,6 +14,7 @@ import { RootState } from "@/redux/store";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
 import { setHeaderRef } from "@/src/hooks/RefManager";
 import { levelOperationUp, levelUserUp } from "@/src/redux/slices/userSlice";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type HeaderProps = {
@@ -81,9 +82,9 @@ const GameHeader: FC<HeaderProps> = ({
   const xpProgress = xp / xpToNextLevel;
 
   return (
-    <View style={styles.headerContainer} ref={headerRef}>
+    <View style={styles.gameHeaderContainer} ref={headerRef}>
       {backTo && (
-        <View style={styles.iconContainer}>
+        <View style={styles.gameHeaderIcons}>
           <TouchableOpacity
             onPress={() => navigation.navigate(backTo, backToParams)}
           >
@@ -91,8 +92,8 @@ const GameHeader: FC<HeaderProps> = ({
           </TouchableOpacity>
         </View>
       )}
-      <View style={styles.statsContainer}>
-        <Text style={styles.level}>
+      <View style={styles.gameHeaderStats}>
+        <Text style={styles.gameHeaderLevel}>
           {operationIdParam ? "Difficulty:" : "Level:"} {userStats.level}
         </Text>
         <View style={{ flexDirection: "row" }}>
@@ -113,11 +114,11 @@ const GameHeader: FC<HeaderProps> = ({
             <ProgressBar
               progress={xpProgress}
               color="#ffbb64"
-              style={styles.progressBar}
+              style={styles.gameHeaderProgressBar}
             />
           </View>
         </View>
-        <Text style={styles.xpText}>
+        <Text style={styles.gameHeaderXpText}>
           {userStats.xp}/{userStats.xpToNextLevel} XP
         </Text>
       </View>
@@ -126,24 +127,3 @@ const GameHeader: FC<HeaderProps> = ({
 };
 
 export default GameHeader;
-
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 10,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  statsContainer: { flex: 1, paddingHorizontal: 10 },
-  level: { fontSize: 16, fontWeight: "bold", color: "#333" },
-  progressBar: { height: 6, borderRadius: 3, marginVertical: 5 },
-  xpText: { fontSize: 12, color: "#666" },
-  iconContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: 60,
-  },
-});

@@ -4,10 +4,11 @@ import {
   GestureResponderEvent,
   PanResponder,
   PanResponderGestureState,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
+
+import { styles } from "@/theme";
 
 const TAP_MOVEMENT_THRESHOLD = 6;
 
@@ -99,7 +100,7 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
   return (
     <Animated.View
       style={[
-        styles.draggable,
+        styles.draggableDigitWrapper,
         {
           transform: position.getTranslateTransform(),
         },
@@ -109,44 +110,15 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
       <View style={{ position: "relative" }}>
         <View
           style={{
-            ...styles.draggableItem,
-            ...(isSelected ? styles.selectedDraggableItem : null),
+            ...styles.draggableDigitItem,
+            ...(isSelected ? styles.draggableDigitSelected : null),
             width: Math.min(digitSize, 40),
             height: Math.min(digitSize, 40),
           }}
         >
-          <Text style={styles.draggableText}>{renderText}</Text>
+          <Text style={styles.draggableDigitText}>{renderText}</Text>
         </View>
       </View>
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  draggable: {
-    userSelect: "none",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "100%",
-  },
-  draggableItem: {
-    backgroundColor: "#d49b57",
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    userSelect: "none",
-    borderWidth: 3,
-    borderColor: "transparent",
-  },
-  selectedDraggableItem: {
-    borderColor: "#FFD700",
-    backgroundColor: "#e8b06f",
-  },
-  draggableText: {
-    color: "#fff",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-});

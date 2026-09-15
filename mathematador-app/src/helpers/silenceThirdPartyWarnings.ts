@@ -50,14 +50,15 @@ const isBenignAutoplayRejection = (
       rejectionMessage.includes("removed from the document")));
 
 export const silenceKnownUnhandledRejections = (): void => {
-  if (typeof window === "undefined") {
+  // `typeof window === "undefined"` doesn't actually distinguish web from
+  // native here - React Native aliases `window` to `global`, so `window` is
+  // defined on Android/iOS too, and the old guard let native call straight
+  // into a DOM-only API that doesn't exist there, throwing at startup
+  // (confirmed live - "undefined is not a function" on Android, crashing
+  // the app before it renders anything). Check for the API itself instead.
+  if (typeof globalThis.addEventListener !== "function") {
     return;
   }
-  // globalThis, not window directly - this repo's lint config bans direct
-  // `window.*` member access (aimed at things like window.alert/confirm,
-  // which have a cross-platform custom-component equivalent); on web,
-  // globalThis is the same object and carries the same DOM event target
-  // API, with no such equivalent existing for unhandledrejection.
   globalThis.addEventListener("unhandledrejection", (event) => {
     // event.reason is typed `any` by lib.dom.d.ts - member access on it
     // stays `any` too, which is what lets the two typeof checks below

@@ -11,7 +11,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
@@ -29,6 +29,7 @@ import { minigames } from "@/configs/minigames";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import { OperationId } from "@/src/_generated/model";
+import { colors, styles } from "@/theme";
 import {
   Challenge,
   ChalengeResult,
@@ -152,18 +153,20 @@ const ChallengeTopBar = ({
   timeLeft,
   isToroInspired,
 }: ChallengeTopBarProps): JSX.Element => (
-  <View style={styles.topBar}>
-    <View style={styles.timerContainer}>
+  <View style={styles.challengeTopBar}>
+    <View style={[styles.overlayCardMedium, styles.challengeTimerContainer]}>
       <Ionicons
         name={isFrozen ? "snow-outline" : "timer-outline"}
         size={20}
-        color={isFrozen ? "#00FFFF" : timeLeft <= 10 ? "#FF3B30" : "#fff"}
+        color={
+          isFrozen ? colors.cyan : timeLeft <= 10 ? colors.danger : colors.white
+        }
       />
       <Text
         style={[
-          styles.timerText,
-          isFrozen && styles.frozenText,
-          timeLeft <= 10 && styles.lowTimeText,
+          styles.challengeTimerText,
+          isFrozen && styles.challengeFrozenText,
+          timeLeft <= 10 && styles.challengeLowTimeText,
         ]}
       >
         {isFrozen ? "FROZEN" : `${timeLeft}s`}
@@ -172,9 +175,9 @@ const ChallengeTopBar = ({
 
     {/* Toro Inspiration Badge */}
     {isToroInspired && (
-      <View style={styles.inspirationBadge}>
-        <Ionicons name="flame" size={14} color="#FFD700" />
-        <Text style={styles.inspirationText}>Inspired (2x XP)</Text>
+      <View style={styles.challengeInspirationBadge}>
+        <Ionicons name="flame" size={14} color={colors.gold} />
+        <Text style={styles.challengeInspirationText}>Inspired (2x XP)</Text>
       </View>
     )}
   </View>
@@ -198,44 +201,51 @@ const ToroPanel = ({
   isFrozen,
 }: ToroPanelProps): JSX.Element => (
   <View
-    style={[styles.toroPanel, isToroInspired ? styles.inspiredPanel : null]}
+    style={[
+      styles.overlayCardSubtle,
+      styles.challengeToroPanel,
+      isToroInspired ? styles.challengeInspiredPanel : null,
+    ]}
   >
-    <View style={styles.toroHeader}>
-      <Text style={styles.toroEmoji}>🐂</Text>
+    <View style={styles.challengeToroHeader}>
+      <Text style={styles.challengeToroEmoji}>🐂</Text>
       <View style={{ flex: 1, marginLeft: 10 }}>
-        <Text style={styles.toroTitle}>Toro Cooperation</Text>
+        <Text style={styles.challengeToroTitle}>Toro Cooperation</Text>
         <ProgressBar
           progress={cooperation / 100}
-          color="#FFD700"
-          style={styles.coopBar}
+          color={colors.gold}
+          style={styles.challengeCoopBar}
         />
       </View>
     </View>
 
-    <View style={styles.toroActions}>
+    <View style={styles.challengeToroActions}>
       <TouchableOpacity
         style={[
-          styles.toroBtn,
-          cooperation < 100 ? styles.toroBtnDisabled : null,
+          styles.challengeToroBtn,
+          cooperation < 100 ? styles.challengeToroBtnDisabled : null,
         ]}
         disabled={cooperation < 100}
         onPress={handleToroHint}
       >
-        <Ionicons name="bulb-outline" size={16} color="#fff" />
-        <Text style={styles.toroBtnText}>Toro Hint</Text>
+        <Ionicons name="bulb-outline" size={16} color={colors.white} />
+        <Text style={styles.challengeToroBtnText}>Toro Hint</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.toroBtn, focusUsed ? styles.toroBtnDisabled : null]}
+        style={[
+          styles.challengeToroBtn,
+          focusUsed ? styles.challengeToroBtnDisabled : null,
+        ]}
         disabled={focusUsed}
         onPress={handleToroFocus}
       >
         <Ionicons
           name={isFrozen ? "snow" : "hourglass-outline"}
           size={16}
-          color="#fff"
+          color={colors.white}
         />
-        <Text style={styles.toroBtnText}>
+        <Text style={styles.challengeToroBtnText}>
           {isFrozen ? "Frozen (3s)" : "Toro Focus"}
         </Text>
       </TouchableOpacity>
@@ -336,7 +346,7 @@ const ChallengeGameScreen = (): JSX.Element => {
   if (!MinigameComponent) {
     return (
       <Layout>
-        <Text style={{ color: "#fff", textAlign: "center", marginTop: 50 }}>
+        <Text style={styles.challengeMinigameNotFoundText}>
           Minigame component not found.
         </Text>
       </Layout>
@@ -373,7 +383,7 @@ const ChallengeGameScreen = (): JSX.Element => {
       <ComboRewardBurst burstKey={burstKey} />
 
       {/* Core Minigame Layout */}
-      <View style={styles.gameContainer}>
+      <View style={styles.challengeGameContainer}>
         <MinigameComponent
           challenge={enhancedChallenge}
           submitResults={handleChallengeSubmit}
@@ -382,112 +392,5 @@ const ChallengeGameScreen = (): JSX.Element => {
     </Layout>
   );
 };
-
-const styles = StyleSheet.create({
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 10,
-    width: "100%",
-  },
-  timerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  timerText: {
-    color: "#fff",
-    fontWeight: "bold",
-    marginLeft: 6,
-    fontSize: 16,
-  },
-  frozenText: {
-    color: "#00FFFF",
-  },
-  lowTimeText: {
-    color: "#FF3B30",
-  },
-  inspirationBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 215, 0, 0.2)",
-    borderWidth: 1,
-    borderColor: "#FFD700",
-    borderRadius: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  inspirationText: {
-    color: "#FFD700",
-    fontSize: 12,
-    fontWeight: "bold",
-    marginLeft: 4,
-  },
-  toroPanel: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    padding: 14,
-  },
-  inspiredPanel: {
-    borderColor: "#FFD700",
-    backgroundColor: "rgba(255, 215, 0, 0.05)",
-  },
-  toroHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  toroEmoji: {
-    fontSize: 32,
-  },
-  toroTitle: {
-    color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  coopBar: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-  },
-  toroActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  toroBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    paddingVertical: 8,
-    borderRadius: 10,
-    marginHorizontal: 4,
-  },
-  toroBtnDisabled: {
-    opacity: 0.4,
-  },
-  toroBtnText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
-    marginLeft: 6,
-  },
-  gameContainer: {
-    flex: 1,
-    paddingTop: 10,
-  },
-});
 
 export default ChallengeGameScreen;

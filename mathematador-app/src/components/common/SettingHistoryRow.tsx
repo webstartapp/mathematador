@@ -1,8 +1,7 @@
 import { FC, JSX } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
 import {
   formatDeviceId,
   formatSettingChangedAt,
@@ -10,11 +9,7 @@ import {
   SETTING_KEY_LABELS,
 } from "@/helpers/settingLabels";
 import { UserSetting } from "@/src/_generated/model";
-
-// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
-// exact tan/gold card (#d49b57) - the black halo is what makes flat
-// white text legible on it.
-const rowTextShadow = createTextShadow("black", 2, 2, 5);
+import { styles } from "@/theme";
 
 interface SettingHistoryRowProps {
   entry: UserSetting;
@@ -26,59 +21,23 @@ const SettingHistoryRow: FC<SettingHistoryRowProps> = ({
   currentDeviceId,
 }): JSX.Element => {
   return (
-    <View style={styles.row}>
-      <View style={styles.textContainer}>
-        <ThemedText variant="subtitle" style={styles.label}>
+    <View style={styles.settingHistoryRow}>
+      <View style={styles.settingHistoryTextContainer}>
+        <ThemedText variant="subtitle" style={styles.settingHistoryLabel}>
           {SETTING_KEY_LABELS[entry.settingKey]}
         </ThemedText>
-        <Text style={styles.date}>
+        <Text style={styles.settingHistoryDate}>
           {formatSettingChangedAt(entry.changedAt)}
         </Text>
-        <Text style={styles.device}>
+        <Text style={styles.settingHistoryDevice}>
           {formatDeviceId(entry.deviceId, currentDeviceId)}
         </Text>
       </View>
-      <Text style={styles.value}>{formatSettingValue(entry.settingValue)}</Text>
+      <Text style={styles.settingHistoryValue}>
+        {formatSettingValue(entry.settingValue)}
+      </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: "#B47b37",
-    paddingVertical: 12,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  label: {
-    textAlign: "left",
-    ...rowTextShadow,
-  },
-  date: {
-    color: "#fff",
-    fontSize: 12,
-    marginTop: 4,
-    ...rowTextShadow,
-  },
-  device: {
-    color: "#fff",
-    fontSize: 11,
-    marginTop: 2,
-    ...rowTextShadow,
-  },
-  value: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 14,
-    ...rowTextShadow,
-  },
-});
 
 export default SettingHistoryRow;
