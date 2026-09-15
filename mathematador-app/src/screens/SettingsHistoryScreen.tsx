@@ -14,9 +14,12 @@ import {
 import Layout from "@/components/common/Layout";
 import SettingHistoryRow from "@/components/common/SettingHistoryRow";
 import ThemedText from "@/components/texts/ThemedText";
+import { createTextShadow } from "@/helpers/createTextShadow";
 import { userSettingsGetHistory } from "@/src/_generated/api";
 import { UserSetting } from "@/src/_generated/model";
 import { RootStackParamList } from "@/types/Navigation";
+
+const headerTextShadow = createTextShadow("rgba(0, 0, 0, 0.8)", 1, 1, 5);
 
 type SettingsHistoryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     padding: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
     borderRadius: 20,
     width: 40,
     height: 40,
@@ -128,6 +131,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     marginHorizontal: 10,
+    ...headerTextShadow,
   },
   scrollContainer: {
     paddingHorizontal: 20,
@@ -137,10 +141,11 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   emptyText: {
-    color: "rgba(255, 255, 255, 0.5)",
+    color: "rgba(255, 255, 255, 0.75)",
     textAlign: "center",
     marginTop: 50,
     fontSize: 16,
+    ...headerTextShadow,
   },
 });
 

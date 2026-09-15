@@ -8,10 +8,13 @@ import { useDispatch, useSelector } from "react-redux";
 import Layout from "@/components/common/Layout";
 import SettingToggleRow from "@/components/common/SettingToggleRow";
 import ThemedText from "@/components/texts/ThemedText";
+import { createTextShadow } from "@/helpers/createTextShadow";
 import { useUpdateUserSetting } from "@/hooks/useSyncUserSettings";
 import { setMusicEnabled, setSoundEnabled } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
 import { RootStackParamList } from "@/types/Navigation";
+
+const headerTextShadow = createTextShadow("rgba(0, 0, 0, 0.8)", 1, 1, 5);
 
 type SettingsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -109,7 +112,7 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     padding: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
     borderRadius: 20,
     width: 40,
     height: 40,
@@ -121,6 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
     marginHorizontal: 10,
+    ...headerTextShadow,
   },
   section: {
     width: "100%",
@@ -128,12 +132,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   sectionLabel: {
-    color: "rgba(255, 255, 255, 0.5)",
+    color: "rgba(255, 255, 255, 0.75)",
     fontSize: 12,
     fontWeight: "700",
     letterSpacing: 1,
     marginBottom: 10,
     textTransform: "uppercase",
+    ...headerTextShadow,
   },
   historyLink: {
     flexDirection: "row",
@@ -147,6 +152,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 15,
     marginRight: 6,
+    ...headerTextShadow,
   },
 });
 

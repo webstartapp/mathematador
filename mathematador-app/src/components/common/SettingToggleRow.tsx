@@ -2,6 +2,9 @@ import { FC, JSX } from "react";
 import { StyleSheet, Switch, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
+import { createTextShadow } from "@/helpers/createTextShadow";
+
+const labelTextShadow = createTextShadow("rgba(0, 0, 0, 0.8)", 1, 1, 4);
 
 interface SettingToggleRowProps {
   label: string;
@@ -43,9 +46,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    // Dark (not light) translucent fill - a light tint barely registers
+    // against this screen's bright background artwork (the same intro
+    // image Home uses), where a dark one gives real contrast regardless
+    // of what's directly behind it.
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 16,
     paddingVertical: 14,
     paddingHorizontal: 16,
@@ -57,10 +64,12 @@ const styles = StyleSheet.create({
   },
   label: {
     textAlign: "left",
+    ...labelTextShadow,
   },
   description: {
-    color: "rgba(255, 255, 255, 0.6)",
+    color: "rgba(255, 255, 255, 0.75)",
     marginTop: 4,
+    ...labelTextShadow,
   },
 });
 
