@@ -24,6 +24,8 @@ import type {
   SubscriptionCreate,
   UserProfile,
   UserSetting,
+  UserSettingsGetHistoryParams,
+  UserSettingsHistoryPage,
   UserSettingsUpdateBody
 } from './model';
 
@@ -525,7 +527,7 @@ const res = await fetch(getUserSettingsUpdateUrl(),
 
 
 export type userSettingsGetHistoryResponse200 = {
-  data: UserSetting[]
+  data: UserSettingsHistoryPage
   status: 200
 }
 
@@ -536,20 +538,27 @@ export type userSettingsGetHistoryResponseSuccess = (userSettingsGetHistoryRespo
 
 export type userSettingsGetHistoryResponse = (userSettingsGetHistoryResponseSuccess)
 
-export const getUserSettingsGetHistoryUrl = () => {
+export const getUserSettingsGetHistoryUrl = (params?: UserSettingsGetHistoryParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/user/settings/history`
+  return stringifiedParams.length > 0 ? `/user/settings/history?${stringifiedParams}` : `/user/settings/history`
 }
 
 /**
- * @summary Get every change ever made to this account's settings, newest first
+ * @summary Get one page of this account's settings change history, newest first
  */
-export const userSettingsGetHistory = async ( options?: RequestInit): Promise<userSettingsGetHistoryResponse> => {
+export const userSettingsGetHistory = async (params?: UserSettingsGetHistoryParams, options?: RequestInit): Promise<userSettingsGetHistoryResponse> => {
 
-  const res = await fetch(getUserSettingsGetHistoryUrl(),
+  const res = await fetch(getUserSettingsGetHistoryUrl(params),
   {
     ...options,
     method: 'GET'

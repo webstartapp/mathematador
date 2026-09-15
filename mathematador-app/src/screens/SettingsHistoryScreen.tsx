@@ -1,6 +1,6 @@
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
-import { JSX, useEffect, useState } from "react";
+import { JSX } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet } from "react-native";
 
 import Button from "@/components/common/Button";
@@ -9,18 +9,17 @@ import SettingHistoryRow from "@/components/common/SettingHistoryRow";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
 import { createTextShadow } from "@/helpers/createTextShadow";
-import { waitForPendingUserSettingsWrites } from "@/hooks/useSyncUserSettings";
-import { userSettingsGetHistory } from "@/src/_generated/api";
+import {
+  HistoryLoadState,
+  useSettingsHistoryPage,
+} from "@/hooks/useSettingsHistoryPage";
 import { UserSetting } from "@/src/_generated/model";
 import { RootStackParamList } from "@/types/Navigation";
-import { getOrCreateDeviceId } from "@/utils/consent";
 
 type SettingsHistoryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
   "SettingsHistory"
 >;
-
-type LoadState = "loading" | "loaded" | "error";
 
 // Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
 // exact tan/gold card (#d49b57) - the black halo is what makes flat
@@ -28,8 +27,8 @@ type LoadState = "loading" | "loaded" | "error";
 const cardTextShadow = createTextShadow("black", 2, 2, 5);
 
 const renderContent = (
-  loadState: LoadState,
-  history: UserSetting[],
+  loadState: HistoryLoadState,
+  entries: UserSetting[],
   currentDeviceId: string | null,
 ): JSX.Element => {
   if (loadState === "loading") {
@@ -46,7 +45,7 @@ const renderContent = (
     );
   }
 
-  if (history.length === 0) {
+  if (entries.length === 0) {
     return (
       <ThemedText variant="description" style={styles.message}>
         No changes yet.
@@ -56,7 +55,7 @@ const renderContent = (
 
   return (
     <>
-      {history.map((entry, index) => (
+      {entries.map((entry, index) => (
         <SettingHistoryRow
           key={`${entry.settingKey}_${entry.changedAt}_${index}`}
           entry={entry}
@@ -69,39 +68,14 @@ const renderContent = (
 
 const SettingsHistoryScreen = (): JSX.Element => {
   const navigation = useNavigation<SettingsHistoryScreenNavigationProp>();
-  const [loadState, setLoadState] = useState<LoadState>("loading");
-  const [history, setHistory] = useState<UserSetting[]>([]);
-  const [currentDeviceId, setCurrentDeviceId] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isCancelled = false;
-    getOrCreateDeviceId()
-      .then((deviceId) => {
-        if (!isCancelled) setCurrentDeviceId(deviceId);
-      })
-      .catch(() => {
-        // Rows just render their own device id instead of "This device".
-      });
-    // Wait for any still-queued toggle to actually reach the server first -
-    // otherwise navigating here right after a toggle can have this GET race
-    // that POST and render a history list missing the just-made change.
-    waitForPendingUserSettingsWrites()
-      .then(() => userSettingsGetHistory())
-      .then((response) => {
-        if (isCancelled) return;
-        setHistory(response?.data ?? []);
-        setLoadState("loaded");
-      })
-      .catch(() => {
-        // Unlike the current-settings screen, there's no sensible local
-        // fallback for a change log - show a real error instead of
-        // silently rendering stale/fabricated data.
-        if (!isCancelled) setLoadState("error");
-      });
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
+  const {
+    loadState,
+    entries,
+    currentDeviceId,
+    hasNextPage,
+    isLoadingMore,
+    loadMore,
+  } = useSettingsHistoryPage();
 
   return (
     <Layout>
@@ -110,7 +84,14 @@ const SettingsHistoryScreen = (): JSX.Element => {
           style={styles.historyList}
           contentContainerStyle={styles.historyListContent}
         >
-          {renderContent(loadState, history, currentDeviceId)}
+          {renderContent(loadState, entries, currentDeviceId)}
+          {hasNextPage && (
+            <Button
+              title={isLoadingMore ? "Loading..." : "Load More"}
+              onPress={loadMore}
+              style={styles.loadMoreButton}
+            />
+          )}
         </ScrollView>
         <Button title="Back to Settings" onPress={() => navigation.goBack()} />
       </CenteredDesk>
@@ -135,6 +116,9 @@ const styles = StyleSheet.create({
   },
   historyListContent: {
     paddingBottom: 8,
+  },
+  loadMoreButton: {
+    marginTop: 4,
   },
   loader: {
     marginVertical: 30,

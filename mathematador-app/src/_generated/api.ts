@@ -38,6 +38,8 @@ import type {
   SubscriptionCreate,
   UserProfile,
   UserSetting,
+  UserSettingsGetHistoryParams,
+  UserSettingsHistoryPage,
   UserSettingsUpdateBody
 } from './model';
 
@@ -947,7 +949,7 @@ export const useUserSettingsUpdate = <TError = unknown,
     }
 
 export type userSettingsGetHistoryResponse200 = {
-  data: UserSetting[]
+  data: UserSettingsHistoryPage
   status: 200
 }
 
@@ -958,20 +960,27 @@ export type userSettingsGetHistoryResponseSuccess = (userSettingsGetHistoryRespo
 
 export type userSettingsGetHistoryResponse = (userSettingsGetHistoryResponseSuccess)
 
-export const getUserSettingsGetHistoryUrl = () => {
+export const getUserSettingsGetHistoryUrl = (params?: UserSettingsGetHistoryParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/user/settings/history`
+  return stringifiedParams.length > 0 ? `/user/settings/history?${stringifiedParams}` : `/user/settings/history`
 }
 
 /**
- * @summary Get every change ever made to this account's settings, newest first
+ * @summary Get one page of this account's settings change history, newest first
  */
-export const userSettingsGetHistory = async ( options?: Parameters<typeof customInstance>[1]): Promise<userSettingsGetHistoryResponse> => {
+export const userSettingsGetHistory = async (params?: UserSettingsGetHistoryParams, options?: Parameters<typeof customInstance>[1]): Promise<userSettingsGetHistoryResponse> => {
 
-  return customInstance<userSettingsGetHistoryResponse>(getUserSettingsGetHistoryUrl(),
+  return customInstance<userSettingsGetHistoryResponse>(getUserSettingsGetHistoryUrl(params),
   {
     ...options,
     method: 'GET'
@@ -984,23 +993,23 @@ export const userSettingsGetHistory = async ( options?: Parameters<typeof custom
 
 
 
-export const getUserSettingsGetHistoryQueryKey = () => {
+export const getUserSettingsGetHistoryQueryKey = (params?: UserSettingsGetHistoryParams,) => {
     return [
-    `/user/settings/history`
+    `/user/settings/history`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getUserSettingsGetHistoryQueryOptions = <TData = Awaited<ReturnType<typeof userSettingsGetHistory>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof userSettingsGetHistory>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+export const getUserSettingsGetHistoryQueryOptions = <TData = Awaited<ReturnType<typeof userSettingsGetHistory>>, TError = unknown>(params?: UserSettingsGetHistoryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof userSettingsGetHistory>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getUserSettingsGetHistoryQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getUserSettingsGetHistoryQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof userSettingsGetHistory>>> = ({ signal }) => userSettingsGetHistory({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof userSettingsGetHistory>>> = ({ signal }) => userSettingsGetHistory(params, { signal, ...requestOptions });
 
 
 
@@ -1014,15 +1023,15 @@ export type UserSettingsGetHistoryQueryError = unknown
 
 
 /**
- * @summary Get every change ever made to this account's settings, newest first
+ * @summary Get one page of this account's settings change history, newest first
  */
 
 export function useUserSettingsGetHistory<TData = Awaited<ReturnType<typeof userSettingsGetHistory>>, TError = unknown>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof userSettingsGetHistory>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+ params?: UserSettingsGetHistoryParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof userSettingsGetHistory>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getUserSettingsGetHistoryQueryOptions(options)
+  const queryOptions = getUserSettingsGetHistoryQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

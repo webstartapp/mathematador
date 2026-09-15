@@ -37,4 +37,6 @@ export * from './subscriptionType';
 export * from './userProfile';
 export * from './userSetting';
 export * from './userSettingKey';
+export * from './userSettingsGetHistoryParams';
+export * from './userSettingsHistoryPage';
 export * from './userSettingsUpdateBody';

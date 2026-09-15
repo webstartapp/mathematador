@@ -30,11 +30,20 @@ const KNOWN_THIRD_PARTY_WARNINGS = [
 // IntroScreen.tsx's own statusChange listener reacts to the player's real
 // state rather than this promise - both are web-only console noise for an
 // expected condition, not a real error.
-const isBenignAutoplayRejection = (rejectionReason: Error): boolean =>
-  (rejectionReason.name === "NotAllowedError" &&
-    rejectionReason.message.includes("interact with the document first")) ||
-  (rejectionReason.name === "AbortError" &&
-    rejectionReason.message.includes("paused to save power"));
+// Duck-typed name/message string checks, not `instanceof Error`: both
+// rejections are actually DOMException instances (the standard type for
+// media-element errors), and DOMException deliberately does not inherit
+// from Error in browser implementations - an `instanceof Error` guard here
+// silently never matches either one, which is exactly what let this
+// specific rejection keep appearing live even after this filter shipped.
+const isBenignAutoplayRejection = (
+  rejectionName: string,
+  rejectionMessage: string,
+): boolean =>
+  (rejectionName === "NotAllowedError" &&
+    rejectionMessage.includes("interact with the document first")) ||
+  (rejectionName === "AbortError" &&
+    rejectionMessage.includes("paused to save power"));
 
 export const silenceKnownUnhandledRejections = (): void => {
   if (typeof window === "undefined") {
@@ -46,11 +55,18 @@ export const silenceKnownUnhandledRejections = (): void => {
   // globalThis is the same object and carries the same DOM event target
   // API, with no such equivalent existing for unhandledrejection.
   globalThis.addEventListener("unhandledrejection", (event) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- PromiseRejectionEvent.reason is typed `any` by lib.dom.d.ts
-    const rejectionReason = event.reason;
+    // event.reason is typed `any` by lib.dom.d.ts - member access on it
+    // stays `any` too, which is what lets the two typeof checks below
+    // narrow rejectionName/rejectionMessage to `string` without needing an
+    // intermediate `unknown` (banned in this repo) or an `as` assertion.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const rejectionName = event.reason?.name;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const rejectionMessage = event.reason?.message;
     if (
-      rejectionReason instanceof Error &&
-      isBenignAutoplayRejection(rejectionReason)
+      typeof rejectionName === "string" &&
+      typeof rejectionMessage === "string" &&
+      isBenignAutoplayRejection(rejectionName, rejectionMessage)
     ) {
       event.preventDefault();
     }
