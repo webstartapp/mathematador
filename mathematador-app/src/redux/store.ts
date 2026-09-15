@@ -13,6 +13,7 @@ import {
 
 import gameReducer from "@/redux/slices/gameSlice";
 import navigationReducer from "@/redux/slices/navigationSlice";
+import settingsReducer from "@/redux/slices/settingsSlice";
 import userReducer from "@/redux/slices/userSlice";
 // Import other reducers as needed
 const createNoopStorage = (): {
@@ -39,12 +40,13 @@ const storage =
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user", "game", "navigation"], // Only these reducers will be persisted
+  whitelist: ["user", "game", "navigation", "settings"], // Only these reducers will be persisted
 };
 const rootReducer = combineReducers({
   user: userReducer,
   game: gameReducer,
   navigation: navigationReducer,
+  settings: settingsReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

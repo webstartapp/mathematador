@@ -75,6 +75,17 @@ export interface UserConsentRow {
   consented_at: Date;
 }
 
+export interface UserSettingsHistoryRow {
+  id: string;
+  created: Date;
+  // bigint - node-postgres returns int8/bigserial columns as strings by
+  // default (a JS number can't safely represent the full bigint range).
+  sequence: string;
+  user_id: string;
+  setting_key: string;
+  setting_value: string;
+}
+
 export type IDBType = {
   users: UserRow;
   subscriptions: SubscriptionRow;
@@ -84,6 +95,7 @@ export type IDBType = {
   user_cosmetics: UserCosmeticRow;
   minigame_progress: MinigameProgressRow;
   user_consents: UserConsentRow;
+  user_settings_history: UserSettingsHistoryRow;
 };
 
 // Minimal DBConfig placeholder for legacy expressTypeResolver.ts to compile

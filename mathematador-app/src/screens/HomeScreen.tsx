@@ -8,6 +8,7 @@ import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
+import { useSyncUserSettings } from "@/hooks/useSyncUserSettings";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { RootState } from "@/redux/store";
 import { RootStackParamList } from "@/types/Navigation";
@@ -19,6 +20,11 @@ const HomeScreen = (): JSX.Element => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const user = useSelector((state: RootState) => state.user);
   const { start: startMenuMusic, stop: stopMenuMusic } = useMenuMusic();
+  // Home is the natural post-login landing screen (no central "load
+  // everything on app start" component exists in this codebase - each
+  // screen self-fetches what it needs, e.g. TiendaScreen/GauntletScreen),
+  // so this is where settings get synced from the server once per session.
+  useSyncUserSettings();
 
   useEffect(() => {
     startMenuMusic();

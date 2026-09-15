@@ -35,3 +35,6 @@ export * from './subscription';
 export * from './subscriptionCreate';
 export * from './subscriptionType';
 export * from './userProfile';
+export * from './userSetting';
+export * from './userSettingKey';
+export * from './userSettingsUpdateBody';

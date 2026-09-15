@@ -40,10 +40,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserProfile'
-    put: 
+    put:
       operationId: user_login_password
       summary: submit new password after forgotten
-      requestBody: 
+      security:
+        - bearerAuth: []
+      requestBody:
         required: true
         content:
           application/json:
@@ -103,6 +105,8 @@ paths:
     post:
       operationId: user_consent_record
       summary: Persist the device-recorded, pre-login consent against the now-authenticated account (idempotent - the first consent on file always wins)
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -116,6 +120,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConsentRecord'
+  /user/settings:
+    get:
+      operationId: user_settings_get_current
+      summary: Get the current (latest per key) value of every setting this account has ever changed
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: The account's current settings - only keys that have been changed at least once appear here
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSetting'
+    post:
+      operationId: user_settings_update
+      summary: Append a new value for a setting (a fresh history row, never an update-in-place)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSettingsUpdateBody'
+      responses:
+        '200':
+          description: The newly-appended setting row
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSetting'
+  /user/settings/history:
+    get:
+      operationId: user_settings_get_history
+      summary: Get every change ever made to this account's settings, newest first
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Full settings change history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSetting'
   /user/forgotten-password:
     post:
       operationId: user_forgotten_password
@@ -135,6 +187,8 @@ paths:
     post:
       operationId: challenge_start_new
       summary: Create a new game
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -151,6 +205,8 @@ paths:
     get:
       operationId: challenge_get_all
       summary: Get all user challenges
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: List of challenges
@@ -167,6 +223,8 @@ paths:
     get:
       operationId: challenge_get
       summary: Get challenge by id
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Detail of challenge
@@ -177,6 +235,8 @@ paths:
     put:
       operationId: challenge_update_result
       summary: Update challenge items
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -194,6 +254,8 @@ paths:
     post:
       operationId: subscription_update
       summary: Add new subscription
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -210,13 +272,17 @@ paths:
     delete:
       operationId: subscription_cancel_immediately
       summary: Remove subscription
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: subscription removed
   /game/progress:
     get:
       operationId: game_progress
-      summary: Get game status 
+      summary: Get game status
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Game status
@@ -228,6 +294,8 @@ paths:
     get:
       operationId: cosmetics_get_all
       summary: Retrieve all available cosmetics in the shop
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: List of cosmetics
@@ -241,6 +309,8 @@ paths:
     post:
       operationId: cosmetics_buy
       summary: Buy a cosmetic item
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -263,6 +333,8 @@ paths:
     post:
       operationId: cosmetics_equip
       summary: Equip or unequip a cosmetic item
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -285,6 +357,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/GameProgress'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "A JWT from POST /user/login (or /user/register, /user/google-login) sent as `Authorization: Bearer <token>` - see requireAuth in server/src/middlewares/auth.ts. Tokens expire after 30 days (see signToken in server/src/utils/JWT.ts)."
   parameters:
     OperationId:
       name: operationId
@@ -525,6 +603,42 @@ components:
       required:
         - deviceId
         - consentedAt
+    UserSettingKey:
+      # Deliberately just the two account-scoped settings - sound (like
+      # music) is a device preference tracked entirely client-side in
+      # userSlice, never sent here.
+      type: string
+      enum:
+        - ads_consent
+        - gdpr_consent
+    UserSetting:
+      type: object
+      properties:
+        settingKey:
+          $ref: '#/components/schemas/UserSettingKey'
+        settingValue:
+          # Plain string (e.g. "true"/"false" for these two booleans), not
+          # typed further - same reasoning as ConsentRecord.consentedAt
+          # above: keeps orval's zod codegen on the version this repo can
+          # actually build with, and leaves room for a future non-boolean
+          # setting without a schema change.
+          type: string
+        changedAt:
+          type: string
+      required:
+        - settingKey
+        - settingValue
+        - changedAt
+    UserSettingsUpdateBody:
+      type: object
+      properties:
+        settingKey:
+          $ref: '#/components/schemas/UserSettingKey'
+        settingValue:
+          type: string
+      required:
+        - settingKey
+        - settingValue
     SubscriptionType:
       type: string
       enum:

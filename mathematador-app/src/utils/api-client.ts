@@ -31,9 +31,27 @@ const PERSISTED_TOKEN_KEY = "auth_token";
 // persisted id, which deleted the just-stored token outright. Actual
 // invalidation (on a confirmed 401, or logout) already happens explicitly
 // below and has no dependency on this lookup.
-const getAuthToken = async (): Promise<string | null> => {
+// Exported so a caller that needs its request pinned to a specific session
+// (rather than whichever token happens to be live when the request actually
+// reaches the network - see the Authorization override below) can capture
+// this value itself at the moment that matters to it.
+export const getAuthToken = async (): Promise<string | null> => {
   return AsyncStorage.getItem(PERSISTED_TOKEN_KEY);
 };
+
+const AUTHORIZATION_HEADER_NAME = "Authorization";
+
+// HTTP header names are case-insensitive - a caller pinning a session's
+// token might reasonably spread in a lowercase `authorization` key (a
+// `Headers` instance always normalizes to lowercase, but a plain object
+// literal doesn't), and an exact-case lookup would miss it entirely.
+const findHeaderKey = (
+  headers: Record<string, string>,
+  headerName: string,
+): string | undefined =>
+  Object.keys(headers).find(
+    (key) => key.toLowerCase() === headerName.toLowerCase(),
+  );
 
 const normalizeHeaders = (
   headersInit: HeadersInit | undefined,
@@ -88,18 +106,48 @@ const persistAuthTokenIfPresent = async (
   }
 };
 
+// A caller-supplied Authorization header (any casing) wins over the live
+// token - this is how a request gets pinned to a specific session (e.g.
+// one enqueued before a later account switch) instead of picking up
+// whatever's currently stored by the time this async function actually
+// runs. Mutates `headers` in place and returns the token that was (or will
+// be, once attached) on the request, for the 401-handling check below.
+const resolveRequestToken = async (
+  headers: Record<string, string>,
+): Promise<string | null> => {
+  const existingAuthorizationKey = findHeaderKey(
+    headers,
+    AUTHORIZATION_HEADER_NAME,
+  );
+  // The Bearer auth scheme name is case-insensitive per RFC 7235 - matching
+  // only exact-case "Bearer" would fall through to the live token for a
+  // pinned "bearer <token>" header, silently defeating the pin.
+  const pinnedBearerMatch = /^Bearer\s+(.+)$/i.exec(
+    (existingAuthorizationKey && headers[existingAuthorizationKey]) || "",
+  );
+  if (pinnedBearerMatch) {
+    return pinnedBearerMatch[1];
+  }
+
+  const token = await getAuthToken();
+  if (token) {
+    // Overwrite whatever casing was already present (if any) rather than
+    // adding a second key - two Authorization headers on the same request
+    // is undefined/unpredictable behavior for most HTTP clients.
+    headers[existingAuthorizationKey ?? AUTHORIZATION_HEADER_NAME] =
+      `Bearer ${token}`;
+  }
+  return token;
+};
+
 // Matches the RequestInit shape orval's fetch-client codegen always passes
 // (see @orval/fetch's generated `options?: RequestInit`).
 export const customInstance = async <T>(
   requestUrl: string,
   options: RequestInit,
 ): Promise<T> => {
-  const token = await getAuthToken();
   const headers = normalizeHeaders(options.headers);
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+  const token = await resolveRequestToken(headers);
 
   const response = await fetch(`${BASE_URL}${requestUrl}`, {
     ...options,
