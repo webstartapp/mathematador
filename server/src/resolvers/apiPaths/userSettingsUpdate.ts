@@ -2,10 +2,10 @@ import { UserSettingsUpdateBody } from "@/_generated/be_fe.zod";
 import knex from "@/knexWrapper";
 import { restAPICall } from "@/utils/restAPI";
 
-// All three keys tracked today are booleans - validated per-key (not by
+// Both keys tracked today are booleans - validated per-key (not by
 // constraining the shared settingValue schema to a "true"/"false" enum)
 // so a future non-boolean setting doesn't need this schema changed.
-const BOOLEAN_SETTING_KEYS = new Set(["ads_consent", "gdpr_consent", "sound_enabled"]);
+const BOOLEAN_SETTING_KEYS = new Set(["ads_consent", "gdpr_consent"]);
 const BOOLEAN_SETTING_VALUES = new Set(["true", "false"]);
 
 export const userSettingsUpdate = restAPICall(

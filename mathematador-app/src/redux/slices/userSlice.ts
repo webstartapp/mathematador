@@ -44,6 +44,7 @@ export interface UserState {
   equippedFlare: string | null;
   minigameProgress: MinigameProgress[];
   musicEnabled: boolean;
+  soundEnabled: boolean;
 }
 
 // A factory (not a shared literal) so setAuth can reset a returning
@@ -53,7 +54,7 @@ export interface UserState {
 // auto-freeze errors on any later mutation of those same objects.
 const createInitialUserProgress = (): Omit<
   UserState,
-  "id" | "role" | "musicEnabled"
+  "id" | "role" | "musicEnabled" | "soundEnabled"
 > => ({
   name: "Corina",
   level: 1,
@@ -85,6 +86,7 @@ const initialState: UserState = {
   id: null,
   role: null,
   musicEnabled: true,
+  soundEnabled: true,
   ...createInitialUserProgress(),
 };
 
@@ -141,7 +143,8 @@ const userSlice = createSlice({
       // so a second account logging in on the same device/browser never
       // sees the previous account's locally-persisted state, even for the
       // moment before any server sync happens to overwrite it. musicEnabled
-      // is a device preference, not account data, so it's left alone.
+      // and soundEnabled are device preferences, not account data, so
+      // they're left alone.
       const freshProgress = createInitialUserProgress();
       state.name = action.payload.name || freshProgress.name;
       state.level = freshProgress.level;
@@ -163,6 +166,9 @@ const userSlice = createSlice({
     },
     setMusicEnabled(state, action: PayloadAction<boolean>) {
       state.musicEnabled = action.payload;
+    },
+    setSoundEnabled(state, action: PayloadAction<boolean>) {
+      state.soundEnabled = action.payload;
     },
     levelUserUp(state) {
       state.level += 1;
@@ -282,6 +288,7 @@ export const {
   setAuth,
   logout,
   setMusicEnabled,
+  setSoundEnabled,
   levelOperationUp,
   levelUserUp,
   completeChalange,

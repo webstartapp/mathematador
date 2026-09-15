@@ -4,7 +4,6 @@ import { setAuth } from "@/redux/slices/userSlice";
 import { UserSetting } from "@/src/_generated/model";
 
 export interface SettingsState {
-  soundEnabled: boolean;
   adsConsent: boolean;
   gdprConsent: boolean;
 }
@@ -15,9 +14,10 @@ export interface SettingsState {
 // Ads/GDPR consent default true: reaching any authenticated screen already
 // implies the mandatory consent gate (#31) was passed, so there's nothing
 // to re-confirm here until this account explicitly changes one of these
-// settings for the first time (no history row exists for it yet).
+// settings for the first time (no history row exists for it yet). Sound
+// is deliberately not tracked here - it's a device preference (like
+// userSlice's musicEnabled), not account data, see useOleSound.ts.
 const createInitialState = (): SettingsState => ({
-  soundEnabled: true,
   adsConsent: true,
   gdprConsent: true,
 });
@@ -29,9 +29,7 @@ const parseBooleanSettingValue = (settingValue: string): boolean =>
 
 const applySetting = (state: SettingsState, setting: UserSetting): void => {
   const isEnabled = parseBooleanSettingValue(setting.settingValue);
-  if (setting.settingKey === "sound_enabled") {
-    state.soundEnabled = isEnabled;
-  } else if (setting.settingKey === "ads_consent") {
+  if (setting.settingKey === "ads_consent") {
     state.adsConsent = isEnabled;
   } else if (setting.settingKey === "gdpr_consent") {
     state.gdprConsent = isEnabled;
@@ -42,9 +40,6 @@ const settingsSlice = createSlice({
   name: "settings",
   initialState,
   reducers: {
-    setSoundEnabled(state, action: PayloadAction<boolean>) {
-      state.soundEnabled = action.payload;
-    },
     setAdsConsent(state, action: PayloadAction<boolean>) {
       state.adsConsent = action.payload;
     },
@@ -61,9 +56,9 @@ const settingsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // These settings are account-scoped (unlike userSlice's musicEnabled,
-    // a deliberate per-device exception spared by this same reset) -
-    // without this, logging into a second account on the same
+    // These settings are account-scoped (unlike userSlice's musicEnabled/
+    // soundEnabled, deliberate per-device exceptions spared by this same
+    // reset) - without this, logging into a second account on the same
     // device/browser would silently inherit the first account's
     // locally-persisted values for any setting the second account has
     // never itself changed, until the server sync happened to overwrite
@@ -72,10 +67,6 @@ const settingsSlice = createSlice({
   },
 });
 
-export const {
-  setSoundEnabled,
-  setAdsConsent,
-  setGdprConsent,
-  syncCurrentSettings,
-} = settingsSlice.actions;
+export const { setAdsConsent, setGdprConsent, syncCurrentSettings } =
+  settingsSlice.actions;
 export default settingsSlice.reducer;

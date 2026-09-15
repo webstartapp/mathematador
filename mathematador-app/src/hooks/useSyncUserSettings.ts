@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import {
   setAdsConsent,
   setGdprConsent,
-  setSoundEnabled,
   syncCurrentSettings,
 } from "@/redux/slices/settingsSlice";
 import { AppDispatch } from "@/redux/store";
@@ -15,8 +14,10 @@ import {
 import { UserSettingKey } from "@/src/_generated/model";
 import { getAuthToken } from "@/utils/api-client";
 
+// sound_enabled isn't here - it's a device preference tracked entirely in
+// userSlice (see setSoundEnabled/useOleSound.ts), not one of this account-
+// scoped, server-synced settings.
 const SETTING_ACTIONS = {
-  sound_enabled: setSoundEnabled,
   ads_consent: setAdsConsent,
   gdpr_consent: setGdprConsent,
 };

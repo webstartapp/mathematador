@@ -8,7 +8,7 @@ import { RootState } from "@/redux/store";
 export const useOleSound = (): (() => void) => {
   const player = useAudioPlayer(oleSoundAsset);
   const soundEnabled = useSelector(
-    (state: RootState) => state.settings.soundEnabled,
+    (state: RootState) => state.user.soundEnabled,
   );
 
   const playOleSound = useCallback((): void => {

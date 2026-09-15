@@ -604,19 +604,21 @@ components:
         - deviceId
         - consentedAt
     UserSettingKey:
+      # Deliberately just the two account-scoped settings - sound (like
+      # music) is a device preference tracked entirely client-side in
+      # userSlice, never sent here.
       type: string
       enum:
         - ads_consent
         - gdpr_consent
-        - sound_enabled
     UserSetting:
       type: object
       properties:
         settingKey:
           $ref: '#/components/schemas/UserSettingKey'
         settingValue:
-          # Plain string (e.g. "true"/"false" for these three booleans),
-          # not typed further - same reasoning as ConsentRecord.consentedAt
+          # Plain string (e.g. "true"/"false" for these two booleans), not
+          # typed further - same reasoning as ConsentRecord.consentedAt
           # above: keeps orval's zod codegen on the version this repo can
           # actually build with, and leaves room for a future non-boolean
           # setting without a schema change.

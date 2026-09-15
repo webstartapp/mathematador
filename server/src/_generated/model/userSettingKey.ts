@@ -12,5 +12,4 @@ export type UserSettingKey = typeof UserSettingKey[keyof typeof UserSettingKey];
 export const UserSettingKey = {
   ads_consent: 'ads_consent',
   gdpr_consent: 'gdpr_consent',
-  sound_enabled: 'sound_enabled',
 } as const;
