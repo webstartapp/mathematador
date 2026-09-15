@@ -15,4 +15,6 @@ export type RootStackParamList = {
   Gauntlet?: {};
   DailyCorrida?: {};
   Auth?: {};
+  Settings?: {};
+  SettingsHistory?: {};
 };
