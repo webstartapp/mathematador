@@ -861,7 +861,8 @@ type UserRegisterBodyOutput = zod.output<typeof UserRegisterBody>;
 export const UserSetting = zod.object({
   "settingKey": zod.enum(['ads_consent', 'gdpr_consent']),
   "settingValue": zod.string(),
-  "changedAt": zod.string()
+  "changedAt": zod.string(),
+  "deviceId": zod.string()
 })
 
 type UserSetting = zod.input<typeof UserSetting>;
@@ -892,7 +893,8 @@ type UserSettingKeyOutput = zod.output<typeof UserSettingKey>;
 
 export const UserSettingsUpdateBody = zod.object({
   "settingKey": zod.enum(['ads_consent', 'gdpr_consent']),
-  "settingValue": zod.string()
+  "settingValue": zod.string(),
+  "deviceId": zod.string()
 })
 
 type UserSettingsUpdateBody = zod.input<typeof UserSettingsUpdateBody>;

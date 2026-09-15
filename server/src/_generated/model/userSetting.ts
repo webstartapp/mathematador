@@ -11,4 +11,5 @@ export type UserSetting = {
   settingKey: UserSettingKey;
   settingValue: string;
   changedAt: string;
+  deviceId: string;
 };

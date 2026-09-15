@@ -26,12 +26,9 @@ Express + TypeScript + Knex (PostgreSQL). Single entry point `src/index.ts` → 
 | `gameProgress.ts` | `GET /game/progress` | Thin wrapper around `getUserProgress()` (`utils/gameProgress.ts`), the shared aggregator also used by the cosmetics resolvers. |
 | `subscriptionUpdate.ts` / `subscriptionCancelImmediately.ts` | `POST` / `DELETE /subscriptions` | Upsert / delete the user's single subscription row. |
 
-## Database (`src/migrations/`, in order)
+## Database (`src/migrations/`)
 
-1. `0_init.js` — enables the `uuid-ossp` Postgres extension.
-2. `20240804235416_users.js` — `users`, `subscriptions`, `challenges`, `operation_progress`; seeds a root/admin user (this is the row `userLoginPassword.ts`'s bug can hijack).
-3. `20241109002335_gameData.js` — **no-op**, empty `up`/`down`. Vestigial.
-4. `20260615204201_cosmetics_and_progression.js` — `cosmetics`, `user_cosmetics` (unique `(user_id, cosmetic_id)` + a **partial unique index** enforcing one equipped item per `cosmetic_type`), `minigame_progress` (unique `(user_id, minigame_id)`); seeds the same cosmetics `TiendaScreen.tsx`'s `FALLBACK_COSMETICS` hardcodes.
+A single consolidated migration, `20260915100000_initial_schema.js`, creates the entire current schema in one file — `users`, `subscriptions`, `challenges`, `operation_progress`, `cosmetics`, `user_cosmetics` (unique `(user_id, cosmetic_id)` + a **partial unique index** enforcing one equipped item per `cosmetic_type`), `minigame_progress` (unique `(user_id, minigame_id)`), and `user_settings_history` (append-only settings/consent change log, #32 — its oldest `ads_consent`/`gdpr_consent` row per account also serves as that account's original consent proof, #31), plus seed data (a root/admin user — this is the row `userLoginPassword.ts`'s bug can hijack — and the cosmetics shop inventory `TiendaScreen.tsx`'s `FALLBACK_COSMETICS` mirrors). This replaced a chain of incremental migrations now that the MVP has never gone live — nothing exists yet that a real migration history would need to preserve, so collapsing it removed noise rather than losing anything. Once real data exists anywhere that matters, go back to one migration per change.
 
 Row types live in `src/types/KnexDBType.ts` (`IDBType` maps table name → row type, used to parametrize the typed `knex()` helper from `knexWrapper.ts`).
 
@@ -41,8 +38,8 @@ Dev vs. prod is switched by the `DATABASE` env var (`"stage"` → `STAGE_DATABAS
 
 ## Auth internals (`src/utils/JWT.ts`, `src/utils/password.ts`)
 
-`signToken({userId, role})`/`verifyToken`/`tokenContext` wrap `jsonwebtoken`, secret from `process.env.JWT_SECRET` (throws if unset). **No `exp` is set — tokens don't expire.** Passwords: bcrypt via `password.ts`, `genSalt(10)`.
+`signToken({userId, role})`/`verifyToken`/`tokenContext` wrap `jsonwebtoken`, secret from `process.env.JWT_SECRET` (throws if unset). Tokens expire after 30 days (`expiresIn: "30d"`). Passwords: bcrypt via `password.ts`, `genSalt(10)`.
 
 ## Dead code specific to this workspace
 
-`src/types/enums.ts` (unused boilerplate, identical to the frontend's copy), `src/_generated/serverAPI.ts` (type-extraction only, see above), the `DBConfig`/`DBConfigType` placeholder in `KnexDBType.ts` (kept only so an `expressTypeResolver.ts` that no longer exists would still compile), the no-op `20241109002335_gameData.js` migration.
+`src/types/enums.ts` (unused boilerplate, identical to the frontend's copy), `src/_generated/serverAPI.ts` (type-extraction only, see above), the `DBConfig`/`DBConfigType` placeholder in `KnexDBType.ts` (kept only so an `expressTypeResolver.ts` that no longer exists would still compile).

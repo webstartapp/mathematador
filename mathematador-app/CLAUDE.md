@@ -34,7 +34,7 @@ Two parallel user flows both end up at the same `ChallengeGameScreen`:
 
 ## Cosmetics shop (`TiendaScreen.tsx`)
 
-Fetches `cosmeticsGetAll()` on mount; on any failure (almost certainly triggered in practice by the broken auth above) falls back to a hardcoded `FALLBACK_COSMETICS` array that mirrors the DB seed exactly. Buy/equip call `cosmeticsBuy`/`cosmeticsEquip` and merge the response via `syncProgress`; on failure they fall back to local-only `buyCosmetic`/`equipCosmetic` reducers with no server persistence. If you change the cosmetics schema, update both the DB seed (`server/src/migrations/20260615204201_cosmetics_and_progression.js`) and `FALLBACK_COSMETICS` together or the two will drift.
+Fetches `cosmeticsGetAll()` on mount; on any failure (almost certainly triggered in practice by the broken auth above) falls back to a hardcoded `FALLBACK_COSMETICS` array that mirrors the DB seed exactly. Buy/equip call `cosmeticsBuy`/`cosmeticsEquip` and merge the response via `syncProgress`; on failure they fall back to local-only `buyCosmetic`/`equipCosmetic` reducers with no server persistence. If you change the cosmetics schema, update both the DB seed (`server/src/migrations/20260915100000_initial_schema.js`) and `FALLBACK_COSMETICS` together or the two will drift.
 
 ## Dead code specific to this workspace
 

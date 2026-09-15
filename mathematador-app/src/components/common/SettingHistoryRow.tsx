@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import ThemedText from "@/components/texts/ThemedText";
 import { createTextShadow } from "@/helpers/createTextShadow";
 import {
+  formatDeviceId,
   formatSettingChangedAt,
   formatSettingValue,
   SETTING_KEY_LABELS,
@@ -17,10 +18,12 @@ const rowTextShadow = createTextShadow("black", 2, 2, 5);
 
 interface SettingHistoryRowProps {
   entry: UserSetting;
+  currentDeviceId: string | null;
 }
 
 const SettingHistoryRow: FC<SettingHistoryRowProps> = ({
   entry,
+  currentDeviceId,
 }): JSX.Element => {
   return (
     <View style={styles.row}>
@@ -30,6 +33,9 @@ const SettingHistoryRow: FC<SettingHistoryRowProps> = ({
         </ThemedText>
         <Text style={styles.date}>
           {formatSettingChangedAt(entry.changedAt)}
+        </Text>
+        <Text style={styles.device}>
+          {formatDeviceId(entry.deviceId, currentDeviceId)}
         </Text>
       </View>
       <Text style={styles.value}>{formatSettingValue(entry.settingValue)}</Text>
@@ -59,6 +65,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     marginTop: 4,
+    ...rowTextShadow,
+  },
+  device: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 11,
+    marginTop: 2,
     ...rowTextShadow,
   },
   value: {

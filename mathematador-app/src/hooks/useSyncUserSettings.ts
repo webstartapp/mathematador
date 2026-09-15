@@ -13,6 +13,7 @@ import {
 } from "@/src/_generated/api";
 import { UserSettingKey } from "@/src/_generated/model";
 import { getAuthToken } from "@/utils/api-client";
+import { getOrCreateDeviceId } from "@/utils/consent";
 
 // sound_enabled isn't here - it's a device preference tracked entirely in
 // userSlice (see setSoundEnabled/useOleSound.ts), not one of this account-
@@ -62,23 +63,45 @@ const updateUserSetting = (
   // promise skips its body entirely - one failed token read would
   // otherwise silently stop all future writes.
   const pinnedAuthToken = getAuthToken().catch(() => null);
-  pendingWrite = pendingWrite.then(async () => {
-    const authToken = await pinnedAuthToken;
-    if (!authToken) {
-      return;
-    }
-    await userSettingsUpdate(
-      {
-        settingKey,
-        settingValue: isEnabled ? "true" : "false",
-      },
-      { headers: { Authorization: `Bearer ${authToken}` } },
-    ).catch(() => {
-      // Local state already reflects the change; only server-side history
-      // is missing this write until a later call succeeds.
+  // Same stable per-device id already used for the consent gate (#31) - so
+  // a Change History entry from a settings toggle and one from the
+  // original consent both trace back to the same device identifier.
+  // Never optional (unlike the auth token above): a write with no device
+  // id isn't a degraded-but-acceptable write, so a failure to obtain one
+  // fails this write entirely instead of silently sending one anyway.
+  const deviceId = getOrCreateDeviceId();
+  pendingWrite = pendingWrite
+    .then(async () => {
+      const authToken = await pinnedAuthToken;
+      if (!authToken) {
+        return;
+      }
+      await userSettingsUpdate(
+        {
+          settingKey,
+          settingValue: isEnabled ? "true" : "false",
+          deviceId: await deviceId,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } },
+      ).catch(() => {
+        // Local state already reflects the change; only server-side history
+        // is missing this write until a later call succeeds.
+      });
+    })
+    .catch(() => {
+      // A failed device-id lookup (the only thing above with no catch of its
+      // own) would otherwise reject this link and permanently poison every
+      // later write chained onto pendingWrite - same reasoning as the
+      // auth-token .catch() above, just covering the whole link at once.
     });
-  });
 };
+
+// Lets a caller (e.g. the history screen, before fetching) wait for every
+// currently-queued write to settle first - without this, viewing history
+// immediately after a toggle can race the still-in-flight POST and render
+// without that just-made change.
+export const waitForPendingUserSettingsWrites = (): Promise<void> =>
+  pendingWrite;
 
 // On mount: pull this account's current settings from the server and apply
 // them over whatever's locally persisted - mirrors TiendaScreen.tsx's
@@ -92,6 +115,17 @@ export const useSyncUserSettings = (): void => {
 
   useEffect(() => {
     let isCancelled = false;
+    // Reset at the start of every fresh mount's GET, not left permanently
+    // true after the first-ever toggle - hasLocalUpdate only needs to
+    // track "did a toggle happen since THIS GET started", not "has any
+    // toggle ever happened in this browser tab's lifetime". Without this
+    // reset, a single toggle anywhere in the session's history would
+    // permanently stop every later Home mount (e.g. a second account
+    // logging in on the same device) from ever syncing server settings
+    // again. isCancelled (below, closed over per-effect-instance) still
+    // separately guards a still-in-flight previous mount's GET from
+    // dispatching after a newer mount has already reset this flag.
+    hasLocalUpdate = false;
     userSettingsGetCurrent()
       .then((response) => {
         if (!isCancelled && !hasLocalUpdate && response?.data) {

@@ -16,19 +16,25 @@ const KNOWN_THIRD_PARTY_WARNINGS = [
   "props.pointerEvents is deprecated. Use style.pointerEvents",
 ];
 
-// expo-audio's web AudioPlayer.play() calls the underlying <audio> element's
-// own play() directly without awaiting or catching its returned promise
-// (node_modules/expo-audio/build/AudioPlayer.web.js) - there's no promise
-// reference in this app's own code to attach a .catch() to. When the
-// browser's autoplay policy blocks it (no user interaction yet), that
-// rejection surfaces as an unhandled rejection instead. Nothing is actually
-// broken by this: menuMusicEngine.ts already treats "requested but not yet
-// playing" as an expected, normal state (see its tick()/
-// retryPlaybackOnInteraction) and retries once the user interacts - this is
-// web-only console noise for an expected condition, not a real error.
+// Both expo-audio's and expo-video's web players call the underlying
+// <audio>/<video> element's own play() directly without awaiting or
+// catching its returned promise (node_modules/expo-audio/build/
+// AudioPlayer.web.js, node_modules/expo-video/build/VideoPlayer.web.js) -
+// there's no promise reference in this app's own code (menuMusicEngine.ts,
+// IntroScreen.tsx) to attach a .catch() to. Two distinct browser rejections
+// come out of that same gap: NotAllowedError when audio autoplay is
+// blocked pre-interaction, and AbortError when the browser's power-saving
+// policy interrupts a video-only autoplay. Nothing is actually broken by
+// either: menuMusicEngine.ts already treats "requested but not yet
+// playing" as expected and retries once the user interacts, and
+// IntroScreen.tsx's own statusChange listener reacts to the player's real
+// state rather than this promise - both are web-only console noise for an
+// expected condition, not a real error.
 const isBenignAutoplayRejection = (rejectionReason: Error): boolean =>
-  rejectionReason.name === "NotAllowedError" &&
-  rejectionReason.message.includes("interact with the document first");
+  (rejectionReason.name === "NotAllowedError" &&
+    rejectionReason.message.includes("interact with the document first")) ||
+  (rejectionReason.name === "AbortError" &&
+    rejectionReason.message.includes("paused to save power"));
 
 export const silenceKnownUnhandledRejections = (): void => {
   if (typeof window === "undefined") {

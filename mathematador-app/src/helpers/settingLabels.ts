@@ -15,3 +15,18 @@ export const formatSettingChangedAt = (changedAt: string): string =>
 
 export const formatSettingValue = (settingValue: string): string =>
   settingValue === "true" ? "Enabled" : "Disabled";
+
+const DEVICE_ID_DISPLAY_LENGTH = 8;
+
+// "This device" when the entry matches the device viewing history (the
+// common case, and the most useful answer to "did I do this?"); otherwise
+// a shortened id - the full uuid is meant for the server-side audit trail,
+// not for a human reading this list, but enough characters to tell two
+// other devices apart from each other.
+export const formatDeviceId = (
+  entryDeviceId: string,
+  currentDeviceId: string | null,
+): string =>
+  entryDeviceId === currentDeviceId
+    ? "This device"
+    : `Device ${entryDeviceId.slice(0, DEVICE_ID_DISPLAY_LENGTH)}`;

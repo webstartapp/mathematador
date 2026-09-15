@@ -55,7 +55,10 @@ const SettingsScreen = (): JSX.Element => {
         <SettingToggleRow
           label="Music"
           description="Menu background music"
-          value={musicEnabled}
+          // Same reasoning as Sound Effects above - musicEnabled lives in
+          // the same persisted userSlice and is subject to the identical
+          // rehydration gap.
+          value={musicEnabled !== false}
           onValueChange={(next) => dispatch(setMusicEnabled(next))}
         />
 

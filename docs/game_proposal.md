@@ -97,7 +97,7 @@ A single, fixed-preset challenge generated every calendar day to drive daily use
 
 ## 💾 4. Database Schema
 
-> ✅ **Implemented as designed** — see `server/src/migrations/20260615204201_cosmetics_and_progression.js`. The only structural addition beyond this diagram is a `cosmetic_type` column on `user_cosmetics` (denormalized copy of the cosmetic's type, so the "one equipped item per type" constraint below can be enforced with a database-level partial unique index without a join). Seed data ships 4 cosmetics (2 capes, 2 suits) — no `flare`-type items exist yet despite the type being supported end-to-end.
+> ✅ **Implemented as designed** — see `server/src/migrations/20260915100000_initial_schema.js`. The only structural addition beyond this diagram is a `cosmetic_type` column on `user_cosmetics` (denormalized copy of the cosmetic's type, so the "one equipped item per type" constraint below can be enforced with a database-level partial unique index without a join). Seed data ships 6 cosmetics (2 capes, 2 suits, 2 flares).
 
 To support the cosmetics shop, purchase tracking, and multi-dimensional progression, this is the schema used.
 

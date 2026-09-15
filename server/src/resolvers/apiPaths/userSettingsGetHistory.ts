@@ -21,10 +21,10 @@ export const userSettingsGetHistory = restAPICall(
       .where({ user_id: userId })
       .orderBy([
         { column: "created", order: "desc" },
-        { column: "sequence", order: "desc" }
+        { column: "id", order: "desc" }
       ])
       .limit(HISTORY_ROW_LIMIT)
-      .select("setting_key", "setting_value", "created");
+      .select("setting_key", "setting_value", "created", "device_id");
 
     response.status(200).json(mapSettingsHistoryRows(historyRows));
   }

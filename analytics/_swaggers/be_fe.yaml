@@ -625,10 +625,16 @@ components:
           type: string
         changedAt:
           type: string
+        deviceId:
+          # Never optional - every write (a toggle or the original consent
+          # sync) always has one, so the history view can always say which
+          # device a change came from.
+          type: string
       required:
         - settingKey
         - settingValue
         - changedAt
+        - deviceId
     UserSettingsUpdateBody:
       type: object
       properties:
@@ -636,9 +642,12 @@ components:
           $ref: '#/components/schemas/UserSettingKey'
         settingValue:
           type: string
+        deviceId:
+          type: string
       required:
         - settingKey
         - settingValue
+        - deviceId
     SubscriptionType:
       type: string
       enum:

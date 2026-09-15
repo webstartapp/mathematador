@@ -108,7 +108,6 @@ No `LoginScreen`/`RegisterScreen` exists — there is no UI path to obtain a JWT
 - `mathematador-app/src/hooks/useTypedSelector.ts` — empty file.
 - `HeaderModule` (`components/common/HeaderEvents.ts`) — no such native module is registered anywhere; always a no-op.
 - `server/src/_generated/serverAPI.ts` — type-extraction plumbing only, never called at runtime; real routing is 100% hand-written in `server/src/routes.ts`.
-- `server/src/migrations/20241109002335_gameData.js` — a no-op migration (empty `up`/`down`).
 - `GauntletScreen.tsx`'s leaderboard — fully hardcoded/fake, not backed by any API.
 - `QueryClientProvider` is set up in `app/_layout.tsx` but no screen uses the generated `use*` react-query hooks — all screens call the plain async fetchers directly.
 
