@@ -6,7 +6,7 @@ import {
   getNextComboMilestone,
   getPreviousComboMilestone,
 } from "@/components/toro/comboMilestones";
-import { comboMeterStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 interface ComboMeterProps {
   streak: number;
@@ -23,9 +23,13 @@ const ComboMeter = ({ streak }: ComboMeterProps): JSX.Element => {
   const progress = Math.min(1, (streak - previousMilestone) / milestoneSpan);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>🔥 Combo x{streak}</Text>
-      <ProgressBar progress={progress} color="#FF6B35" style={styles.bar} />
+    <View style={styles.comboMeterContainer}>
+      <Text style={styles.comboMeterLabel}>🔥 Combo x{streak}</Text>
+      <ProgressBar
+        progress={progress}
+        color="#FF6B35"
+        style={styles.comboMeterBar}
+      />
     </View>
   );
 };

@@ -8,7 +8,7 @@ import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { operations } from "@/configs/operations";
-import { challengeResultScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
@@ -47,7 +47,7 @@ const ChallengeResultScreen = ({
 
   return (
     <Layout>
-      <View style={styles.container}>
+      <View style={styles.challengeResultContainer}>
         <CenteredDesk
           styles={{
             wrapper: {

@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { comboRewardBurstStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 const PARTICLE_COUNT = 14;
 const PARTICLE_EMOJIS = ["🌸", "🪙", "🌺", "🪙", "✨"];
@@ -49,7 +49,7 @@ const Particle = ({
 
   return (
     <Animated.Text
-      style={[styles.particle, { left: leftPosition }, animatedStyle]}
+      style={[styles.comboBurstParticle, { left: leftPosition }, animatedStyle]}
     >
       {emoji}
     </Animated.Text>
@@ -93,7 +93,7 @@ const ComboRewardBurst = ({ burstKey }: ComboRewardBurstProps): JSX.Element => {
   }
 
   return (
-    <View style={[styles.overlay, { pointerEvents: "none" }]}>
+    <View style={[styles.comboBurstOverlay, { pointerEvents: "none" }]}>
       {particles.map((particleItem) => (
         <Particle
           key={particleItem.particleKey}

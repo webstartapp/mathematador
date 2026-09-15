@@ -6,7 +6,7 @@ import ExeriseDigit, {
 } from "@/components/minigames/components/ExerciseDigit";
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
-import { exerciseValuePreviewStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 interface ExerciseValuePreviewProps extends ExerciseDigitProps {
   onDigitPress?: (inputIndex: number) => void;
@@ -71,7 +71,7 @@ const ExerciseValuePreview: FC<ExerciseValuePreviewProps> = ({
   }, [updateExercisePositions, value, exercisePositions, layoutsReady]);
 
   return (
-    <View style={styles.numberContainer}>
+    <View style={styles.valuePreviewNumberContainer}>
       {String(value)
         .split("")
         .map((valueChar, index) => (

@@ -9,7 +9,7 @@ import {
   Exercise as ExerciseType,
   ExerciseInputPosition,
 } from "@/src/types/Chalenge";
-import { exerciseStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 interface ExerciseProps {
   exerciseId: number;

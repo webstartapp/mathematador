@@ -14,7 +14,7 @@ import { RootState } from "@/redux/store";
 import { calculateXPToNextLevel } from "@/src/helpers/calculateXPToNextLevel";
 import { setHeaderRef } from "@/src/hooks/RefManager";
 import { levelOperationUp, levelUserUp } from "@/src/redux/slices/userSlice";
-import { gameHeaderStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type HeaderProps = {
@@ -82,9 +82,9 @@ const GameHeader: FC<HeaderProps> = ({
   const xpProgress = xp / xpToNextLevel;
 
   return (
-    <View style={styles.headerContainer} ref={headerRef}>
+    <View style={styles.gameHeaderContainer} ref={headerRef}>
       {backTo && (
-        <View style={styles.iconContainer}>
+        <View style={styles.gameHeaderIcons}>
           <TouchableOpacity
             onPress={() => navigation.navigate(backTo, backToParams)}
           >
@@ -92,8 +92,8 @@ const GameHeader: FC<HeaderProps> = ({
           </TouchableOpacity>
         </View>
       )}
-      <View style={styles.statsContainer}>
-        <Text style={styles.level}>
+      <View style={styles.gameHeaderStats}>
+        <Text style={styles.gameHeaderLevel}>
           {operationIdParam ? "Difficulty:" : "Level:"} {userStats.level}
         </Text>
         <View style={{ flexDirection: "row" }}>
@@ -114,11 +114,11 @@ const GameHeader: FC<HeaderProps> = ({
             <ProgressBar
               progress={xpProgress}
               color="#ffbb64"
-              style={styles.progressBar}
+              style={styles.gameHeaderProgressBar}
             />
           </View>
         </View>
-        <Text style={styles.xpText}>
+        <Text style={styles.gameHeaderXpText}>
           {userStats.xp}/{userStats.xpToNextLevel} XP
         </Text>
       </View>

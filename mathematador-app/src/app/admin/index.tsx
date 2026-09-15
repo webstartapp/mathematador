@@ -3,15 +3,15 @@ import { JSX } from "react";
 import { Text, View } from "react-native";
 
 import RequireAdmin from "@/components/auth/RequireAdmin";
-import { adminScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 const AdminScreen = (): JSX.Element => {
   return (
     <RequireAdmin>
-      <View style={styles.container}>
+      <View style={styles.adminContainer}>
         <Stack.Screen options={{ title: "Admin" }} />
-        <Text style={styles.title}>Admin Panel</Text>
-        <Text style={styles.body}>
+        <Text style={styles.adminTitle}>Admin Panel</Text>
+        <Text style={styles.adminBody}>
           Authentication (issue #30) is enforced here now - only signed-in
           admins reach this page. The actual page-management UI (issue #36)
           isn&apos;t built yet.

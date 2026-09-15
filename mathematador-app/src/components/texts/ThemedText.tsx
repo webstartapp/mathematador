@@ -1,9 +1,18 @@
 import { ReactNode } from "react";
 import { Text, TextProps } from "react-native";
 
-import { themedTextVariants as variants } from "@/theme";
+import { styles } from "@/theme";
 
-type Variant = keyof typeof variants;
+// Maps this component's public `variant` prop values to their flat
+// theme.ts keys - the prop names stay short/semantic ("title") while the
+// single shared stylesheet's keys stay disambiguated ("themedTextTitle").
+const VARIANT_STYLE_KEYS = {
+  title: "themedTextTitle",
+  subtitle: "themedTextSubtitle",
+  description: "themedTextDescription",
+} as const;
+
+type Variant = keyof typeof VARIANT_STYLE_KEYS;
 
 const ThemedText = <T extends Variant>({
   variant,
@@ -13,7 +22,7 @@ const ThemedText = <T extends Variant>({
 }: TextProps & {
   variant: T;
 }): ReactNode => (
-  <Text style={[variants[variant], style]} {...props}>
+  <Text style={[styles[VARIANT_STYLE_KEYS[variant]], style]} {...props}>
     {children}
   </Text>
 );

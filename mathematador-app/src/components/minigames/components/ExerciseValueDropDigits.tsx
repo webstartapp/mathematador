@@ -4,7 +4,7 @@ import { View } from "react-native";
 import ExerciseValuePreview from "@/components/minigames/components/ExerciseValuePreview";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
-import { exerciseValueDropDigitsStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 type ExerciseValueDropDigitsProps = {
   value: number | string;
@@ -44,7 +44,7 @@ const ExerciseValueDropDigits: FC<ExerciseValueDropDigitsProps> = ({
       .join("");
   }, [value, result]);
   return (
-    <View style={styles.resultValue}>
+    <View style={styles.exerciseDropResultValue}>
       <ExerciseValuePreview
         key={`exerciseId_{exerciseId}_${Math.floor(primarySize.width)}_${Math.floor(primarySize.height / 5)}`}
         value={partialResult}

@@ -9,7 +9,7 @@ import {
 } from "react";
 import { ImageSourcePropType, View, Animated, Platform } from "react-native";
 
-import { animatedImageStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 type AnimatedImageProps = {
   image: ImageSourcePropType | undefined;
@@ -65,7 +65,7 @@ export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
     <Animated.Image
       source={image}
       style={[
-        styles.backgroundImage,
+        styles.animatedImageBackground,
         {
           transform: [
             { scale: scaleAnim },
@@ -111,10 +111,13 @@ const AnimatedBackgroundProvider: FC<AnimatedBackgroundProviderProps> = ({
 }) => {
   const [bgImage, setBgImage] = useState<ImageSourcePropType>();
   return (
-    <View style={styles.container}>
+    <View style={styles.animatedImageContainer}>
       <AnimatedImageContext.Provider value={{ bgImage, setBgImage }}>
         <AnimatedImage image={bgImage} />
-        <View style={styles.childrenWrapper} id="AnimatedImageBackground">
+        <View
+          style={styles.animatedImageChildrenWrapper}
+          id="AnimatedImageBackground"
+        >
           {children}
         </View>
       </AnimatedImageContext.Provider>

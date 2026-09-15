@@ -28,7 +28,7 @@ import {
   cosmeticsEquip,
 } from "@/src/_generated/api";
 import { Cosmetic, CosmeticType } from "@/src/_generated/model";
-import { colors, tiendaScreenStyles as styles } from "@/theme";
+import { colors, styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type CosmeticItem = {
@@ -154,12 +154,12 @@ const CosmeticCard = ({
 
   const getButtonStyle = (): object => {
     if (isLocked || (user.coins < item.price && !isOwned)) {
-      return styles.btnDisabled;
+      return styles.tiendaBtnDisabled;
     }
     if (isOwned) {
-      return isEquipped ? styles.btnEquipped : styles.btnEquip;
+      return isEquipped ? styles.tiendaBtnEquipped : styles.tiendaBtnEquip;
     }
-    return styles.btnBuy;
+    return styles.tiendaBtnBuy;
   };
 
   const getButtonText = (): string => {
@@ -172,24 +172,26 @@ const CosmeticCard = ({
   return (
     <View
       style={[
-        styles.card,
-        isEquipped && styles.cardEquipped,
-        isLocked && styles.cardLocked,
+        styles.overlayCardSubtle,
+        styles.cardDropShadow,
+        styles.tiendaCard,
+        isEquipped && styles.tiendaCardEquipped,
+        isLocked && styles.tiendaCardLocked,
       ]}
     >
-      <View style={styles.cardHeader}>
-        <View style={[styles.iconContainer, { borderColor: iconColor }]}>
+      <View style={styles.tiendaCardHeader}>
+        <View style={[styles.tiendaIconContainer, { borderColor: iconColor }]}>
           <Ionicons name={itemIcon} size={32} color={iconColor} />
         </View>
-        <View style={styles.cardInfo}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
+        <View style={styles.tiendaCardInfo}>
+          <Text style={styles.tiendaCardTitle}>{item.name}</Text>
           {isLocked ? (
-            <Text style={styles.lockText}>
+            <Text style={styles.tiendaLockText}>
               <Ionicons name="lock-closed" size={12} /> Lvl {item.requiredLevel}{" "}
               Required
             </Text>
           ) : (
-            <Text style={styles.unlockedText}>
+            <Text style={styles.tiendaUnlockedText}>
               <Ionicons name="checkmark-circle-outline" size={12} /> Level{" "}
               {item.requiredLevel}
             </Text>
@@ -197,16 +199,16 @@ const CosmeticCard = ({
         </View>
       </View>
 
-      <View style={styles.cardFooter}>
+      <View style={styles.tiendaCardFooter}>
         {!isOwned && (
-          <View style={styles.priceContainer}>
-            <Text style={styles.coinSymbol}>🪙</Text>
-            <Text style={styles.priceText}>{item.price}</Text>
+          <View style={styles.tiendaPriceContainer}>
+            <Text style={styles.tiendaCoinSymbol}>🪙</Text>
+            <Text style={styles.tiendaPriceText}>{item.price}</Text>
           </View>
         )}
 
         <TouchableOpacity
-          style={[styles.actionButton, getButtonStyle()]}
+          style={[styles.tiendaActionButton, getButtonStyle()]}
           disabled={
             isLocked || (user.coins < item.price && !isOwned) || isActionLoading
           }
@@ -217,7 +219,7 @@ const CosmeticCard = ({
           {isActionLoading ? (
             <ActivityIndicator size="small" color={colors.white} />
           ) : (
-            <Text style={styles.btnText}>{getButtonText()}</Text>
+            <Text style={styles.tiendaBtnText}>{getButtonText()}</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -247,14 +249,16 @@ const renderContent = ({
       <ActivityIndicator
         size="large"
         color={colors.gold}
-        style={styles.loader}
+        style={styles.tiendaLoader}
       />
     );
   }
 
   if (filteredItems.length === 0) {
     return (
-      <Text style={styles.emptyText}>No items available in this category.</Text>
+      <Text style={styles.tiendaEmptyText}>
+        No items available in this category.
+      </Text>
     );
   }
 
@@ -382,34 +386,37 @@ const TiendaScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.header}>
+      <View style={styles.screenHeader}>
         <TouchableOpacity
-          style={styles.backBtn}
+          style={styles.headerBackButton}
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={24} color={colors.white} />
         </TouchableOpacity>
-        <ThemedText variant="title" style={styles.title}>
+        <ThemedText variant="title" style={styles.tiendaTitle}>
           Tienda de Torero
         </ThemedText>
-        <View style={styles.coinsWrapper}>
-          <Text style={styles.coinsEmoji}>🪙</Text>
-          <Text style={styles.coinsCount}>{user.coins}</Text>
+        <View style={styles.tiendaCoinsWrapper}>
+          <Text style={styles.tiendaCoinsEmoji}>🪙</Text>
+          <Text style={styles.tiendaCoinsCount}>{user.coins}</Text>
         </View>
       </View>
 
       {/* Categories Tabs */}
-      <View style={styles.tabBar}>
+      <View style={[styles.overlayCardSubtle, styles.tiendaTabBar]}>
         {COSMETIC_CATEGORIES.map((category) => (
           <TouchableOpacity
             key={category}
-            style={[styles.tab, activeTab === category && styles.tabActive]}
+            style={[
+              styles.tiendaTab,
+              activeTab === category && styles.tiendaTabActive,
+            ]}
             onPress={() => setActiveTab(category)}
           >
             <Text
               style={[
-                styles.tabText,
-                activeTab === category && styles.tabTextActive,
+                styles.tiendaTabText,
+                activeTab === category && styles.tiendaTabTextActive,
               ]}
             >
               {category.toUpperCase()}S

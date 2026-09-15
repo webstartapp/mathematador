@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
-import { exerciseDigitStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 export type ExerciseDigitProps = {
   value?: string;
@@ -26,8 +26,10 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
   isTargetable,
 }) => {
   const containerStyle = [
-    isUnknown ? styles.unknownDigitContainer : styles.digitContainer,
-    isTargetable ? styles.targetableDigitContainer : null,
+    isUnknown
+      ? styles.exerciseDigitUnknownContainer
+      : styles.exerciseDigitContainer,
+    isTargetable ? styles.exerciseDigitTargetable : null,
   ];
   const digitContent = (
     <View
@@ -36,7 +38,11 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
         if (forwardRef) forwardRef(refI);
       }}
     >
-      <Text style={isUnknown ? styles.unknownDigit : styles.digit}>
+      <Text
+        style={
+          isUnknown ? styles.exerciseDigitUnknownText : styles.exerciseDigitText
+        }
+      >
         {value || "?"}
       </Text>
     </View>

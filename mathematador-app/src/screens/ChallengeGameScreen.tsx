@@ -29,7 +29,7 @@ import { minigames } from "@/configs/minigames";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import { OperationId } from "@/src/_generated/model";
-import { challengeGameScreenStyles as styles, colors, spacing } from "@/theme";
+import { colors, spacing, styles } from "@/theme";
 import {
   Challenge,
   ChalengeResult,
@@ -153,8 +153,8 @@ const ChallengeTopBar = ({
   timeLeft,
   isToroInspired,
 }: ChallengeTopBarProps): JSX.Element => (
-  <View style={styles.topBar}>
-    <View style={styles.timerContainer}>
+  <View style={styles.challengeTopBar}>
+    <View style={[styles.overlayCardMedium, styles.challengeTimerContainer]}>
       <Ionicons
         name={isFrozen ? "snow-outline" : "timer-outline"}
         size={20}
@@ -164,9 +164,9 @@ const ChallengeTopBar = ({
       />
       <Text
         style={[
-          styles.timerText,
-          isFrozen && styles.frozenText,
-          timeLeft <= 10 && styles.lowTimeText,
+          styles.challengeTimerText,
+          isFrozen && styles.challengeFrozenText,
+          timeLeft <= 10 && styles.challengeLowTimeText,
         ]}
       >
         {isFrozen ? "FROZEN" : `${timeLeft}s`}
@@ -175,9 +175,9 @@ const ChallengeTopBar = ({
 
     {/* Toro Inspiration Badge */}
     {isToroInspired && (
-      <View style={styles.inspirationBadge}>
+      <View style={styles.challengeInspirationBadge}>
         <Ionicons name="flame" size={14} color={colors.gold} />
-        <Text style={styles.inspirationText}>Inspired (2x XP)</Text>
+        <Text style={styles.challengeInspirationText}>Inspired (2x XP)</Text>
       </View>
     )}
   </View>
@@ -201,35 +201,42 @@ const ToroPanel = ({
   isFrozen,
 }: ToroPanelProps): JSX.Element => (
   <View
-    style={[styles.toroPanel, isToroInspired ? styles.inspiredPanel : null]}
+    style={[
+      styles.overlayCardSubtle,
+      styles.challengeToroPanel,
+      isToroInspired ? styles.challengeInspiredPanel : null,
+    ]}
   >
-    <View style={styles.toroHeader}>
-      <Text style={styles.toroEmoji}>🐂</Text>
+    <View style={styles.challengeToroHeader}>
+      <Text style={styles.challengeToroEmoji}>🐂</Text>
       <View style={{ flex: 1, marginLeft: 10 }}>
-        <Text style={styles.toroTitle}>Toro Cooperation</Text>
+        <Text style={styles.challengeToroTitle}>Toro Cooperation</Text>
         <ProgressBar
           progress={cooperation / 100}
           color={colors.gold}
-          style={styles.coopBar}
+          style={styles.challengeCoopBar}
         />
       </View>
     </View>
 
-    <View style={styles.toroActions}>
+    <View style={styles.challengeToroActions}>
       <TouchableOpacity
         style={[
-          styles.toroBtn,
-          cooperation < 100 ? styles.toroBtnDisabled : null,
+          styles.challengeToroBtn,
+          cooperation < 100 ? styles.challengeToroBtnDisabled : null,
         ]}
         disabled={cooperation < 100}
         onPress={handleToroHint}
       >
         <Ionicons name="bulb-outline" size={16} color={colors.white} />
-        <Text style={styles.toroBtnText}>Toro Hint</Text>
+        <Text style={styles.challengeToroBtnText}>Toro Hint</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.toroBtn, focusUsed ? styles.toroBtnDisabled : null]}
+        style={[
+          styles.challengeToroBtn,
+          focusUsed ? styles.challengeToroBtnDisabled : null,
+        ]}
         disabled={focusUsed}
         onPress={handleToroFocus}
       >
@@ -238,7 +245,7 @@ const ToroPanel = ({
           size={16}
           color={colors.white}
         />
-        <Text style={styles.toroBtnText}>
+        <Text style={styles.challengeToroBtnText}>
           {isFrozen ? "Frozen (3s)" : "Toro Focus"}
         </Text>
       </TouchableOpacity>
@@ -382,7 +389,7 @@ const ChallengeGameScreen = (): JSX.Element => {
       <ComboRewardBurst burstKey={burstKey} />
 
       {/* Core Minigame Layout */}
-      <View style={styles.gameContainer}>
+      <View style={styles.challengeGameContainer}>
         <MinigameComponent
           challenge={enhancedChallenge}
           submitResults={handleChallengeSubmit}

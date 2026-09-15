@@ -4,15 +4,15 @@ import { View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
 import { ThemedView } from "@/src/components/ThemedView";
-import { notFoundScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 const NotFoundScreen = (): JSX.Element => {
   return (
     <View>
       <Stack.Screen options={{ title: "Oops!" }} />
-      <ThemedView style={styles.container}>
+      <ThemedView style={styles.notFoundContainer}>
         <ThemedText variant="title">This screen doesn't exist.</ThemedText>
-        <Link href="/" style={styles.link}>
+        <Link href="/" style={styles.notFoundLink}>
           <ThemedText variant="description">Go to home screen!</ThemedText>
         </Link>
       </ThemedView>

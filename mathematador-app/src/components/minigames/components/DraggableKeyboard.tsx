@@ -9,7 +9,7 @@ import { DraggableKeyboardDigit } from "@/components/minigames/components/Dragga
 import { computePositionKey } from "@/components/minigames/helpers/computePositionKey";
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
-import { draggableKeyboardStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 const digits = Array.from({ length: 10 }, (_ignored, index) =>
   index === 9 ? 0 : index + 1,
@@ -45,12 +45,12 @@ const DraggableKeyboard: FC<DraggableKeyboardProps> = ({
   const digitSize =
     orientation === "landscape" ? minSizeLandscape : minSizePortrait;
   return (
-    <View style={styles.keyboardContainer}>
+    <View style={styles.draggableKeyboardContainer}>
       {digits.map((digit) => (
         <View
           key={`${digit}_${computePositionKey(exercisePositions)}`}
           style={{
-            ...styles.draggableWrapper,
+            ...styles.draggableKeyboardWrapper,
             width: orientation !== "landscape" ? digitSize : "50%",
             height: orientation === "landscape" ? digitSize : "50%",
             flexBasis: orientation !== "landscape" ? "20%" : "50%",

@@ -1,14 +1,15 @@
 /* eslint-disable max-lines */
-// Single source of truth for every style in mathematador-app - colors,
-// spacing, radii, typography, text shadows, composed "usage" styles
-// shared across otherwise-unrelated screens (a wood-textured card, a
-// frosted overlay panel, gold-accent text), and every remaining
-// screen/component-specific StyleSheet.create() call, namespaced by file
-// below. eslint.config.js enforces this: StyleSheet.create() is banned
-// in every other .tsx file in this workspace (see the "Single shared
-// stylesheet" block there), so this is the only place a new style can be
-// added - either as a new shared usage-style if the look recurs, or as a
-// new namespaced entry in the per-file section below if it doesn't.
+// Single source of truth for every style in mathematador-app. `styles` is
+// the one flat exported stylesheet - every key lives directly on it (no
+// per-screen/per-component nesting), so two unrelated screens that happen
+// to both want a "card" or a "title" get distinctly-named flat keys
+// (settingsCard vs authCard) rather than two same-named keys buried in
+// two different nested objects. `colors`/`spacing`/`radii`/`typography`/
+// `textShadows` stay separate: they're raw design tokens consumed inline
+// (e.g. an Ionicons `color` prop), not styles themselves.
+// eslint.config.js enforces this: StyleSheet.create() is banned in every
+// other .tsx file in this workspace (see its "Single shared stylesheet"
+// block), so a new style has nowhere to go but a new flat key here.
 import { StyleSheet } from "react-native";
 
 import { createTextShadow } from "@/helpers/createTextShadow";
@@ -45,8 +46,8 @@ export const colors = {
 } as const;
 
 // Covers the real spacing values found across the app; the rarer odd ones
-// (5, 6, 10, 14, 15, 25, 30) snap to their nearest neighbor during
-// migration rather than each keeping its own one-off step.
+// (5, 6, 10, 14, 15, 25, 30) snap to their nearest neighbor rather than
+// each keeping its own one-off step.
 export const spacing = {
   xxs: 2,
   xs: 4,
@@ -106,666 +107,16 @@ export const textShadows = {
   soft: createTextShadow("rgba(0, 0, 0, 0.75)", -1, 1, 10),
 };
 
-// Spread this directly (`...cardTextShadow`), matching how every existing
-// call site already uses its own local copy of the same value.
-export const cardTextShadow = textShadows.standard;
+// Not exported - a brevity alias used only while building the styles
+// below (nothing outside this file needs the fragment on its own).
+const cardTextShadow = textShadows.standard;
 
-// Composed, ready-to-spread styles built from the primitives above -
-// still a good idea to override structural props per call site (radius,
-// width, etc) but the color/shadow identity comes from here.
-export const usageStyles = StyleSheet.create({
-  // CenteredDesk's big card chrome.
-  woodPanel: {
-    backgroundColor: colors.wood.base,
-    borderColor: colors.wood.light,
-    borderWidth: 5,
-    borderRadius: radii.sm,
-    boxShadow: [
-      { offsetX: 2, offsetY: 2, blurRadius: 0, color: colors.wood.border },
-    ],
-  },
-  // The small interactive digit-tile variant (draggable keyboard, exercise
-  // digits) - same palette, smaller radius, no card-level shadow.
-  woodTile: {
-    backgroundColor: colors.wood.base,
-    borderColor: colors.wood.light,
-    borderWidth: 5,
-    borderRadius: radii.xs,
-  },
-  overlayCardSubtle: {
-    backgroundColor: colors.overlay.subtle,
-    borderWidth: 1,
-    borderColor: colors.overlay.medium,
-    borderRadius: radii.lg,
-  },
-  overlayCardMedium: {
-    backgroundColor: colors.overlay.medium,
-    borderRadius: radii.lg,
-  },
-  overlayCardStrong: {
-    backgroundColor: colors.overlay.strong,
-    borderRadius: radii.lg,
-  },
-  // The soft drop shadow under a frosted overlay card (TiendaScreen's shop
-  // cards, e.g.) - a separate composed piece since not every overlay card
-  // wants it (e.g. small pill buttons don't).
-  cardDropShadow: {
-    boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 10, color: colors.shadowDark },
-    ],
-  },
-  goldButton: {
-    backgroundColor: colors.gold,
-  },
-  goldButtonText: {
-    color: colors.nearBlack,
-    fontWeight: typography.weight.bold,
-  },
-  // Gold-colored value/label text that ISN'T sitting on a gold button
-  // background (combo popup, prices, stat values).
-  goldText: {
-    color: colors.gold,
-    fontWeight: typography.weight.bold,
-  },
-  dangerText: {
-    color: colors.danger,
-  },
-  successText: {
-    color: colors.success,
-  },
-  // The auth/consent gates' card width - identical in both.
-  screenCardSm: {
-    maxWidth: 420,
-    padding: spacing.xl,
-  },
-  // The settings/history screens' card width - identical in both.
-  screenCardMd: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
-  // Tienda's and Gauntlet's scrollable content padding - identical in both.
-  scrollContainer: {
-    padding: spacing.xl,
-    paddingBottom: spacing.xxxl,
-  },
-  // A layer that fills its parent completely - the intro video and the
-  // info-page background image both want exactly this.
-  fullBleed: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  // Tienda's and Gauntlet's top header bar - identical in both (unlike
-  // ChallengeGameScreen's topBar, which has no back button and a
-  // different, timer-focused layout, so isn't merged in here).
-  screenHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.xl,
-    paddingTop: 15,
-    paddingBottom: spacing.sm,
-    width: "100%",
-  },
-  // The round back button in that same header - identical in both.
-  headerBackButton: {
-    padding: spacing.sm,
-    backgroundColor: colors.overlay.medium,
-    borderRadius: radii.xl,
-  },
-});
-
-// Per-file styles below - nothing here recurs elsewhere, so each stays
-// namespaced to the one file that uses it rather than joining the shared
-// usageStyles above.
-
-export const notFoundScreenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing.xl,
-  },
-  link: {
-    marginTop: spacing.lg,
-    paddingVertical: spacing.lg,
-  },
-});
-
-export const adminScreenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing.xxl,
-    backgroundColor: colors.white,
-  },
-  title: {
-    fontSize: typography.size.xxxl,
-    fontWeight: typography.weight.bold,
-    marginBottom: spacing.md,
-    color: colors.nearBlack,
-  },
-  body: {
-    fontSize: typography.size.md,
-    color: "#555",
-    textAlign: "center",
-  },
-});
-
-export const layoutStyles = StyleSheet.create({
-  scroller: usageStyles.fullBleed,
-  container: {
-    flex: 1,
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  fixed: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
-
-export const exerciseStyles = StyleSheet.create({
-  exerciseWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.lg,
-  },
-  exercisePreviewContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: spacing.lg,
-    userSelect: "none",
-    flexWrap: "wrap",
-  },
-  exerciseValues: {
-    flexDirection: "row",
-    alignItems: "center",
-    userSelect: "none",
-  },
-  exerciseValue: {
-    flexDirection: "row",
-    alignItems: "center",
-    userSelect: "none",
-  },
-});
-
-export const halvingLayoutStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: "100%",
-    width: "100%",
-  },
-  upper: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  lower: {
-    alignItems: "flex-end",
-    justifyContent: "center",
-  },
-});
-
-export const exerciseValueDropDigitsStyles = StyleSheet.create({
-  resultValue: {
-    marginLeft: spacing.sm,
-  },
-});
-
-export const exerciseValuePreviewStyles = StyleSheet.create({
-  numberContainer: {
-    flexDirection: "row",
-  },
-});
-
-export const comboRewardBurstStyles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 20,
-  },
-  particle: {
-    position: "absolute",
-    top: 0,
-    fontSize: 26,
-  },
-});
-
-export const googleSignInButtonStyles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    marginBottom: spacing.lg,
-  },
-});
-
-export const helloWaveStyles = StyleSheet.create({
-  text: {
-    fontSize: typography.size.display,
-    lineHeight: 32,
-    marginTop: -6,
-  },
-});
-
-export const parallaxScrollViewStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    height: 250,
-    overflow: "hidden",
-  },
-  content: {
-    flex: 1,
-    padding: spacing.xxxl,
-    gap: spacing.lg,
-    overflow: "hidden",
-  },
-});
-
-export const operationSelectionScreenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-  },
-  header: {
-    fontSize: typography.size.xl,
-    fontWeight: typography.weight.bold,
-    marginBottom: spacing.xl,
-    textAlign: "center",
-  },
-  grid: {
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignContent: "flex-start",
-    flexDirection: "row",
-  },
-  operationButton: {
-    width: "100%",
-    maxWidth: 400,
-    minWidth: 200,
-  },
-  operationLabel: {
-    fontSize: typography.size.lg,
-    fontWeight: typography.weight.semibold,
-    color: "#333",
-  },
-  operationSymbol: {
-    fontSize: typography.size.xxxl,
-    fontWeight: typography.weight.bold,
-    color: "#333",
-  },
-  operationDescription: {
-    fontSize: typography.size.base,
-    color: "#333",
-  },
-});
-
-export const chalengeSelectScreenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  title: {
-    fontSize: typography.size.xxxl,
-    fontWeight: typography.weight.bold,
-    textAlign: "center",
-    marginBottom: spacing.lg,
-  },
-  subTitle: {
-    fontSize: typography.size.xl,
-    fontWeight: typography.weight.semibold,
-    marginTop: spacing.xxl,
-    marginBottom: spacing.sm,
-    textAlign: "center",
-  },
-  currentChallengeContainer: {
-    marginBottom: spacing.xxl,
-    marginTop: spacing.xxl,
-  },
-  challengeBoxContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    width: "100%",
-    flexBasis: "100%",
-    flexGrow: 1,
-  },
-  challengeText: {
-    fontSize: typography.size.lg,
-    fontWeight: typography.weight.medium,
-  },
-  challengeBox: {
-    flex: 1,
-    marginBottom: spacing.xl,
-    borderRadius: radii.sm,
-    minWidth: 200,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
-
-export const challengeResultScreenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-});
-
-export const animatedImageStyles = StyleSheet.create({
-  backgroundImage: {
-    position: "absolute",
-    // Oversized so the scale/translate wobble never exposes the container's
-    // edges. An absolutely-positioned child isn't reliably centered by the
-    // parent's flex alignment alone (confirmed live: without these
-    // offsets, the image drifted almost entirely below the visible area,
-    // leaving only a sliver visible at the bottom) - top/left explicitly
-    // center the oversized box: -(120%-100%)/2 and -(110%-100%)/2.
-    top: "-5%",
-    left: "-10%",
-    width: "120%",
-    height: "110%",
-  },
-  container: {
-    display: "flex",
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  childrenWrapper: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    // Was a semi-transparent white scrim, but the only screens using this
-    // background (Home, Auth) put their text inside an opaque card
-    // (CenteredDesk), never directly over the image - so it only ever
-    // washed the image out once it became visible (see index.tsx's
-    // transparentNavigationTheme fix).
-    backgroundColor: "transparent",
-    display: "flex",
-    flex: 1,
-    alignContent: "center",
-    padding: 0,
-    margin: 0,
-  },
-});
-
-export const centeredDeskStyles = StyleSheet.create({
-  container: {
-    ...usageStyles.woodPanel,
-    color: colors.white,
-    width: "100%",
-  },
-  wrapper: {},
-  title: {
-    fontSize: typography.size.hero,
-    marginBottom: spacing.sm,
-    color: colors.white,
-    ...cardTextShadow,
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-  },
-  subtitle: {
-    fontSize: typography.size.xxxl,
-    marginBottom: spacing.xxs,
-    color: colors.white,
-    ...cardTextShadow,
-    textAlign: "center",
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-  },
-  description: {
-    fontSize: typography.size.lg,
-    marginBottom: spacing.xxs,
-    color: colors.white,
-    ...cardTextShadow,
-    textAlign: "justify",
-    paddingLeft: spacing.sm,
-    paddingRight: spacing.sm,
-  },
-});
-
-export const draggableKeyboardStyles = StyleSheet.create({
-  draggableWrapper: {
-    ...usageStyles.woodTile,
-    borderColor: colors.wood.dark,
-    borderRadius: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    userSelect: "none",
-  },
-  keyboardContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
-    width: "100%",
-    height: "100%",
-    gap: 0,
-  },
-});
-
-export const draggableKeyboardDigitStyles = StyleSheet.create({
-  draggable: {
-    userSelect: "none",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "100%",
-  },
-  draggableItem: {
-    backgroundColor: colors.wood.base,
-    borderRadius: radii.pill,
-    justifyContent: "center",
-    alignItems: "center",
-    userSelect: "none",
-    borderWidth: 3,
-    borderColor: "transparent",
-  },
-  selectedDraggableItem: {
-    borderColor: colors.gold,
-    backgroundColor: colors.wood.highlight,
-  },
-  draggableText: {
-    color: colors.white,
-    fontSize: typography.size.xxxl,
-    fontWeight: typography.weight.bold,
-  },
-});
-
-export const exerciseDigitStyles = StyleSheet.create({
-  unknownDigitContainer: {
-    ...usageStyles.woodTile,
-    borderColor: colors.white,
-    backgroundColor: colors.wood.dark,
-    padding: spacing.xs,
-    margin: spacing.xxs,
-    minWidth: 75,
-    height: 75,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  digitContainer: {
-    ...usageStyles.woodTile,
-    padding: spacing.xs,
-    margin: spacing.xxs,
-    minWidth: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  targetableDigitContainer: {
-    borderColor: colors.gold,
-  },
-  unknownDigit: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-  },
-  digit: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-  },
-});
-
-export const settingToggleRowStyles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.wood.border,
-    paddingVertical: spacing.md,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  label: {
-    textAlign: "left",
-    ...cardTextShadow,
-  },
-  description: {
-    color: colors.white,
-    marginTop: spacing.xs,
-    ...cardTextShadow,
-  },
-});
-
-export const settingHistoryRowStyles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.wood.border,
-    paddingVertical: spacing.md,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  label: {
-    textAlign: "left",
-    ...cardTextShadow,
-  },
-  date: {
-    color: colors.white,
-    fontSize: typography.size.sm,
-    marginTop: spacing.xs,
-    ...cardTextShadow,
-  },
-  device: {
-    color: colors.white,
-    fontSize: typography.size.xs,
-    marginTop: spacing.xxs,
-    ...cardTextShadow,
-  },
-  value: {
-    color: colors.white,
-    fontWeight: typography.weight.bold,
-    fontSize: typography.size.base,
-    ...cardTextShadow,
-  },
-});
-
-export const settingsScreenStyles = StyleSheet.create({
-  card: usageStyles.screenCardMd,
-  sectionLabel: {
-    color: colors.white,
-    fontSize: typography.size.sm,
-    fontWeight: typography.weight.bold,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    alignSelf: "flex-start",
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    ...cardTextShadow,
-  },
-  historyButton: {
-    ...usageStyles.goldButton,
-    marginTop: spacing.lg,
-  },
-  historyButtonText: usageStyles.goldButtonText,
-});
-
-export const settingsHistoryScreenStyles = StyleSheet.create({
-  card: usageStyles.screenCardMd,
-  // Layout.tsx's own outer ScrollView constrains its content container to
-  // height: "100%" rather than letting it grow, so it can't scroll content
-  // taller than the viewport on its own (TiendaScreen works around the same
-  // limitation with its own nested ScrollView) - bounded so a long history
-  // list scrolls internally instead of clipping rows or pushing the Back
-  // button off-screen.
-  historyList: {
-    maxHeight: 400,
-    width: "100%",
-  },
-  historyListContent: {
-    paddingBottom: spacing.sm,
-  },
-  loadMoreButton: {
-    marginTop: spacing.xs,
-  },
-  loader: {
-    marginVertical: spacing.xxxl,
-  },
-  message: {
-    textAlign: "center",
-    marginVertical: spacing.xxl,
-    ...cardTextShadow,
-  },
-});
-
-export const infoPageStyles = StyleSheet.create({
-  background: usageStyles.fullBleed,
-  scrollContent: {
-    alignItems: "center",
-    padding: spacing.xxl,
-  },
-  card: {
-    maxWidth: 720,
-    padding: spacing.xl,
-    marginVertical: spacing.huge,
-  },
-  description: {
-    textAlign: "center",
-    ...cardTextShadow,
-  },
-  updatedAt: {
-    color: colors.white,
-    fontSize: typography.size.sm,
-    fontStyle: "italic",
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    ...cardTextShadow,
-  },
-});
-
-// react-native-markdown-display consumes this as a plain object, never
-// through StyleSheet.create - it walks ancestor styles itself and expects
-// raw style values, not RN's opaque registered-style ids.
+// react-native-markdown-display consumes this as a plain object with a
+// fixed, library-dictated shape (body/heading1/.../fence) - never through
+// StyleSheet.create, and its keys can't be renamed to fit the flat
+// `styles` object below without info/[slug].tsx reconstructing that exact
+// shape at the call site anyway. Kept as its own small export for that
+// reason, not because it's exempt from the "one stylesheet" rule in spirit.
 export const infoPageMarkdownStyles = {
   body: {
     color: colors.white,
@@ -804,94 +155,734 @@ export const infoPageMarkdownStyles = {
   fence: { color: colors.nearBlack },
 };
 
-export const authScreenStyles = StyleSheet.create({
-  card: usageStyles.screenCardSm,
-  fieldGroup: {
+// The one flat stylesheet - every key below is a direct, top-level key on
+// this single object. Shared cross-screen patterns come first (reused by
+// more than one screen/component); everything after is prefixed by the
+// screen/component it belongs to, so same-shaped concepts ("a card", "a
+// title") never collide across unrelated screens.
+export const styles = StyleSheet.create({
+  // ---- Shared across multiple screens/components ----
+  // CenteredDesk's big card chrome.
+  woodPanel: {
+    backgroundColor: colors.wood.base,
+    borderColor: colors.wood.light,
+    borderWidth: 5,
+    borderRadius: radii.sm,
+    boxShadow: [
+      { offsetX: 2, offsetY: 2, blurRadius: 0, color: colors.wood.border },
+    ],
+  },
+  // The small interactive digit-tile variant (draggable keyboard, exercise
+  // digits) - same palette, smaller radius, no card-level shadow.
+  woodTile: {
+    backgroundColor: colors.wood.base,
+    borderColor: colors.wood.light,
+    borderWidth: 5,
+    borderRadius: radii.xs,
+  },
+  overlayCardSubtle: {
+    backgroundColor: colors.overlay.subtle,
+    borderWidth: 1,
+    borderColor: colors.overlay.medium,
+    borderRadius: radii.lg,
+  },
+  overlayCardMedium: {
+    backgroundColor: colors.overlay.medium,
+    borderRadius: radii.lg,
+  },
+  overlayCardStrong: {
+    backgroundColor: colors.overlay.strong,
+    borderRadius: radii.lg,
+  },
+  // The soft drop shadow under a frosted overlay card (Tienda's shop
+  // cards, e.g.) - separate since not every overlay card wants it.
+  cardDropShadow: {
+    boxShadow: [
+      { offsetX: 0, offsetY: 4, blurRadius: 10, color: colors.shadowDark },
+    ],
+  },
+  goldButton: {
+    backgroundColor: colors.gold,
+  },
+  goldButtonText: {
+    color: colors.nearBlack,
+    fontWeight: typography.weight.bold,
+  },
+  // The auth/consent gates' card width - identical in both.
+  screenCardSm: {
+    maxWidth: 420,
+    padding: spacing.xl,
+  },
+  // The settings/history screens' card width - identical in both.
+  screenCardMd: {
+    maxWidth: 480,
+    padding: spacing.xl,
+  },
+  // Tienda's and Gauntlet's scrollable content padding - identical in both.
+  scrollContainer: {
+    padding: spacing.xl,
+    paddingBottom: spacing.huge,
+  },
+  // A layer that fills its parent completely - the intro video and the
+  // info-page background image both want exactly this.
+  fullBleed: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  // Tienda's and Gauntlet's top header bar - identical in both (unlike
+  // ChallengeGameScreen's topBar, which has no back button and a
+  // different, timer-focused layout, so isn't merged in here).
+  screenHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.xl,
+    paddingTop: 15,
+    paddingBottom: spacing.sm,
+    width: "100%",
+  },
+  // The round back button in that same header - identical in both.
+  headerBackButton: {
+    padding: spacing.sm,
+    backgroundColor: colors.overlay.medium,
+    borderRadius: radii.xl,
+  },
+
+  // ---- app/+not-found.tsx ----
+  notFoundContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xl,
+  },
+  notFoundLink: {
+    marginTop: spacing.lg,
+    paddingVertical: spacing.lg,
+  },
+
+  // ---- app/admin/index.tsx ----
+  adminContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: spacing.xxl,
+    backgroundColor: colors.white,
+  },
+  adminTitle: {
+    fontSize: typography.size.xxxl,
+    fontWeight: typography.weight.bold,
+    marginBottom: spacing.md,
+    color: colors.nearBlack,
+  },
+  adminBody: {
+    fontSize: typography.size.md,
+    color: "#555",
+    textAlign: "center",
+  },
+
+  // ---- components/common/Layout.tsx ----
+  layoutScroller: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  layoutContainer: {
+    flex: 1,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  layoutFixed: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+  },
+
+  // ---- components/minigames/components/Exercise.tsx ----
+  exerciseWrapper: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: spacing.lg,
   },
-  fieldLabel: {
+  exercisePreviewContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.lg,
+    userSelect: "none",
+    flexWrap: "wrap",
+  },
+  exerciseValues: {
+    flexDirection: "row",
+    alignItems: "center",
+    userSelect: "none",
+  },
+  exerciseValue: {
+    flexDirection: "row",
+    alignItems: "center",
+    userSelect: "none",
+  },
+
+  // ---- components/minigames/components/HalvingLayout.tsx ----
+  halvingContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+  },
+  halvingUpper: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  halvingLower: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+
+  // ---- components/minigames/components/ExerciseValueDropDigits.tsx ----
+  exerciseDropResultValue: {
+    marginLeft: spacing.sm,
+  },
+
+  // ---- components/minigames/components/ExerciseValuePreview.tsx ----
+  valuePreviewNumberContainer: {
+    flexDirection: "row",
+  },
+
+  // ---- components/toro/ComboRewardBurst.tsx ----
+  comboBurstOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 20,
+  },
+  comboBurstParticle: {
+    position: "absolute",
+    top: 0,
+    fontSize: 26,
+  },
+
+  // ---- components/auth/GoogleSignInButton.tsx ----
+  googleSignInContainer: {
+    alignItems: "center",
+    marginBottom: spacing.lg,
+  },
+
+  // ---- components/HelloWave.tsx ----
+  helloWaveText: {
+    fontSize: typography.size.display,
+    lineHeight: 32,
+    marginTop: -6,
+  },
+
+  // ---- components/ParallaxScrollView.tsx ----
+  parallaxContainer: {
+    flex: 1,
+  },
+  parallaxHeader: {
+    height: 250,
+    overflow: "hidden",
+  },
+  parallaxContent: {
+    flex: 1,
+    padding: spacing.xxxl,
+    gap: spacing.lg,
+    overflow: "hidden",
+  },
+
+  // ---- screens/OperationSelectionScreen.tsx ----
+  opSelectContainer: {
+    flex: 1,
+    width: "100%",
+  },
+  opSelectHeader: {
+    fontSize: typography.size.xl,
+    fontWeight: typography.weight.bold,
+    marginBottom: spacing.xl,
+    textAlign: "center",
+  },
+  opSelectGrid: {
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignContent: "flex-start",
+    flexDirection: "row",
+  },
+  opSelectButton: {
+    width: "100%",
+    maxWidth: 400,
+    minWidth: 200,
+  },
+  opSelectLabel: {
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.semibold,
+    color: "#333",
+  },
+  opSelectSymbol: {
+    fontSize: typography.size.xxxl,
+    fontWeight: typography.weight.bold,
+    color: "#333",
+  },
+  opSelectDescription: {
+    fontSize: typography.size.base,
+    color: "#333",
+  },
+
+  // ---- screens/ChalengeSelectScreen.tsx ----
+  chalengeSelectContainer: {
+    flex: 1,
+    padding: spacing.lg,
+  },
+  chalengeSelectTitle: {
+    fontSize: typography.size.xxxl,
+    fontWeight: typography.weight.bold,
+    textAlign: "center",
+    marginBottom: spacing.lg,
+  },
+  chalengeSelectSubTitle: {
+    fontSize: typography.size.xl,
+    fontWeight: typography.weight.semibold,
+    marginTop: spacing.xxl,
+    marginBottom: spacing.sm,
+    textAlign: "center",
+  },
+  chalengeSelectCurrentContainer: {
+    marginBottom: spacing.xxl,
+    marginTop: spacing.xxl,
+  },
+  chalengeSelectBoxContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    width: "100%",
+    flexBasis: "100%",
+    flexGrow: 1,
+  },
+  chalengeSelectText: {
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.medium,
+  },
+  chalengeSelectBox: {
+    flex: 1,
+    marginBottom: spacing.xl,
+    borderRadius: radii.sm,
+    minWidth: 200,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // ---- screens/ChallengeResultScreen.tsx ----
+  challengeResultContainer: {
+    flex: 1,
+    padding: spacing.lg,
+  },
+
+  // ---- providers/animations/AnimatedImage.tsx ----
+  animatedImageBackground: {
+    position: "absolute",
+    // Oversized so the scale/translate wobble never exposes the container's
+    // edges. An absolutely-positioned child isn't reliably centered by the
+    // parent's flex alignment alone (confirmed live: without these
+    // offsets, the image drifted almost entirely below the visible area,
+    // leaving only a sliver visible at the bottom) - top/left explicitly
+    // center the oversized box: -(120%-100%)/2 and -(110%-100%)/2.
+    top: "-5%",
+    left: "-10%",
+    width: "120%",
+    height: "110%",
+  },
+  animatedImageContainer: {
+    display: "flex",
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  animatedImageChildrenWrapper: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    // Was a semi-transparent white scrim, but the only screens using this
+    // background (Home, Auth) put their text inside an opaque card
+    // (CenteredDesk), never directly over the image - so it only ever
+    // washed the image out once it became visible (see index.tsx's
+    // transparentNavigationTheme fix).
+    backgroundColor: "transparent",
+    display: "flex",
+    flex: 1,
+    alignContent: "center",
+    padding: 0,
+    margin: 0,
+  },
+
+  // ---- components/layouts/CenteredDesk.tsx ----
+  // No separate "container" key here - it's styles.woodPanel plus two
+  // small overrides, composed directly at the call site instead of
+  // duplicating woodPanel's fields under a near-identical new name.
+  centeredDeskWrapper: {},
+  centeredDeskTitle: {
+    fontSize: typography.size.hero,
+    marginBottom: spacing.sm,
+    color: colors.white,
+    ...cardTextShadow,
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
+  },
+  centeredDeskSubtitle: {
+    fontSize: typography.size.xxxl,
+    marginBottom: spacing.xs,
+    color: colors.white,
+    ...cardTextShadow,
+    textAlign: "center",
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
+  },
+  centeredDeskDescription: {
+    fontSize: typography.size.lg,
+    marginBottom: spacing.xs,
+    color: colors.white,
+    ...cardTextShadow,
+    textAlign: "justify",
+    paddingLeft: spacing.sm,
+    paddingRight: spacing.sm,
+  },
+
+  // ---- components/minigames/components/DraggableKeyboard.tsx ----
+  draggableKeyboardWrapper: {
+    backgroundColor: colors.wood.base,
+    borderColor: colors.wood.dark,
+    borderWidth: 5,
+    borderRadius: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    userSelect: "none",
+  },
+  draggableKeyboardContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    width: "100%",
+    height: "100%",
+    gap: 0,
+  },
+
+  // ---- components/minigames/components/DraggableKeyboardDigit.tsx ----
+  draggableDigitWrapper: {
+    userSelect: "none",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
+  },
+  draggableDigitItem: {
+    backgroundColor: colors.wood.base,
+    borderRadius: radii.pill,
+    justifyContent: "center",
+    alignItems: "center",
+    userSelect: "none",
+    borderWidth: 3,
+    borderColor: "transparent",
+  },
+  draggableDigitSelected: {
+    borderColor: colors.gold,
+    backgroundColor: colors.wood.highlight,
+  },
+  draggableDigitText: {
+    color: colors.white,
+    fontSize: typography.size.xxxl,
+    fontWeight: typography.weight.bold,
+  },
+
+  // ---- components/minigames/components/ExerciseDigit.tsx ----
+  exerciseDigitUnknownContainer: {
+    backgroundColor: colors.wood.dark,
+    borderColor: colors.white,
+    borderWidth: 5,
+    borderRadius: radii.xs,
+    padding: spacing.xs,
+    margin: spacing.xxs,
+    minWidth: 75,
+    height: 75,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  exerciseDigitContainer: {
+    backgroundColor: colors.wood.base,
+    borderColor: colors.wood.light,
+    borderWidth: 5,
+    borderRadius: radii.xs,
+    padding: spacing.xs,
+    margin: spacing.xxs,
+    minWidth: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  exerciseDigitTargetable: {
+    borderColor: colors.gold,
+  },
+  exerciseDigitUnknownText: {
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
+  },
+  exerciseDigitText: {
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
+  },
+
+  // ---- components/common/SettingToggleRow.tsx ----
+  settingToggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.wood.border,
+    paddingVertical: spacing.md,
+  },
+  settingToggleTextContainer: {
+    flex: 1,
+    marginRight: spacing.md,
+  },
+  settingToggleLabel: {
+    textAlign: "left",
+    ...cardTextShadow,
+  },
+  settingToggleDescription: {
+    color: colors.white,
+    marginTop: spacing.xs,
+    ...cardTextShadow,
+  },
+
+  // ---- components/common/SettingHistoryRow.tsx ----
+  settingHistoryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    borderBottomWidth: 1,
+    borderBottomColor: colors.wood.border,
+    paddingVertical: spacing.md,
+  },
+  settingHistoryTextContainer: {
+    flex: 1,
+    marginRight: spacing.md,
+  },
+  settingHistoryLabel: {
+    textAlign: "left",
+    ...cardTextShadow,
+  },
+  settingHistoryDate: {
+    color: colors.white,
+    fontSize: typography.size.sm,
+    marginTop: spacing.xs,
+    ...cardTextShadow,
+  },
+  settingHistoryDevice: {
+    color: colors.white,
+    fontSize: typography.size.xs,
+    marginTop: spacing.xxs,
+    ...cardTextShadow,
+  },
+  settingHistoryValue: {
+    color: colors.white,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.base,
+    ...cardTextShadow,
+  },
+
+  // ---- screens/SettingsScreen.tsx ----
+  settingsCard: {
+    maxWidth: 480,
+    padding: spacing.xl,
+  },
+  settingsSectionLabel: {
+    color: colors.white,
+    // Not typography.size.sm (12) - this is a distinct 13px value shared
+    // with info page's updatedAt below, not close enough to any step in
+    // the scale to snap without a visible 1px shrink.
+    fontSize: 13,
+    fontWeight: typography.weight.bold,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    alignSelf: "flex-start",
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    ...cardTextShadow,
+  },
+  settingsHistoryButton: {
+    backgroundColor: colors.gold,
+    marginTop: spacing.lg,
+  },
+  settingsHistoryButtonText: {
+    color: colors.nearBlack,
+    fontWeight: typography.weight.bold,
+  },
+
+  // ---- screens/SettingsHistoryScreen.tsx ----
+  settingsHistoryCard: {
+    maxWidth: 480,
+    padding: spacing.xl,
+  },
+  // Layout.tsx's own outer ScrollView constrains its content container to
+  // height: "100%" rather than letting it grow, so it can't scroll content
+  // taller than the viewport on its own (TiendaScreen works around the same
+  // limitation with its own nested ScrollView) - bounded so a long history
+  // list scrolls internally instead of clipping rows or pushing the Back
+  // button off-screen.
+  settingsHistoryList: {
+    maxHeight: 400,
+    width: "100%",
+  },
+  settingsHistoryListContent: {
+    paddingBottom: spacing.sm,
+  },
+  settingsHistoryLoadMore: {
+    marginTop: spacing.xs,
+  },
+  settingsHistoryLoader: {
+    marginVertical: spacing.xxxl,
+  },
+  settingsHistoryMessage: {
+    textAlign: "center",
+    marginVertical: spacing.xxl,
+    ...cardTextShadow,
+  },
+
+  // ---- app/info/[slug].tsx ----
+  // No separate "background" key - it's identical to styles.fullBleed
+  // above, referenced directly at the call site instead of duplicated.
+  infoPageScrollContent: {
+    alignItems: "center",
+    padding: spacing.xxl,
+  },
+  infoPageCard: {
+    maxWidth: 720,
+    padding: spacing.xl,
+    marginVertical: spacing.huge,
+  },
+  infoPageDescription: {
+    textAlign: "center",
+    ...cardTextShadow,
+  },
+  infoPageUpdatedAt: {
+    color: colors.white,
+    // See settingsSectionLabel above - same distinct 13px value.
+    fontSize: 13,
+    fontStyle: "italic",
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    ...cardTextShadow,
+  },
+
+  // ---- screens/AuthScreen.tsx ----
+  authCard: {
+    maxWidth: 420,
+    padding: spacing.xl,
+  },
+  authFieldGroup: {
+    marginBottom: spacing.lg,
+  },
+  authFieldLabel: {
     color: colors.white,
     fontSize: 13,
     marginBottom: spacing.xs,
   },
-  input: {
+  authInput: {
     height: 48,
     backgroundColor: colors.white,
     borderRadius: radii.sm,
     paddingHorizontal: spacing.md,
     fontSize: typography.size.md,
   },
-  errorText: {
+  authErrorText: {
     color: colors.danger,
     marginBottom: spacing.lg,
     textAlign: "center",
   },
-  submitButton: {
+  authSubmitButton: {
     backgroundColor: colors.wood.dark,
     paddingVertical: 14,
     borderRadius: radii.xxl,
     alignItems: "center",
     marginTop: spacing.sm,
   },
-  buttonDisabled: {
+  authButtonDisabled: {
     opacity: 0.6,
   },
-  submitButtonText: {
+  authSubmitButtonText: {
     color: colors.white,
     fontWeight: typography.weight.bold,
     fontSize: typography.size.md,
   },
-  linkText: {
+  authLinkText: {
     color: colors.white,
     textAlign: "center",
     marginTop: spacing.lg,
     textDecorationLine: "underline",
   },
-  dividerText: {
+  authDividerText: {
     color: "rgba(255,255,255,0.8)",
     textAlign: "center",
     marginTop: spacing.lg,
     marginBottom: spacing.md,
   },
-});
 
-export const consentScreenStyles = StyleSheet.create({
-  card: usageStyles.screenCardSm,
-  acceptButton: {
+  // ---- screens/ConsentScreen.tsx ----
+  consentCard: {
+    maxWidth: 420,
+    padding: spacing.xl,
+  },
+  consentAcceptButton: {
     backgroundColor: colors.wood.dark,
     paddingVertical: 14,
     borderRadius: radii.xxl,
     alignItems: "center",
     marginTop: spacing.sm,
   },
-  buttonDisabled: {
+  consentButtonDisabled: {
     opacity: 0.6,
   },
-  acceptButtonText: {
+  consentAcceptButtonText: {
     color: colors.white,
     fontWeight: typography.weight.bold,
     fontSize: typography.size.md,
   },
-  declineLink: {
+  consentDeclineLink: {
     color: colors.white,
     textAlign: "center",
     marginTop: spacing.lg,
     textDecorationLine: "underline",
   },
-  declineText: {
+  consentDeclineText: {
     color: colors.danger,
     marginBottom: spacing.lg,
     textAlign: "center",
   },
-});
 
-export const introScreenStyles = StyleSheet.create({
-  container: {
+  // ---- screens/IntroScreen.tsx ----
+  introContainer: {
     flex: 1,
     backgroundColor: "#000",
   },
-  video: usageStyles.fullBleed,
-  skipButton: {
+  // No separate "video" key - it's identical to styles.fullBleed above,
+  // referenced directly at the call site instead of duplicated.
+  introSkipButton: {
     position: "absolute",
     bottom: spacing.huge,
     right: spacing.xxl,
@@ -900,33 +891,31 @@ export const introScreenStyles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
   },
-  skipText: {
+  introSkipText: {
     color: colors.white,
     fontWeight: typography.weight.bold,
     fontSize: typography.size.md,
   },
-});
 
-export const comboMeterStyles = StyleSheet.create({
-  container: {
+  // ---- components/toro/ComboMeter.tsx ----
+  comboMeterContainer: {
     marginHorizontal: spacing.xl,
     marginBottom: spacing.sm,
   },
-  label: {
+  comboMeterLabel: {
     color: "#FFB347",
     fontSize: 12,
     fontWeight: "bold",
     marginBottom: 4,
   },
-  bar: {
+  comboMeterBar: {
     height: 6,
     borderRadius: 3,
     backgroundColor: colors.overlay.medium,
   },
-});
 
-export const comboPopupStyles = StyleSheet.create({
-  overlay: {
+  // ---- components/toro/ComboPopup.tsx ----
+  comboPopupOverlay: {
     position: "absolute",
     top: 150,
     left: 0,
@@ -934,15 +923,14 @@ export const comboPopupStyles = StyleSheet.create({
     alignItems: "center",
     zIndex: 10,
   },
-  text: {
-    ...usageStyles.goldText,
-    fontSize: 30,
+  comboPopupText: {
+    color: colors.gold,
     fontWeight: typography.weight.black,
+    fontSize: 30,
     ...textShadows.soft,
   },
-});
 
-export const buttonStyles = StyleSheet.create({
+  // ---- components/common/Button.tsx ----
   button: {
     backgroundColor: colors.wood.dark,
     paddingVertical: spacing.md,
@@ -951,40 +939,32 @@ export const buttonStyles = StyleSheet.create({
     alignItems: "center",
     marginVertical: spacing.sm,
   },
-  text: {},
-});
+  buttonText: {},
 
-// ThemedText's variant map - the closest thing to a typography-variant
-// abstraction in this codebase. Exported already StyleSheet.create()'d
-// (not raw objects) so ThemedText.tsx itself never needs its own
-// StyleSheet.create call, and `keyof typeof themedTextVariants` there
-// still gives it the same variant-name type safety it always had.
-export const themedTextVariants = StyleSheet.create({
-  title: {
+  // ---- components/texts/ThemedText.tsx ----
+  themedTextTitle: {
     color: colors.white,
     fontSize: typography.size.xxxl,
     fontWeight: typography.weight.bold,
     textAlign: "center",
   },
-  subtitle: {
+  themedTextSubtitle: {
     color: colors.white,
     fontSize: typography.size.lg,
     fontWeight: typography.weight.medium,
   },
-  description: {
+  themedTextDescription: {
     color: "#333",
     fontSize: typography.size.base,
   },
-});
 
-export const animatedNumberStyles = StyleSheet.create({
-  whiteText: {
+  // ---- components/AnimatedNumber.tsx ----
+  animatedNumberText: {
     color: colors.white,
   },
-});
 
-export const policyLinksStyles = StyleSheet.create({
-  container: {
+  // ---- components/auth/PolicyLinks.tsx ----
+  policyLinksContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
@@ -992,23 +972,22 @@ export const policyLinksStyles = StyleSheet.create({
     rowGap: spacing.xs,
     marginBottom: spacing.lg,
   },
-  link: {
+  policyLinksLink: {
     color: colors.white,
     fontSize: typography.size.base,
     textDecorationLine: "underline",
   },
-});
 
-export const mathChallengeStyles = StyleSheet.create({
-  container: {
+  // ---- components/game/MathChallenge.tsx ----
+  mathChallengeContainer: {
     padding: spacing.xl,
     alignItems: "center",
   },
-  question: {
+  mathChallengeQuestion: {
     fontSize: typography.size.xxxl,
     marginBottom: spacing.lg,
   },
-  input: {
+  mathChallengeInput: {
     width: "80%",
     borderWidth: 1,
     borderColor: colors.success,
@@ -1017,12 +996,9 @@ export const mathChallengeStyles = StyleSheet.create({
     fontSize: typography.size.lg,
     textAlign: "center",
   },
-});
 
-export const gauntletScreenStyles = StyleSheet.create({
-  header: usageStyles.screenHeader,
-  backBtn: usageStyles.headerBackButton,
-  title: {
+  // ---- screens/GauntletScreen.tsx ----
+  gauntletTitle: {
     fontSize: typography.size.xl,
     fontWeight: typography.weight.bold,
     color: colors.white,
@@ -1030,25 +1006,22 @@ export const gauntletScreenStyles = StyleSheet.create({
     textAlign: "center",
     marginHorizontal: spacing.sm,
   },
-  scrollContainer: usageStyles.scrollContainer,
-  glassPanel: {
-    ...usageStyles.overlayCardSubtle,
-    ...usageStyles.cardDropShadow,
+  gauntletGlassPanel: {
     padding: spacing.lg,
     marginBottom: spacing.xl,
   },
-  sectionTitle: {
+  gauntletSectionTitle: {
     color: colors.white,
     fontSize: typography.size.md,
     fontWeight: typography.weight.bold,
     marginBottom: spacing.md,
     letterSpacing: 0.5,
   },
-  loadoutGrid: {
+  gauntletLoadoutGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  loadoutItem: {
+  gauntletLoadoutItem: {
     flex: 1,
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -1056,93 +1029,91 @@ export const gauntletScreenStyles = StyleSheet.create({
     borderRadius: radii.sm,
     marginHorizontal: spacing.xs,
   },
-  loadoutLabel: {
+  gauntletLoadoutLabel: {
     color: "rgba(255, 255, 255, 0.5)",
     fontSize: typography.size.sm,
     fontWeight: typography.weight.medium,
     marginBottom: 4,
   },
-  loadoutValue: {
+  gauntletLoadoutValue: {
     color: "rgba(255, 255, 255, 0.3)",
     fontSize: typography.size.sm,
     fontWeight: typography.weight.bold,
   },
-  activeCosmetic: {
+  gauntletActiveCosmetic: {
     color: colors.gold,
   },
-  modeHeader: {
+  gauntletModeHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: spacing.sm,
   },
-  modeTitle: {
+  gauntletModeTitle: {
     color: colors.white,
     fontSize: typography.size.xl,
     fontWeight: typography.weight.bold,
   },
-  modeSubtitle: {
+  gauntletModeSubtitle: {
     color: "rgba(255, 255, 255, 0.6)",
     fontSize: 13,
     marginTop: 2,
   },
-  rulesText: {
+  gauntletRulesText: {
     color: "rgba(255, 255, 255, 0.5)",
     fontSize: typography.size.sm,
     marginVertical: spacing.sm,
   },
-  startButton: {
-    ...usageStyles.goldButton,
+  gauntletStartButton: {
+    backgroundColor: colors.gold,
     paddingVertical: spacing.md,
     borderRadius: radii.xxl,
     alignItems: "center",
     justifyContent: "center",
     marginTop: spacing.sm,
   },
-  startButtonText: {
-    ...usageStyles.goldButtonText,
+  gauntletStartButtonText: {
+    color: colors.nearBlack,
+    fontWeight: typography.weight.bold,
     fontSize: typography.size.base,
     letterSpacing: 1,
   },
-  btnDisabled: {
+  gauntletBtnDisabled: {
     opacity: 0.5,
   },
-  leaderboardRow: {
+  gauntletLeaderboardRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.overlay.subtle,
   },
-  rank: {
+  gauntletRank: {
     width: 30,
     fontSize: typography.size.md,
     color: colors.white,
     fontWeight: typography.weight.bold,
   },
-  player: {
+  gauntletPlayer: {
     flex: 1,
     color: colors.white,
     fontSize: typography.size.base,
     fontWeight: typography.weight.medium,
   },
-  score: {
+  gauntletScore: {
     color: colors.gold,
     fontSize: typography.size.base,
     fontWeight: typography.weight.bold,
   },
-  myRow: {
+  gauntletMyRow: {
     backgroundColor: colors.overlay.subtle,
     borderRadius: radii.sm,
     paddingHorizontal: spacing.sm,
     borderBottomWidth: 0,
   },
-});
 
-export const tiendaScreenStyles = StyleSheet.create({
-  header: usageStyles.screenHeader,
-  backBtn: usageStyles.headerBackButton,
-  title: {
+  // ---- screens/TiendaScreen.tsx ----
+  tiendaTitle: {
     fontSize: typography.size.xxl,
     fontWeight: typography.weight.bold,
     color: colors.white,
@@ -1150,7 +1121,7 @@ export const tiendaScreenStyles = StyleSheet.create({
     textAlign: "center",
     marginHorizontal: spacing.sm,
   },
-  coinsWrapper: {
+  tiendaCoinsWrapper: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255, 215, 0, 0.2)",
@@ -1163,30 +1134,29 @@ export const tiendaScreenStyles = StyleSheet.create({
       { offsetX: 0, offsetY: 0, blurRadius: 5, color: "rgba(255,215,0,0.3)" },
     ],
   },
-  coinsEmoji: {
+  tiendaCoinsEmoji: {
     fontSize: typography.size.lg,
     marginRight: 4,
   },
-  coinsCount: {
+  tiendaCoinsCount: {
     color: colors.gold,
     fontWeight: typography.weight.bold,
     fontSize: typography.size.md,
   },
-  tabBar: {
+  tiendaTabBar: {
     flexDirection: "row",
-    ...usageStyles.overlayCardSubtle,
     marginHorizontal: spacing.xl,
     marginVertical: spacing.sm,
     borderRadius: radii.xxl,
     padding: 4,
   },
-  tab: {
+  tiendaTab: {
     flex: 1,
     paddingVertical: spacing.sm,
     alignItems: "center",
     borderRadius: radii.xl,
   },
-  tabActive: {
+  tiendaTabActive: {
     backgroundColor: colors.overlay.strong,
     boxShadow: [
       {
@@ -1197,46 +1167,43 @@ export const tiendaScreenStyles = StyleSheet.create({
       },
     ],
   },
-  tabText: {
+  tiendaTabText: {
     color: "rgba(255, 255, 255, 0.6)",
     fontWeight: typography.weight.semibold,
     fontSize: typography.size.sm,
     letterSpacing: 1,
   },
-  tabTextActive: {
+  tiendaTabTextActive: {
     color: colors.white,
   },
-  scrollContainer: usageStyles.scrollContainer,
-  loader: {
+  tiendaLoader: {
     marginTop: spacing.giant,
   },
-  emptyText: {
+  tiendaEmptyText: {
     color: "rgba(255, 255, 255, 0.5)",
     textAlign: "center",
     marginTop: spacing.giant,
     fontSize: typography.size.md,
   },
-  card: {
-    ...usageStyles.overlayCardSubtle,
-    ...usageStyles.cardDropShadow,
+  tiendaCard: {
     padding: spacing.lg,
     marginBottom: spacing.lg,
   },
-  cardEquipped: {
+  tiendaCardEquipped: {
     borderColor: colors.gold,
     backgroundColor: "rgba(255, 215, 0, 0.05)",
     boxShadow: [
       { offsetX: 0, offsetY: 4, blurRadius: 8, color: "rgba(255,215,0,0.1)" },
     ],
   },
-  cardLocked: {
+  tiendaCardLocked: {
     opacity: 0.6,
   },
-  cardHeader: {
+  tiendaCardHeader: {
     flexDirection: "row",
     alignItems: "center",
   },
-  iconContainer: {
+  tiendaIconContainer: {
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -1245,28 +1212,28 @@ export const tiendaScreenStyles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.overlay.subtle,
   },
-  cardInfo: {
+  tiendaCardInfo: {
     marginLeft: spacing.lg,
     flex: 1,
   },
-  cardTitle: {
+  tiendaCardTitle: {
     color: colors.white,
     fontSize: typography.size.lg,
     fontWeight: typography.weight.bold,
   },
-  lockText: {
+  tiendaLockText: {
     color: colors.danger,
     fontSize: 13,
     marginTop: 4,
     fontWeight: typography.weight.medium,
   },
-  unlockedText: {
+  tiendaUnlockedText: {
     color: colors.success,
     fontSize: 13,
     marginTop: 4,
     fontWeight: typography.weight.medium,
   },
-  cardFooter: {
+  tiendaCardFooter: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1275,20 +1242,20 @@ export const tiendaScreenStyles = StyleSheet.create({
     borderTopColor: "rgba(255, 255, 255, 0.08)",
     paddingTop: spacing.md,
   },
-  priceContainer: {
+  tiendaPriceContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  coinSymbol: {
+  tiendaCoinSymbol: {
     fontSize: typography.size.lg,
     marginRight: 4,
   },
-  priceText: {
+  tiendaPriceText: {
     color: colors.white,
     fontSize: typography.size.md,
     fontWeight: typography.weight.bold,
   },
-  actionButton: {
+  tiendaActionButton: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
     borderRadius: radii.xl,
@@ -1296,27 +1263,29 @@ export const tiendaScreenStyles = StyleSheet.create({
     justifyContent: "center",
     minWidth: 100,
   },
-  btnBuy: usageStyles.goldButton,
-  btnEquip: {
+  tiendaBtnBuy: {
+    backgroundColor: colors.gold,
+  },
+  tiendaBtnEquip: {
     backgroundColor: colors.overlay.strong,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.3)",
   },
-  btnEquipped: {
+  tiendaBtnEquipped: {
     backgroundColor: colors.success,
   },
-  btnDisabled: {
+  tiendaBtnDisabled: {
     backgroundColor: colors.overlay.subtle,
     borderColor: colors.overlay.subtle,
   },
-  btnText: {
-    ...usageStyles.goldButtonText,
+  tiendaBtnText: {
+    color: colors.nearBlack,
+    fontWeight: typography.weight.bold,
     fontSize: typography.size.base,
   },
-});
 
-export const challengeGameScreenStyles = StyleSheet.create({
-  topBar: {
+  // ---- screens/ChallengeGameScreen.tsx ----
+  challengeTopBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1325,77 +1294,75 @@ export const challengeGameScreenStyles = StyleSheet.create({
     paddingBottom: spacing.sm,
     width: "100%",
   },
-  timerContainer: {
+  challengeTimerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    ...usageStyles.overlayCardMedium,
     borderRadius: radii.xl,
     paddingVertical: 6,
     paddingHorizontal: spacing.md,
   },
-  timerText: {
+  challengeTimerText: {
     color: colors.white,
     fontWeight: typography.weight.bold,
     marginLeft: 6,
     fontSize: typography.size.md,
   },
-  frozenText: {
+  challengeFrozenText: {
     color: colors.cyan,
   },
-  lowTimeText: {
+  challengeLowTimeText: {
     color: colors.danger,
   },
-  inspirationBadge: {
+  challengeInspirationBadge: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(255, 215, 0, 0.2)",
     borderWidth: 1,
     borderColor: colors.gold,
     borderRadius: radii.md,
-    paddingVertical: spacing.xxs,
+    paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
   },
-  inspirationText: {
+  challengeInspirationText: {
     color: colors.gold,
     fontSize: typography.size.sm,
     fontWeight: typography.weight.bold,
     marginLeft: 4,
   },
-  toroPanel: {
-    ...usageStyles.overlayCardSubtle,
+  challengeToroPanel: {
     marginHorizontal: spacing.xl,
     marginVertical: spacing.sm,
     borderRadius: radii.lg,
     padding: 14,
   },
-  inspiredPanel: {
+  challengeInspiredPanel: {
     borderColor: colors.gold,
     backgroundColor: "rgba(255, 215, 0, 0.05)",
   },
-  toroHeader: {
+  challengeToroHeader: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: spacing.sm,
   },
-  toroEmoji: {
+  challengeToroEmoji: {
     fontSize: typography.size.hero,
   },
-  toroTitle: {
+  challengeToroTitle: {
     color: colors.white,
     fontSize: typography.size.base,
     fontWeight: typography.weight.bold,
     marginBottom: 4,
   },
-  coopBar: {
-    height: spacing.xs,
+  challengeCoopBar: {
+    height: spacing.sm,
     borderRadius: radii.xs,
     backgroundColor: colors.overlay.medium,
   },
-  toroActions: {
+  challengeToroActions: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  toroBtn: {
+  challengeToroBtn: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
@@ -1405,27 +1372,26 @@ export const challengeGameScreenStyles = StyleSheet.create({
     borderRadius: radii.sm,
     marginHorizontal: spacing.xs,
   },
-  toroBtnDisabled: {
+  challengeToroBtnDisabled: {
     opacity: 0.4,
   },
-  toroBtnText: {
+  challengeToroBtnText: {
     color: colors.white,
     fontSize: typography.size.sm,
     fontWeight: typography.weight.bold,
     marginLeft: 6,
   },
-  gameContainer: {
+  challengeGameContainer: {
     flex: 1,
     paddingTop: spacing.sm,
   },
-});
 
-// GameHeader's own light-theme palette (white bar, dark text) is
-// deliberately distinct from the rest of the app's dark/wood aesthetic -
-// none of these colors match any shared token, so they stay literal here
-// rather than forcing new tokens into existence for a one-off style.
-export const gameHeaderStyles = StyleSheet.create({
-  headerContainer: {
+  // ---- components/common/Header.tsx (GameHeader) ----
+  // Its own light-theme palette (white bar, dark text) is deliberately
+  // distinct from the rest of the app's dark/wood aesthetic - none of
+  // these colors match any shared token, so they stay literal here rather
+  // than forcing new tokens into existence for a one-off style.
+  gameHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1434,15 +1400,19 @@ export const gameHeaderStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  statsContainer: { flex: 1, paddingHorizontal: spacing.md },
-  level: {
+  gameHeaderStats: { flex: 1, paddingHorizontal: spacing.md },
+  gameHeaderLevel: {
     fontSize: typography.size.md,
     fontWeight: typography.weight.bold,
     color: "#333",
   },
-  progressBar: { height: 6, borderRadius: 3, marginVertical: spacing.xs },
-  xpText: { fontSize: typography.size.sm, color: "#666" },
-  iconContainer: {
+  gameHeaderProgressBar: {
+    height: 6,
+    borderRadius: 3,
+    marginVertical: spacing.xs,
+  },
+  gameHeaderXpText: { fontSize: typography.size.sm, color: "#666" },
+  gameHeaderIcons: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: 60,

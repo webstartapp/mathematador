@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react";
 import { View } from "react-native";
 
 import { useScreenSizes } from "@/src/hooks/useScreenSizes";
-import { halvingLayoutStyles as localStyles } from "@/theme";
+import { styles } from "@/theme";
 
 type HalvingLayoutProps = {
   UpperComponent: ReactNode;
@@ -20,17 +20,17 @@ const HalvingLayout: FC<HalvingLayoutProps> = ({
   return (
     <View
       style={[
-        localStyles.container,
+        styles.halvingContainer,
         {
           flexDirection:
             rectangularSize.orientation === "landscape" ? "row" : "column",
         },
       ]}
     >
-      <View style={[localStyles.upper, rectangularSize.primarySize]}>
+      <View style={[styles.halvingUpper, rectangularSize.primarySize]}>
         {UpperComponent}
       </View>
-      <View style={[localStyles.lower, rectangularSize.secondarySize]}>
+      <View style={[styles.halvingLower, rectangularSize.secondarySize]}>
         {LowerComponent}
       </View>
     </View>

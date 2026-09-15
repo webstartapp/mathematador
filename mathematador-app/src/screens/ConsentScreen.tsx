@@ -13,7 +13,7 @@ import { markConsentResolved } from "@/navigation/introSession";
 import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { selectIsAuthenticated } from "@/redux/selectors/auth";
 import { userConsentRecord } from "@/src/_generated/api";
-import { consentScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 import { getLocalConsentRecord, recordLocalConsent } from "@/utils/consent";
 
@@ -113,28 +113,31 @@ const ConsentScreen = (): JSX.Element | null => {
         descriptions={[
           "Mathematador uses your data to personalize ads and keep the game free, and processes it in line with GDPR. You must accept both to play.",
         ]}
-        styles={{ container: styles.card }}
+        styles={{ container: styles.consentCard }}
       >
         <PolicyLinks />
         {showDeclineMessage && (
-          <Text style={styles.declineText}>
+          <Text style={styles.consentDeclineText}>
             You need to accept to use Mathematador.
           </Text>
         )}
         {acceptError && (
-          <Text style={styles.declineText}>
+          <Text style={styles.consentDeclineText}>
             Could not save your acceptance. Please try again.
           </Text>
         )}
         <TouchableOpacity
-          style={[styles.acceptButton, isAccepting && styles.buttonDisabled]}
+          style={[
+            styles.consentAcceptButton,
+            isAccepting && styles.consentButtonDisabled,
+          ]}
           onPress={handleAccept}
           disabled={isAccepting}
         >
-          <Text style={styles.acceptButtonText}>Accept & Continue</Text>
+          <Text style={styles.consentAcceptButtonText}>Accept & Continue</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDecline}>
-          <Text style={styles.declineLink}>Decline</Text>
+          <Text style={styles.consentDeclineLink}>Decline</Text>
         </TouchableOpacity>
       </CenteredDesk>
     </Layout>

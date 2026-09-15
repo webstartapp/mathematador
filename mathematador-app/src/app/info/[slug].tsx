@@ -8,10 +8,7 @@ import Button from "@/components/common/Button";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
 import { pagesBySlug } from "@/content/pages";
-import {
-  infoPageMarkdownStyles as markdownStyles,
-  infoPageStyles as styles,
-} from "@/theme";
+import { infoPageMarkdownStyles as markdownStyles, styles } from "@/theme";
 
 const InfoPageScreen = (): JSX.Element => {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -39,21 +36,24 @@ const InfoPageScreen = (): JSX.Element => {
   return (
     <ImageBackground
       source={imageBG}
-      style={styles.background}
+      style={styles.fullBleed}
       resizeMode="cover"
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.infoPageScrollContent}>
         <Stack.Screen options={{ title: page ? page.title : "Not Found" }} />
         <CenteredDesk
           title={page ? page.title : "Page Not Found"}
-          styles={{ container: styles.card }}
+          styles={{ container: styles.infoPageCard }}
         >
           {page ? (
             <>
               <Markdown style={markdownStyles} onLinkPress={handleLinkPress}>
                 {page.markdownContent}
               </Markdown>
-              <ThemedText variant="description" style={styles.updatedAt}>
+              <ThemedText
+                variant="description"
+                style={styles.infoPageUpdatedAt}
+              >
                 Last updated:{" "}
                 {new Date(page.updatedAt).toLocaleDateString(undefined, {
                   timeZone: "UTC",
@@ -61,7 +61,10 @@ const InfoPageScreen = (): JSX.Element => {
               </ThemedText>
             </>
           ) : (
-            <ThemedText variant="description" style={styles.description}>
+            <ThemedText
+              variant="description"
+              style={styles.infoPageDescription}
+            >
               There&apos;s no page at this address.
             </ThemedText>
           )}

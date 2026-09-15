@@ -11,7 +11,7 @@ import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useUpdateUserSetting } from "@/hooks/useSyncUserSettings";
 import { setMusicEnabled, setSoundEnabled } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
-import { settingsScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type SettingsScreenNavigationProp = StackNavigationProp<
@@ -39,8 +39,11 @@ const SettingsScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <CenteredDesk title="Settings" styles={{ container: styles.card }}>
-        <Text style={styles.sectionLabel}>Device</Text>
+      <CenteredDesk
+        title="Settings"
+        styles={{ container: styles.settingsCard }}
+      >
+        <Text style={styles.settingsSectionLabel}>Device</Text>
         <SettingToggleRow
           label="Sound Effects"
           description="The Toro's ¡Ole! and other in-game sounds"
@@ -62,7 +65,7 @@ const SettingsScreen = (): JSX.Element => {
           onValueChange={(next) => dispatch(setMusicEnabled(next))}
         />
 
-        <Text style={styles.sectionLabel}>Account</Text>
+        <Text style={styles.settingsSectionLabel}>Account</Text>
         <SettingToggleRow
           label="Ads Consent"
           value={adsConsent}
@@ -77,8 +80,8 @@ const SettingsScreen = (): JSX.Element => {
         <Button
           title="View Change History"
           onPress={() => navigation.navigate("SettingsHistory")}
-          style={styles.historyButton}
-          textStyle={styles.historyButtonText}
+          style={styles.settingsHistoryButton}
+          textStyle={styles.settingsHistoryButtonText}
         />
         <Button title="Back to Home" onPress={() => navigation.goBack()} />
       </CenteredDesk>

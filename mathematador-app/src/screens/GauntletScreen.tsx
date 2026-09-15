@@ -17,7 +17,7 @@ import ThemedText from "@/components/texts/ThemedText";
 import { RootState } from "@/redux/store";
 import { challengeStartNew } from "@/src/_generated/api";
 import { Challenge as ApiChallenge } from "@/src/_generated/model";
-import { colors, gauntletScreenStyles as styles } from "@/theme";
+import { colors, styles } from "@/theme";
 import { Challenge as LocalChallenge, Exercise } from "@/types/Chalenge";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -89,14 +89,14 @@ const createOfflineChallenge = (
 const renderHeader = (
   navigation: GauntletScreenNavigationProp,
 ): JSX.Element => (
-  <View style={styles.header}>
+  <View style={styles.screenHeader}>
     <TouchableOpacity
-      style={styles.backBtn}
+      style={styles.headerBackButton}
       onPress={() => navigation.goBack()}
     >
       <Ionicons name="arrow-back" size={24} color={colors.white} />
     </TouchableOpacity>
-    <ThemedText variant="title" style={styles.title}>
+    <ThemedText variant="title" style={styles.gauntletTitle}>
       Coliseo de los Números
     </ThemedText>
     <View style={{ width: 40 }} />
@@ -104,39 +104,45 @@ const renderHeader = (
 );
 
 const renderLoadout = (user: RootState["user"]): JSX.Element => (
-  <View style={styles.glassPanel}>
-    <Text style={styles.sectionTitle}>
+  <View
+    style={[
+      styles.overlayCardSubtle,
+      styles.cardDropShadow,
+      styles.gauntletGlassPanel,
+    ]}
+  >
+    <Text style={styles.gauntletSectionTitle}>
       <Ionicons name="shirt-outline" size={18} /> Equipped Loadout
     </Text>
-    <View style={styles.loadoutGrid}>
-      <View style={styles.loadoutItem}>
-        <Text style={styles.loadoutLabel}>Cape</Text>
+    <View style={styles.gauntletLoadoutGrid}>
+      <View style={styles.gauntletLoadoutItem}>
+        <Text style={styles.gauntletLoadoutLabel}>Cape</Text>
         <Text
           style={[
-            styles.loadoutValue,
-            user.equippedCape ? styles.activeCosmetic : null,
+            styles.gauntletLoadoutValue,
+            user.equippedCape ? styles.gauntletActiveCosmetic : null,
           ]}
         >
           {user.equippedCape ? "⚡ Cape Active" : "None"}
         </Text>
       </View>
-      <View style={styles.loadoutItem}>
-        <Text style={styles.loadoutLabel}>Suit</Text>
+      <View style={styles.gauntletLoadoutItem}>
+        <Text style={styles.gauntletLoadoutLabel}>Suit</Text>
         <Text
           style={[
-            styles.loadoutValue,
-            user.equippedSuit ? styles.activeCosmetic : null,
+            styles.gauntletLoadoutValue,
+            user.equippedSuit ? styles.gauntletActiveCosmetic : null,
           ]}
         >
           {user.equippedSuit ? "🔥 Suit Active" : "None"}
         </Text>
       </View>
-      <View style={styles.loadoutItem}>
-        <Text style={styles.loadoutLabel}>Flare</Text>
+      <View style={styles.gauntletLoadoutItem}>
+        <Text style={styles.gauntletLoadoutLabel}>Flare</Text>
         <Text
           style={[
-            styles.loadoutValue,
-            user.equippedFlare ? styles.activeCosmetic : null,
+            styles.gauntletLoadoutValue,
+            user.equippedFlare ? styles.gauntletActiveCosmetic : null,
           ]}
         >
           {user.equippedFlare ? "✨ Flare Active" : "None"}
@@ -152,51 +158,70 @@ interface CardProps {
 }
 
 const ArenaCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
-  <View style={styles.glassPanel}>
-    <View style={styles.modeHeader}>
+  <View
+    style={[
+      styles.overlayCardSubtle,
+      styles.cardDropShadow,
+      styles.gauntletGlassPanel,
+    ]}
+  >
+    <View style={styles.gauntletModeHeader}>
       <View>
-        <Text style={styles.modeTitle}>La Gran Corrida</Text>
-        <Text style={styles.modeSubtitle}>Endless mixed math sprint</Text>
+        <Text style={styles.gauntletModeTitle}>La Gran Corrida</Text>
+        <Text style={styles.gauntletModeSubtitle}>
+          Endless mixed math sprint
+        </Text>
       </View>
       <Ionicons name="flash-outline" size={32} color={colors.gold} />
     </View>
-    <Text style={styles.rulesText}>
+    <Text style={styles.gauntletRulesText}>
       ⏱️ 45 Seconds | ❌ 2 Allowed Mistakes | 🏆 High Rewards
     </Text>
     <TouchableOpacity
-      style={[styles.startButton, startingMode ? styles.btnDisabled : null]}
+      style={[
+        styles.gauntletStartButton,
+        startingMode ? styles.gauntletBtnDisabled : null,
+      ]}
       disabled={startingMode !== null}
       onPress={onPress}
     >
       {startingMode === "gauntlet" ? (
         <ActivityIndicator color={colors.nearBlack} />
       ) : (
-        <Text style={styles.startButtonText}>ENTER ARENA (GAUNTLET)</Text>
+        <Text style={styles.gauntletStartButtonText}>
+          ENTER ARENA (GAUNTLET)
+        </Text>
       )}
     </TouchableOpacity>
   </View>
 );
 
 const DailyCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
-  <View style={styles.glassPanel}>
-    <View style={styles.modeHeader}>
+  <View
+    style={[
+      styles.overlayCardSubtle,
+      styles.cardDropShadow,
+      styles.gauntletGlassPanel,
+    ]}
+  >
+    <View style={styles.gauntletModeHeader}>
       <View>
-        <Text style={styles.modeTitle}>Corrida Diaria</Text>
-        <Text style={styles.modeSubtitle}>
+        <Text style={styles.gauntletModeTitle}>Corrida Diaria</Text>
+        <Text style={styles.gauntletModeSubtitle}>
           Every player gets the same equations
         </Text>
       </View>
       <Ionicons name="calendar-outline" size={32} color={colors.magenta} />
     </View>
-    <Text style={styles.rulesText}>
+    <Text style={styles.gauntletRulesText}>
       ⏱️ 90 Seconds | 💀 1 Life (0 Mistakes) | 🪙 50 Completion Reward + 5%
       Cosmetic Drop
     </Text>
     <TouchableOpacity
       style={[
-        styles.startButton,
+        styles.gauntletStartButton,
         { backgroundColor: colors.magenta },
-        startingMode ? styles.btnDisabled : null,
+        startingMode ? styles.gauntletBtnDisabled : null,
       ]}
       disabled={startingMode !== null}
       onPress={onPress}
@@ -204,7 +229,7 @@ const DailyCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
       {startingMode === "daily_challenge" ? (
         <ActivityIndicator color={colors.white} />
       ) : (
-        <Text style={[styles.startButtonText, { color: colors.white }]}>
+        <Text style={[styles.gauntletStartButtonText, { color: colors.white }]}>
           START DAILY CHALLENGE
         </Text>
       )}
@@ -289,29 +314,35 @@ const GauntletScreen = (): JSX.Element => {
         />
 
         {/* Leaderboard panel */}
-        <View style={styles.glassPanel}>
-          <Text style={styles.sectionTitle}>
+        <View
+          style={[
+            styles.overlayCardSubtle,
+            styles.cardDropShadow,
+            styles.gauntletGlassPanel,
+          ]}
+        >
+          <Text style={styles.gauntletSectionTitle}>
             <Ionicons name="trophy-outline" size={18} /> Arena Leaderboard
           </Text>
-          <View style={styles.leaderboardRow}>
-            <Text style={styles.rank}>🥇</Text>
-            <Text style={styles.player}>Matador El Primo</Text>
-            <Text style={styles.score}>Wave 45</Text>
+          <View style={styles.gauntletLeaderboardRow}>
+            <Text style={styles.gauntletRank}>🥇</Text>
+            <Text style={styles.gauntletPlayer}>Matador El Primo</Text>
+            <Text style={styles.gauntletScore}>Wave 45</Text>
           </View>
-          <View style={styles.leaderboardRow}>
-            <Text style={styles.rank}>🥈</Text>
-            <Text style={styles.player}>Senor Algebra</Text>
-            <Text style={styles.score}>Wave 42</Text>
+          <View style={styles.gauntletLeaderboardRow}>
+            <Text style={styles.gauntletRank}>🥈</Text>
+            <Text style={styles.gauntletPlayer}>Senor Algebra</Text>
+            <Text style={styles.gauntletScore}>Wave 42</Text>
           </View>
-          <View style={styles.leaderboardRow}>
-            <Text style={styles.rank}>🥉</Text>
-            <Text style={styles.player}>Toro Loco</Text>
-            <Text style={styles.score}>Wave 39</Text>
+          <View style={styles.gauntletLeaderboardRow}>
+            <Text style={styles.gauntletRank}>🥉</Text>
+            <Text style={styles.gauntletPlayer}>Toro Loco</Text>
+            <Text style={styles.gauntletScore}>Wave 39</Text>
           </View>
-          <View style={[styles.leaderboardRow, styles.myRow]}>
-            <Text style={styles.rank}>12</Text>
-            <Text style={styles.player}>You</Text>
-            <Text style={styles.score}>Wave 12</Text>
+          <View style={[styles.gauntletLeaderboardRow, styles.gauntletMyRow]}>
+            <Text style={styles.gauntletRank}>12</Text>
+            <Text style={styles.gauntletPlayer}>You</Text>
+            <Text style={styles.gauntletScore}>Wave 12</Text>
           </View>
         </View>
       </ScrollView>

@@ -9,7 +9,7 @@ import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { operations } from "@/configs/operations";
 import { RootState } from "@/redux/store";
-import { chalengeSelectScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { Challenge } from "@/types/Chalenge";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -54,7 +54,7 @@ const ChalengeSelect = ({ route }: Props): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.container}>
+      <View style={styles.chalengeSelectContainer}>
         <CenteredDesk
           title={`Operation: ${operationId}`}
           subtitles={[
@@ -68,13 +68,13 @@ const ChalengeSelect = ({ route }: Props): JSX.Element => {
             onPress={() => handleStartChallenge(currentChallenge)}
           />
         </CenteredDesk>
-        <View style={styles.currentChallengeContainer}>
+        <View style={styles.chalengeSelectCurrentContainer}>
           <CenteredDesk title="Completed Challenges" />
         </View>
-        <View style={styles.challengeBoxContainer}>
+        <View style={styles.chalengeSelectBoxContainer}>
           {completedChallenges?.map((challenge) => (
             <View
-              style={styles.challengeBox}
+              style={styles.chalengeSelectBox}
               key={challenge.challengeOrderId}
               id="challengeBox"
             >

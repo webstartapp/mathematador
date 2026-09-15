@@ -13,7 +13,7 @@ import {
   useSettingsHistoryPage,
 } from "@/hooks/useSettingsHistoryPage";
 import { UserSetting } from "@/src/_generated/model";
-import { colors, settingsHistoryScreenStyles as styles } from "@/theme";
+import { colors, styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type SettingsHistoryScreenNavigationProp = StackNavigationProp<
@@ -31,14 +31,14 @@ const renderContent = (
       <ActivityIndicator
         size="large"
         color={colors.white}
-        style={styles.loader}
+        style={styles.settingsHistoryLoader}
       />
     );
   }
 
   if (loadState === "error") {
     return (
-      <ThemedText variant="description" style={styles.message}>
+      <ThemedText variant="description" style={styles.settingsHistoryMessage}>
         Could not load your change history. Please try again later.
       </ThemedText>
     );
@@ -46,7 +46,7 @@ const renderContent = (
 
   if (entries.length === 0) {
     return (
-      <ThemedText variant="description" style={styles.message}>
+      <ThemedText variant="description" style={styles.settingsHistoryMessage}>
         No changes yet.
       </ThemedText>
     );
@@ -78,17 +78,20 @@ const SettingsHistoryScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <CenteredDesk title="Change History" styles={{ container: styles.card }}>
+      <CenteredDesk
+        title="Change History"
+        styles={{ container: styles.settingsHistoryCard }}
+      >
         <ScrollView
-          style={styles.historyList}
-          contentContainerStyle={styles.historyListContent}
+          style={styles.settingsHistoryList}
+          contentContainerStyle={styles.settingsHistoryListContent}
         >
           {renderContent(loadState, entries, currentDeviceId)}
           {hasNextPage && (
             <Button
               title={isLoadingMore ? "Loading..." : "Load More"}
               onPress={loadMore}
-              style={styles.loadMoreButton}
+              style={styles.settingsHistoryLoadMore}
             />
           )}
         </ScrollView>

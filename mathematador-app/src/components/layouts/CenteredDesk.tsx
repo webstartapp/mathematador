@@ -2,7 +2,19 @@ import { FC, ReactNode } from "react";
 import { TextStyle, View, ViewStyle } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { centeredDeskStyles as localStyles } from "@/theme";
+import { styles as themeStyles } from "@/theme";
+
+// Not its own flat "container" key in theme.ts - this is styles.woodPanel
+// (the shared wood-card chrome) plus this one override, composed here
+// rather than duplicating woodPanel's fields under a new name. (The
+// original also set `color: colors.white` here, but `color` isn't a
+// valid View style - a harmless no-op on the <View> below, dropped now
+// that this is an explicitly-typed ViewStyle rather than a loosely
+// inferred StyleSheet.create entry.)
+const containerStyle: ViewStyle = {
+  ...themeStyles.woodPanel,
+  width: "100%",
+};
 
 type CenteredDeskStyleOverrides = Partial<{
   wrapper: ViewStyle;
@@ -20,16 +32,19 @@ const CenteredDesk: FC<{
   styles?: CenteredDeskStyleOverrides;
 }> = ({ title, subtitles, descriptions, children, styles }) => {
   return (
-    <View style={[localStyles.wrapper, styles?.wrapper]}>
-      <View style={[localStyles.container, styles?.container]}>
-        <ThemedText variant="title" style={[localStyles.title, styles?.title]}>
+    <View style={[themeStyles.centeredDeskWrapper, styles?.wrapper]}>
+      <View style={[containerStyle, styles?.container]}>
+        <ThemedText
+          variant="title"
+          style={[themeStyles.centeredDeskTitle, styles?.title]}
+        >
           {title}
         </ThemedText>
         {subtitles?.map((subtitle, index) => (
           <ThemedText
             key={`subtitles_key${index}`}
             variant="subtitle"
-            style={[localStyles.subtitle, styles?.subtitle]}
+            style={[themeStyles.centeredDeskSubtitle, styles?.subtitle]}
           >
             {subtitle}
           </ThemedText>
@@ -38,7 +53,7 @@ const CenteredDesk: FC<{
           <ThemedText
             key={`descriptions_key${index}`}
             variant="description"
-            style={[localStyles.description, styles?.description]}
+            style={[themeStyles.centeredDeskDescription, styles?.description]}
           >
             {description}
           </ThemedText>

@@ -2,7 +2,7 @@ import { FC, JSX } from "react";
 import { Switch, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { colors, settingToggleRowStyles as styles } from "@/theme";
+import { colors, styles } from "@/theme";
 
 interface SettingToggleRowProps {
   label: string;
@@ -18,13 +18,16 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
   onValueChange,
 }): JSX.Element => {
   return (
-    <View style={styles.row}>
-      <View style={styles.textContainer}>
-        <ThemedText variant="subtitle" style={styles.label}>
+    <View style={styles.settingToggleRow}>
+      <View style={styles.settingToggleTextContainer}>
+        <ThemedText variant="subtitle" style={styles.settingToggleLabel}>
           {label}
         </ThemedText>
         {description && (
-          <ThemedText variant="description" style={styles.description}>
+          <ThemedText
+            variant="description"
+            style={styles.settingToggleDescription}
+          >
             {description}
           </ThemedText>
         )}

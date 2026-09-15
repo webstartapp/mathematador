@@ -9,7 +9,7 @@ import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { Operation, operations } from "@/configs/operations";
 import { RootState } from "@/redux/store";
-import { operationSelectionScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
@@ -33,7 +33,7 @@ const OperationprogressItem = ({
   return (
     <TouchableOpacity
       key={operation.operationId}
-      style={styles.operationButton}
+      style={styles.opSelectButton}
       onPress={() => handleOperationPress(operation.operationId)}
     >
       <CenteredDesk
@@ -65,7 +65,7 @@ const OperationSelectionScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.container}>
+      <View style={styles.opSelectContainer}>
         <CenteredDesk
           title="Select Chalenge"
           styles={{
@@ -74,7 +74,7 @@ const OperationSelectionScreen = (): JSX.Element => {
             },
           }}
         />
-        <View style={styles.grid} id="im-grid">
+        <View style={styles.opSelectGrid} id="im-grid">
           {operations.map((operation) => (
             <OperationprogressItem
               key={operation.operationId}

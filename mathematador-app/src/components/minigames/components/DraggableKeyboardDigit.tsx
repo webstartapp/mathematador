@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-import { draggableKeyboardDigitStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 const TAP_MOVEMENT_THRESHOLD = 6;
 
@@ -100,7 +100,7 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
   return (
     <Animated.View
       style={[
-        styles.draggable,
+        styles.draggableDigitWrapper,
         {
           transform: position.getTranslateTransform(),
         },
@@ -110,13 +110,13 @@ export const DraggableKeyboardDigit: FC<DraggableKeyboardDigitProps> = ({
       <View style={{ position: "relative" }}>
         <View
           style={{
-            ...styles.draggableItem,
-            ...(isSelected ? styles.selectedDraggableItem : null),
+            ...styles.draggableDigitItem,
+            ...(isSelected ? styles.draggableDigitSelected : null),
             width: Math.min(digitSize, 40),
             height: Math.min(digitSize, 40),
           }}
         >
-          <Text style={styles.draggableText}>{renderText}</Text>
+          <Text style={styles.draggableDigitText}>{renderText}</Text>
         </View>
       </View>
     </Animated.View>

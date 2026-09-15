@@ -1,7 +1,7 @@
 import { FC, JSX, ReactNode } from "react";
 import { View, Animated } from "react-native";
 
-import { layoutStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,12 +9,12 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({ children }): JSX.Element => {
   return (
-    <View style={styles.fixed}>
+    <View style={styles.layoutFixed}>
       <Animated.ScrollView
-        style={styles.scroller}
-        contentContainerStyle={styles.container}
+        style={styles.layoutScroller}
+        contentContainerStyle={styles.layoutContainer}
       >
-        <View style={styles.container}>{children}</View>
+        <View style={styles.layoutContainer}>{children}</View>
       </Animated.ScrollView>
     </View>
   );

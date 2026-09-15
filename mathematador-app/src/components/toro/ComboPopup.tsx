@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { comboPopupStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 
 const AUTO_DISMISS_DELAY_MS = 1500;
 
@@ -50,9 +50,13 @@ const ComboPopup = ({ comboText }: ComboPopupProps): JSX.Element => {
 
   return (
     <Animated.View
-      style={[styles.overlay, { pointerEvents: "none" }, animatedStyle]}
+      style={[
+        styles.comboPopupOverlay,
+        { pointerEvents: "none" },
+        animatedStyle,
+      ]}
     >
-      <Text style={styles.text}>{displayText}</Text>
+      <Text style={styles.comboPopupText}>{displayText}</Text>
     </Animated.View>
   );
 };

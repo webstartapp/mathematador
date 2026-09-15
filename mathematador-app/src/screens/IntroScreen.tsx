@@ -11,7 +11,7 @@ import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSessionVerification } from "@/hooks/useSessionVerification";
 import { markIntroPlayed } from "@/navigation/introSession";
-import { introScreenStyles as styles } from "@/theme";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type IntroScreenNavigationProp = StackNavigationProp<
@@ -100,16 +100,16 @@ const IntroScreen = (): JSX.Element => {
   }, [player, startMenuMusic]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.introContainer}>
       <VideoView
-        style={styles.video}
+        style={styles.fullBleed}
         player={player}
         contentFit="cover"
         nativeControls={false}
       />
       {showSkip && (
-        <TouchableOpacity style={styles.skipButton} onPress={requestNext}>
-          <Text style={styles.skipText}>Skip</Text>
+        <TouchableOpacity style={styles.introSkipButton} onPress={requestNext}>
+          <Text style={styles.introSkipText}>Skip</Text>
         </TouchableOpacity>
       )}
     </View>
