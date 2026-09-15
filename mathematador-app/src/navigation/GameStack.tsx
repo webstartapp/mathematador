@@ -14,6 +14,8 @@ import GauntletScreen from "@/screens/GauntletScreen";
 import HomeScreen from "@/screens/HomeScreen";
 import IntroScreen from "@/screens/IntroScreen";
 import OperationSelectionScreen from "@/screens/OperationSelectionScreen";
+import SettingsHistoryScreen from "@/screens/SettingsHistoryScreen";
+import SettingsScreen from "@/screens/SettingsScreen";
 import TiendaScreen from "@/screens/TiendaScreen";
 import { RootStackParamList } from "@/types/Navigation";
 
@@ -110,6 +112,20 @@ const GameStack = (): JSX.Element => (
     <Stack.Screen
       name="Gauntlet"
       component={GauntletScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="Settings"
+      component={SettingsScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="SettingsHistory"
+      component={SettingsHistoryScreen}
       options={{
         headerShown: false,
       }}

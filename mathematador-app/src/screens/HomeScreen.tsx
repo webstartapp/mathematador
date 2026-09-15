@@ -53,6 +53,11 @@ const HomeScreen = (): JSX.Element => {
           style={{ backgroundColor: "#FFD700" }}
           textStyle={{ color: "#1a1a1a" }}
         />
+        <Button
+          title="Settings"
+          onPress={() => navigation.navigate("Settings")}
+          style={{ backgroundColor: "#5A5A72" }}
+        />
       </CenteredDesk>
     </Layout>
   );

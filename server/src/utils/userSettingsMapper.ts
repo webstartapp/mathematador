@@ -4,7 +4,10 @@ import { UserSettingsHistoryRow } from "@/types/KnexDBType";
 
 // Only the columns callers actually .select() - a Pick, not the full row
 // type, since knex's return type narrows to exactly the selected columns.
-type SettingsHistoryRowProjection = Pick<UserSettingsHistoryRow, "setting_key" | "setting_value" | "created">;
+type SettingsHistoryRowProjection = Pick<
+  UserSettingsHistoryRow,
+  "setting_key" | "setting_value" | "created" | "device_id"
+>;
 
 // setting_key is stored as a plain string column, but UserSetting.settingKey
 // is the generated literal-union type - safeParse (not a type assertion,
@@ -19,7 +22,8 @@ export const mapSettingsHistoryRows = (rows: SettingsHistoryRowProjection[]): Us
       formattedSettings.push({
         settingKey: parsedKey.data,
         settingValue: settingRow.setting_value,
-        changedAt: settingRow.created.toISOString()
+        changedAt: settingRow.created.toISOString(),
+        deviceId: settingRow.device_id
       });
     }
   }

@@ -59,7 +59,7 @@ Earned coins are used to buy and equip cosmetics in the shop:
 *   **Trajes de Luces (Suits of Lights)**: Torero suits with glowing, matrix-like equation patterns.
 *   **Flares**: Custom entry animations and music when starting a challenge.
 
-> ✅ **Implemented** as *Tienda de Torero* (`TiendaScreen.tsx`). Currently seeded with 4 items (2 capes, 2 suits — see §4); no `flare`-type items are seeded yet even though the schema and UI both support the type. The shop purchase/equip loop is real; equipped items show in a static loadout preview on the Gauntlet screen, but capes/suits don't yet render as the described dynamic in-game animations (spinning Fibonacci spiral, matrix rain, etc.) on the challenge screen itself — today they're a name/price/level-gate with no equipped-state effect on gameplay visuals.
+> ✅ **Implemented** as *Tienda de Torero* (`TiendaScreen.tsx`). Currently seeded with 6 items (2 capes, 2 suits, 2 flares — see §4). The shop purchase/equip loop is real; equipped items show in a static loadout preview on the Gauntlet screen, but capes/suits don't yet render as the described dynamic in-game animations (spinning Fibonacci spiral, matrix rain, etc.) on the challenge screen itself — today they're a name/price/level-gate with no equipped-state effect on gameplay visuals.
 
 ---
 
@@ -97,7 +97,7 @@ A single, fixed-preset challenge generated every calendar day to drive daily use
 
 ## 💾 4. Database Schema
 
-> ✅ **Implemented as designed** — see `server/src/migrations/20260615204201_cosmetics_and_progression.js`. The only structural addition beyond this diagram is a `cosmetic_type` column on `user_cosmetics` (denormalized copy of the cosmetic's type, so the "one equipped item per type" constraint below can be enforced with a database-level partial unique index without a join). Seed data ships 4 cosmetics (2 capes, 2 suits) — no `flare`-type items exist yet despite the type being supported end-to-end.
+> ✅ **Implemented as designed** — see `server/src/migrations/20260915100000_initial_schema.js`. The only structural addition beyond this diagram is a `cosmetic_type` column on `user_cosmetics` (denormalized copy of the cosmetic's type, so the "one equipped item per type" constraint below can be enforced with a database-level partial unique index without a join). Seed data ships 6 cosmetics (2 capes, 2 suits, 2 flares).
 
 To support the cosmetics shop, purchase tracking, and multi-dimensional progression, this is the schema used.
 

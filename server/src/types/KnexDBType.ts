@@ -67,23 +67,26 @@ export interface MinigameProgressRow {
   xp: number;
 }
 
-export interface UserConsentRow {
-  id: string;
-  created: Date;
-  user_id: string;
-  device_id: string;
-  consented_at: Date;
-}
-
 export interface UserSettingsHistoryRow {
-  id: string;
-  created: Date;
   // bigint - node-postgres returns int8/bigserial columns as strings by
   // default (a JS number can't safely represent the full bigint range).
-  sequence: string;
+  // Also this table's monotonic ordering tie-breaker (see the migration) -
+  // a plain `created` timestamp alone can't disambiguate two rows landing
+  // in the same instant.
+  id: string;
+  created: Date;
   user_id: string;
   setting_key: string;
   setting_value: string;
+  // Which device made this change - never optional, so the history view
+  // can always say which device a change came from. Doubles as the #31
+  // "consent predates the account" proof: the oldest ads_consent/
+  // gdpr_consent row for an account IS its original consent record (see
+  // userConsentRecord.ts) - user_consents used to be a separate table for
+  // exactly this, but its write path (and every write path here) only
+  // ever runs post-login, so there was never a real reason to keep it
+  // apart from this one.
+  device_id: string;
 }
 
 export type IDBType = {
@@ -94,7 +97,6 @@ export type IDBType = {
   cosmetics: CosmeticRow;
   user_cosmetics: UserCosmeticRow;
   minigame_progress: MinigameProgressRow;
-  user_consents: UserConsentRow;
   user_settings_history: UserSettingsHistoryRow;
 };
 

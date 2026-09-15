@@ -156,18 +156,33 @@ paths:
   /user/settings/history:
     get:
       operationId: user_settings_get_history
-      summary: Get every change ever made to this account's settings, newest first
+      summary: Get one page of this account's settings change history, newest first
       security:
         - bearerAuth: []
+      parameters:
+        - name: cursor
+          in: query
+          required: false
+          description: Opaque pagination cursor from a previous response's nextCursor - omit for the first page
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          # Plain string (parsed server-side), not `type: integer` - same
+          # reasoning as ConsentRecord.consentedAt elsewhere in this file:
+          # a typed numeric schema makes orval emit zod.int(), which needs
+          # zod v4 and breaks the build against this repo's pinned zod v3.
+          description: Max rows to return (default 50, capped at 200)
+          schema:
+            type: string
       responses:
         '200':
-          description: Full settings change history
+          description: One page of settings change history, newest first
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UserSetting'
+                $ref: '#/components/schemas/UserSettingsHistoryPage'
   /user/forgotten-password:
     post:
       operationId: user_forgotten_password
@@ -625,10 +640,16 @@ components:
           type: string
         changedAt:
           type: string
+        deviceId:
+          # Never optional - every write (a toggle or the original consent
+          # sync) always has one, so the history view can always say which
+          # device a change came from.
+          type: string
       required:
         - settingKey
         - settingValue
         - changedAt
+        - deviceId
     UserSettingsUpdateBody:
       type: object
       properties:
@@ -636,9 +657,29 @@ components:
           $ref: '#/components/schemas/UserSettingKey'
         settingValue:
           type: string
+        deviceId:
+          type: string
+          minLength: 1
+          maxLength: 255
       required:
         - settingKey
         - settingValue
+        - deviceId
+    UserSettingsHistoryPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSetting'
+        nextCursor:
+          # null once there are no more pages - pass this value back as the
+          # `cursor` query param to fetch the next one.
+          type: string
+          nullable: true
+      required:
+        - items
+        - nextCursor
     SubscriptionType:
       type: string
       enum:

@@ -10,4 +10,9 @@ import type { UserSettingKey } from './userSettingKey';
 export type UserSettingsUpdateBody = {
   settingKey: UserSettingKey;
   settingValue: string;
+  /**
+     * @minLength 1
+     * @maxLength 255
+     */
+  deviceId: string;
 };

@@ -13,12 +13,16 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 
 import spaceMonoFont from "@/assets/fonts/SpaceMono-Regular.ttf";
-import { silenceThirdPartyWarnings } from "@/helpers/silenceThirdPartyWarnings";
+import {
+  silenceKnownUnhandledRejections,
+  silenceThirdPartyWarnings,
+} from "@/helpers/silenceThirdPartyWarnings";
 import { store, persistor } from "@/redux/store";
 
 const queryClient = new QueryClient();
 
 silenceThirdPartyWarnings();
+silenceKnownUnhandledRejections();
 
 // Prevent the splash screen from auto-hiding before asset loading is
 // complete. Deliberately NOT hidden here once fonts load - IntroScreen holds
