@@ -45,7 +45,16 @@ export const getOrCreateDeviceId = (): Promise<string> => {
       const newDeviceId = generateDeviceId();
       await AsyncStorage.setItem(DEVICE_ID_KEY, newDeviceId);
       return newDeviceId;
-    })();
+      // A transient AsyncStorage failure here would otherwise leave
+      // deviceIdPromise permanently pointed at this same rejected promise -
+      // every later call would keep getting that stale rejection forever
+      // (until app restart) instead of getting a chance to retry. Resetting
+      // the memo before rethrowing lets the next caller start a fresh
+      // attempt.
+    })().catch((storageError) => {
+      deviceIdPromise = null;
+      throw storageError;
+    });
   }
   return deviceIdPromise;
 };

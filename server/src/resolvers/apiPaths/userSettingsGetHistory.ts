@@ -7,9 +7,17 @@ import { mapSettingsHistoryRows } from "@/utils/userSettingsMapper";
 const DEFAULT_HISTORY_PAGE_SIZE = 50;
 const MAX_HISTORY_PAGE_SIZE = 200;
 
+// A syntactically valid cursor with the right shape but garbage content
+// (e.g. created: "not-a-date") would otherwise reach the raw SQL
+// comparison below and fail at the Postgres type-cast level - a 500, not
+// the graceful no-cursor fallback a malformed/tampered cursor deserves. id
+// is a bounded decimal digit string (bigint-as-string, matching the "id"
+// column, capped well above any realistic row count) rather than an
+// unbounded regex, so an absurdly long numeric string can't be shipped
+// through to the query either.
 const HistoryCursorSchema = zod.object({
-  created: zod.string(),
-  id: zod.string()
+  created: zod.string().datetime(),
+  id: zod.string().regex(/^\d{1,20}$/)
 });
 type HistoryCursor = zod.infer<typeof HistoryCursorSchema>;
 

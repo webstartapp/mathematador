@@ -100,8 +100,20 @@ const updateUserSetting = (
 // currently-queued write to settle first - without this, viewing history
 // immediately after a toggle can race the still-in-flight POST and render
 // without that just-made change.
-export const waitForPendingUserSettingsWrites = (): Promise<void> =>
-  pendingWrite;
+// Loops rather than a single await: a write queued WHILE this wait is
+// itself in flight re-assigns the module-level pendingWrite to a new
+// promise chained onto the one just captured - a single await would
+// resolve as soon as that older promise settles, racing ahead of the
+// newer write's still-in-flight network call. Re-reading the reference
+// after each await catches any write queued during the wait, and the loop
+// only stops once a full await cycle sees no new promise appear.
+export const waitForPendingUserSettingsWrites = async (): Promise<void> => {
+  let observedWrite: Promise<void> | null = null;
+  while (observedWrite !== pendingWrite) {
+    observedWrite = pendingWrite;
+    await observedWrite;
+  }
+};
 
 // On mount: pull this account's current settings from the server and apply
 // them over whatever's locally persisted - mirrors TiendaScreen.tsx's
@@ -130,6 +142,15 @@ export const useSyncUserSettings = (): void => {
     // this flag.
     waitForPendingUserSettingsWrites()
       .then(() => {
+        // isCancelled guards this reset and the GET itself, not just the
+        // final dispatch below - without it, a mount that unmounted while
+        // still waiting (e.g. Home remounting again before the earlier
+        // wait even settled) would reset the shared hasLocalUpdate flag and
+        // fire a needless GET on behalf of an effect instance nothing
+        // still cares about, potentially undoing a newer mount's own reset.
+        if (isCancelled) {
+          return null;
+        }
         hasLocalUpdate = false;
         return userSettingsGetCurrent();
       })
