@@ -1,20 +1,18 @@
-import { Ionicons } from "@expo/vector-icons";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { JSX } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
+import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import SettingToggleRow from "@/components/common/SettingToggleRow";
-import ThemedText from "@/components/texts/ThemedText";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { createTextShadow } from "@/helpers/createTextShadow";
 import { useUpdateUserSetting } from "@/hooks/useSyncUserSettings";
 import { setMusicEnabled, setSoundEnabled } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
 import { RootStackParamList } from "@/types/Navigation";
-
-const headerTextShadow = createTextShadow("rgba(0, 0, 0, 0.8)", 1, 1, 5);
 
 type SettingsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -41,20 +39,7 @@ const SettingsScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <ThemedText variant="title" style={styles.title}>
-          Settings
-        </ThemedText>
-        <View style={styles.backBtn} />
-      </View>
-
-      <View style={styles.section}>
+      <CenteredDesk title="Settings" styles={{ container: styles.card }}>
         <Text style={styles.sectionLabel}>Device</Text>
         <SettingToggleRow
           label="Sound Effects"
@@ -73,9 +58,7 @@ const SettingsScreen = (): JSX.Element => {
           value={musicEnabled}
           onValueChange={(next) => dispatch(setMusicEnabled(next))}
         />
-      </View>
 
-      <View style={styles.section}>
         <Text style={styles.sectionLabel}>Account</Text>
         <SettingToggleRow
           label="Ads Consent"
@@ -87,72 +70,47 @@ const SettingsScreen = (): JSX.Element => {
           value={gdprConsent}
           onValueChange={(next) => updateUserSetting("gdpr_consent", next)}
         />
-      </View>
 
-      <TouchableOpacity
-        style={styles.historyLink}
-        onPress={() => navigation.navigate("SettingsHistory")}
-      >
-        <Text style={styles.historyLinkText}>View Change History</Text>
-        <Ionicons name="chevron-forward" size={18} color="#FFD700" />
-      </TouchableOpacity>
+        <Button
+          title="View Change History"
+          onPress={() => navigation.navigate("SettingsHistory")}
+          style={styles.historyButton}
+          textStyle={styles.historyButtonText}
+        />
+        <Button title="Back to Home" onPress={() => navigation.goBack()} />
+      </CenteredDesk>
     </Layout>
   );
 };
 
+// Same recipe CenteredDesk.tsx already uses for its own title/description
+// text on this exact tan/gold card (#d49b57) - flat white-on-#d49b57 alone
+// doesn't meet contrast guidelines, the black halo is what makes it legible
+// (see InfoPageScreen.tsx, which established this pattern first).
+const cardTextShadow = createTextShadow("black", 2, 2, 5);
+
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 10,
-    width: "100%",
-  },
-  backBtn: {
-    padding: 8,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: 10,
-    ...headerTextShadow,
-  },
-  section: {
-    width: "100%",
-    paddingHorizontal: 20,
-    marginTop: 10,
+  card: {
+    maxWidth: 480,
+    padding: 20,
   },
   sectionLabel: {
-    color: "rgba(255, 255, 255, 0.75)",
-    fontSize: 12,
+    color: "#fff",
+    fontSize: 13,
     fontWeight: "700",
     letterSpacing: 1,
-    marginBottom: 10,
     textTransform: "uppercase",
-    ...headerTextShadow,
+    alignSelf: "flex-start",
+    marginTop: 12,
+    marginBottom: 8,
+    ...cardTextShadow,
   },
-  historyLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-    paddingVertical: 12,
+  historyButton: {
+    backgroundColor: "#FFD700",
+    marginTop: 16,
   },
-  historyLinkText: {
-    color: "#FFD700",
-    fontWeight: "600",
-    fontSize: 15,
-    marginRight: 6,
-    ...headerTextShadow,
+  historyButtonText: {
+    color: "#1a1a1a",
   },
 });
 

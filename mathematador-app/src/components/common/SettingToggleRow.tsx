@@ -4,7 +4,10 @@ import { StyleSheet, Switch, View } from "react-native";
 import ThemedText from "@/components/texts/ThemedText";
 import { createTextShadow } from "@/helpers/createTextShadow";
 
-const labelTextShadow = createTextShadow("rgba(0, 0, 0, 0.8)", 1, 1, 4);
+// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
+// exact tan/gold card (#d49b57) - the black halo is what makes flat
+// white text legible on it.
+const rowTextShadow = createTextShadow("black", 2, 2, 5);
 
 interface SettingToggleRowProps {
   label: string;
@@ -34,7 +37,7 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: "rgba(255, 255, 255, 0.2)", true: "#FFD700" }}
+        trackColor={{ false: "rgba(255, 255, 255, 0.3)", true: "#4CD964" }}
         thumbColor="#fff"
       />
     </View>
@@ -46,17 +49,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    // Dark (not light) translucent fill - a light tint barely registers
-    // against this screen's bright background artwork (the same intro
-    // image Home uses), where a dark one gives real contrast regardless
-    // of what's directly behind it.
-    backgroundColor: "rgba(0, 0, 0, 0.45)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginBottom: 12,
+    width: "100%",
+    borderBottomWidth: 1,
+    borderBottomColor: "#B47b37",
+    paddingVertical: 12,
   },
   textContainer: {
     flex: 1,
@@ -64,12 +60,12 @@ const styles = StyleSheet.create({
   },
   label: {
     textAlign: "left",
-    ...labelTextShadow,
+    ...rowTextShadow,
   },
   description: {
-    color: "rgba(255, 255, 255, 0.75)",
+    color: "#fff",
     marginTop: 4,
-    ...labelTextShadow,
+    ...rowTextShadow,
   },
 });
 

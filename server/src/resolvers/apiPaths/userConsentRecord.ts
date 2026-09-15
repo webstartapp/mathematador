@@ -55,6 +55,22 @@ export const userConsentRecord = restAPICall(
           consented_at: consentedAtDate
         })
         .returning("*");
+      // Seeds the settings-history log (#32) with the consent this account
+      // is giving right now, so Settings' Change History view has a real
+      // first entry instead of starting empty until this account's first
+      // manual toggle there. Best-effort: a failure here must not undo or
+      // fail the consent record itself, which is already durably saved
+      // above - and only runs on this genuinely-new-row path, never on the
+      // existingConsent early return or the unique-violation race fallback
+      // below, so a returning login never re-seeds duplicate entries.
+      await knex("user_settings_history")
+        .insert([
+          { user_id: userId, setting_key: "ads_consent", setting_value: "true" },
+          { user_id: userId, setting_key: "gdpr_consent", setting_value: "true" }
+        ])
+        .catch(() => {
+          // Ignored - see comment above.
+        });
     } catch (caughtError) {
       // The read-then-insert above is still a race (two near-simultaneous
       // first logins from different devices), so a unique violation here is

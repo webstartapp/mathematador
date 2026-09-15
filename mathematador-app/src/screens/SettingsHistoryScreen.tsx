@@ -1,25 +1,17 @@
-import { Ionicons } from "@expo/vector-icons";
 import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { JSX, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 
+import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import SettingHistoryRow from "@/components/common/SettingHistoryRow";
+import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
 import { createTextShadow } from "@/helpers/createTextShadow";
 import { userSettingsGetHistory } from "@/src/_generated/api";
 import { UserSetting } from "@/src/_generated/model";
 import { RootStackParamList } from "@/types/Navigation";
-
-const headerTextShadow = createTextShadow("rgba(0, 0, 0, 0.8)", 1, 1, 5);
 
 type SettingsHistoryScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -28,26 +20,35 @@ type SettingsHistoryScreenNavigationProp = StackNavigationProp<
 
 type LoadState = "loading" | "loaded" | "error";
 
+// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
+// exact tan/gold card (#d49b57) - the black halo is what makes flat
+// white text legible on it.
+const cardTextShadow = createTextShadow("black", 2, 2, 5);
+
 const renderContent = (
   loadState: LoadState,
   history: UserSetting[],
 ): JSX.Element => {
   if (loadState === "loading") {
     return (
-      <ActivityIndicator size="large" color="#FFD700" style={styles.loader} />
+      <ActivityIndicator size="large" color="#fff" style={styles.loader} />
     );
   }
 
   if (loadState === "error") {
     return (
-      <Text style={styles.emptyText}>
+      <ThemedText variant="description" style={styles.message}>
         Could not load your change history. Please try again later.
-      </Text>
+      </ThemedText>
     );
   }
 
   if (history.length === 0) {
-    return <Text style={styles.emptyText}>No changes yet.</Text>;
+    return (
+      <ThemedText variant="description" style={styles.message}>
+        No changes yet.
+      </ThemedText>
+    );
   }
 
   return (
@@ -88,64 +89,26 @@ const SettingsHistoryScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <ThemedText variant="title" style={styles.title}>
-          Change History
-        </ThemedText>
-        <View style={styles.backBtn} />
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <CenteredDesk title="Change History" styles={{ container: styles.card }}>
         {renderContent(loadState, history)}
-      </ScrollView>
+        <Button title="Back to Settings" onPress={() => navigation.goBack()} />
+      </CenteredDesk>
     </Layout>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 10,
-    width: "100%",
-  },
-  backBtn: {
-    padding: 8,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: 10,
-    ...headerTextShadow,
-  },
-  scrollContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
+  card: {
+    maxWidth: 480,
+    padding: 20,
   },
   loader: {
-    marginTop: 50,
+    marginVertical: 30,
   },
-  emptyText: {
-    color: "rgba(255, 255, 255, 0.75)",
+  message: {
     textAlign: "center",
-    marginTop: 50,
-    fontSize: 16,
-    ...headerTextShadow,
+    marginVertical: 20,
+    ...cardTextShadow,
   },
 });
 
