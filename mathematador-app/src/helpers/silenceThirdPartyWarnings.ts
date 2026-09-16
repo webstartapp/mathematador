@@ -1,5 +1,5 @@
-// Both of these come from inside dependencies, not this app's own code, and
-// can't be fixed without patching them:
+// All three of these come from inside dependencies, not this app's own
+// code, and can't be fixed without patching them:
 // - react-native-paper's ProgressBar (used in Header.tsx) unconditionally
 //   requests useNativeDriver internally on several of its own animations,
 //   which react-native-web doesn't support.
@@ -8,12 +8,21 @@
 //   `disabled` is set - that's react-native-web's own implementation
 //   (node_modules/react-native-web/dist/exports/TouchableOpacity/index.js),
 //   not anything this app's code does.
-// LogBox.ignoreLogs doesn't catch either on web (verified live - still
+// - expo-router bundles its own fork of @react-navigation/stack
+//   (node_modules/expo-router/build/react-navigation/stack/views/Stack/
+//   Card.js), which still accesses react-native's InteractionManager -
+//   react-native's own re-export getter (node_modules/react-native/index.js)
+//   fires this deprecation notice on that access via warnOnce, regardless
+//   of who touched it. Nothing in this app's own code imports
+//   InteractionManager (confirmed - grep turns up no matches under src/),
+//   so there's no call site here to refactor onto requestIdleCallback.
+// LogBox.ignoreLogs doesn't catch any of these on web (verified live - still
 // printed after LogBox.ignoreLogs is called), so this filters console.warn
 // directly instead.
 const KNOWN_THIRD_PARTY_WARNINGS = [
   "useNativeDriver` is not supported because the native animated module is missing",
   "props.pointerEvents is deprecated. Use style.pointerEvents",
+  "InteractionManager has been deprecated",
 ];
 
 // Both expo-audio's and expo-video's web players call the underlying
