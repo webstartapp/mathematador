@@ -97,7 +97,19 @@ export const useAnimatedBackground = (
     );
   }
   useEffect(() => {
-    context.setBgImage(image);
+    // Deferred a tick, not called directly: this hook's caller (a screen)
+    // sits inside app/index.tsx's own NavigationContainer, nested below
+    // AnimatedBackgroundProvider - updating that ancestor's state right as
+    // the screen's own effect fires can race React Navigation's internal
+    // mount scheduling for that nested tree, which is what was producing
+    // "Can't perform a React state update on a component that hasn't
+    // mounted yet" (confirmed live on Android startup). A macrotask delay
+    // puts this update after whatever mount bookkeeping React Navigation
+    // is still doing for the screen that just rendered.
+    const timeoutId = setTimeout(() => {
+      context.setBgImage(image);
+    }, 0);
+    return () => clearTimeout(timeoutId);
   }, [image, context]);
   return context;
 };
