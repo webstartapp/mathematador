@@ -8,6 +8,17 @@ const GOOGLE_SCRIPT_ID = "google-identity-services-script";
 const GOOGLE_SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 const BUTTON_CONTAINER_ID = "google-sign-in-button-container";
 
+// Module-level, not component state: google.accounts.id.initialize() warns
+// ("is called multiple times... only the last initialized instance will be
+// used") if invoked more than once, which happened here on every remount of
+// this component (confirmed live) - initialize() itself only needs to run
+// once per page load. The credential callback closes over this mutable ref
+// instead of `onCredential` directly, so a later remount with a fresh
+// `onCredential` (a new AuthScreen instance, a changed dependency) still
+// reaches the current handler without needing a second initialize() call.
+let hasInitializedGoogleIdentity = false;
+let latestOnCredential: ((idToken: string) => void) | null = null;
+
 // The global `google` identifier's type comes from src/types/google.d.ts
 // (not `window.google`, which this repo's lint config forbids outright).
 interface GoogleSignInButtonProps {
@@ -42,15 +53,19 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({
     if (!clientId) {
       return;
     }
+    latestOnCredential = onCredential;
     loadGoogleScript(() => {
       const buttonContainer = document.getElementById(BUTTON_CONTAINER_ID);
       if (!google || !buttonContainer) {
         return;
       }
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: (response) => onCredential(response.credential),
-      });
+      if (!hasInitializedGoogleIdentity) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response) => latestOnCredential?.(response.credential),
+        });
+        hasInitializedGoogleIdentity = true;
+      }
       google.accounts.id.renderButton(buttonContainer, {
         theme: "outline",
         size: "large",
