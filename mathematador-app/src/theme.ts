@@ -506,8 +506,15 @@ export const styles = StyleSheet.create({
   // character cut off). Giving this wrapper its own 100% breaks the
   // circularity so the child's 100% has an unambiguous width to resolve
   // against on every platform.
+  // alignItems:"center" has to come with that width - this box is no
+  // longer auto-sized-then-centered by its own parent (that's what
+  // centered it pre-fix), so on any screen wider than a card's own
+  // maxWidth (e.g. desktop web), the card would otherwise sit flush at
+  // the start instead of centered (a real regression, caught live on
+  // AuthScreen's "Join the Coliseo!" card sitting at the left edge).
   centeredDeskWrapper: {
     width: "100%",
+    alignItems: "center",
     // A few px so the card's wood border and the background art behind it
     // both stay visible at the screen edges, instead of the card touching
     // edge-to-edge now that it's no longer accidentally shifted off-screen.
