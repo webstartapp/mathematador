@@ -492,7 +492,27 @@ export const styles = StyleSheet.create({
   // No separate "container" key here - it's styles.woodPanel plus two
   // small overrides, composed directly at the call site instead of
   // duplicating woodPanel's fields under a near-identical new name.
-  centeredDeskWrapper: {},
+  // Explicit width, not left auto-sized: this wrapper's own parent
+  // (Layout.tsx's layoutContainer) uses alignItems:"center", so without a
+  // width of its own this box sizes to its content instead of the screen -
+  // and its child card's `width: "100%"` (in centeredDeskWrapper's sibling
+  // container styles below) then has no well-defined 100% to resolve
+  // against. Native Yoga and react-native-web's CSS engine resolve that
+  // ambiguity differently: web renders it fine, but on a real Android
+  // device the card ends up shifted left with content clipped past the
+  // screen edge (confirmed live, via Android's "Show layout bounds" -
+  // every CenteredDesk-based screen's card was affected, e.g. Settings'
+  // row labels rendering as "EVICE"/"ound Effects" with their first
+  // character cut off). Giving this wrapper its own 100% breaks the
+  // circularity so the child's 100% has an unambiguous width to resolve
+  // against on every platform.
+  centeredDeskWrapper: {
+    width: "100%",
+    // A few px so the card's wood border and the background art behind it
+    // both stay visible at the screen edges, instead of the card touching
+    // edge-to-edge now that it's no longer accidentally shifted off-screen.
+    paddingHorizontal: spacing.sm,
+  },
   centeredDeskTitle: {
     fontSize: typography.size.hero,
     marginBottom: spacing.sm,
