@@ -790,9 +790,7 @@ export const styles = StyleSheet.create({
     color: colors.white,
     fontSize: typography.size.md,
     lineHeight: 24,
-    textShadowColor: "black",
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
+    ...cardTextShadow,
   },
   infoPageMarkdownHeading1: {
     fontSize: typography.size.xxl,
