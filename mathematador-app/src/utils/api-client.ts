@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 
 import { logout } from "@/redux/slices/userSlice";
 import { store } from "@/redux/store";
@@ -16,9 +17,33 @@ export class ApiRequestError extends Error {
   }
 }
 
-const BASE_URL = String(
+const FALLBACK_API_URL = String(
   process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076",
 );
+
+// In dev (running via `expo start`), Constants.expoConfig.hostUri is the
+// host:port a device already used to fetch the JS bundle from Metro - since
+// that connection just worked, the same host reaches the backend too. This
+// tracks the dev machine's real LAN IP automatically (it's often a DHCP
+// lease that changes across networks/reboots) instead of relying on
+// EXPO_PUBLIC_API_URL being hand-updated to match, which is what broke a
+// physical Android device reaching a "localhost"-configured backend URL
+// (localhost on-device resolves to the device itself, not this machine).
+// hostUri is undefined in a production/standalone build and on web (where
+// browser and server already share a machine, so the existing env-var
+// fallback is already correct) - only the host is taken from hostUri, since
+// its port is Metro's own bundler port, not the backend server's.
+const resolveBaseUrl = (): string => {
+  const devHost = Constants.expoConfig?.hostUri?.split(":")[0];
+  if (!devHost) {
+    return FALLBACK_API_URL;
+  }
+  const apiPortMatch = /:(\d+)(?:\/|$)/.exec(FALLBACK_API_URL);
+  const apiPort = apiPortMatch ? apiPortMatch[1] : "4076";
+  return `http://${devHost}:${apiPort}`;
+};
+
+const BASE_URL = resolveBaseUrl();
 
 const PERSISTED_TOKEN_KEY = "auth_token";
 
