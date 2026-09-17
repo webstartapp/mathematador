@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Constants from "expo-constants";
 
+import { resolveApiBaseUrl } from "@/helpers/resolveApiBaseUrl";
 import { logout } from "@/redux/slices/userSlice";
 import { store } from "@/redux/store";
 
@@ -17,64 +17,7 @@ export class ApiRequestError extends Error {
   }
 }
 
-const FALLBACK_API_URL = String(
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076",
-);
-
-// Only these host shapes are safe to assume are this dev machine's own LAN
-// address, reachable on our backend's port too: a plain IPv4 dotted-quad,
-// "localhost", or a bracketed IPv6 literal ("[::1]"). @expo/cli's hostUri
-// can just as easily be a public tunnel domain (*.exp.direct, ngrok, ...)
-// when using `expo start --tunnel`, or a packager-proxy host - neither is
-// this machine, so guessing our backend lives there on a different port
-// would send every request somewhere that was never listening for them.
-const LAN_HOST_PATTERN =
-  /^(localhost|\d{1,3}(\.\d{1,3}){3}|\[[0-9a-fA-F:]+\])$/;
-
-// In dev (running via `expo start`), Constants.expoConfig.hostUri is the
-// host:port a device already used to fetch the JS bundle from Metro - since
-// that connection just worked, the same host reaches the backend too. This
-// tracks the dev machine's real LAN IP automatically (it's often a DHCP
-// lease that changes across networks/reboots) instead of relying on
-// EXPO_PUBLIC_API_URL being hand-updated to match, which is what broke a
-// physical Android device reaching a "localhost"-configured backend URL
-// (localhost on-device resolves to the device itself, not this machine).
-// hostUri is undefined in a production/standalone build and on web (where
-// browser and server already share a machine, so the existing env-var
-// fallback is already correct) - only the host is taken from hostUri, since
-// its port is Metro's own bundler port, not the backend server's.
-const resolveDevHost = (hostUri: string): string | undefined => {
-  if (hostUri.startsWith("[")) {
-    // Bracketed IPv6 - split at the closing bracket, not the last colon:
-    // the address's own colons would otherwise be misread as the
-    // host/port separator.
-    const closingBracketIndex = hostUri.indexOf("]");
-    return closingBracketIndex === -1
-      ? undefined
-      : hostUri.slice(0, closingBracketIndex + 1);
-  }
-  const lastColonIndex = hostUri.lastIndexOf(":");
-  const candidate =
-    lastColonIndex === -1 ? hostUri : hostUri.slice(0, lastColonIndex);
-  // A leftover colon means this was actually an unbracketed raw IPv6
-  // address (@expo/cli doesn't bracket one), not a plain host:port pair -
-  // there's no reliable way to tell where the address ends and the port
-  // begins, so this is treated as unparseable rather than guessed at.
-  return candidate.includes(":") ? undefined : candidate;
-};
-
-const resolveBaseUrl = (): string => {
-  const hostUri = Constants.expoConfig?.hostUri;
-  const devHost = hostUri ? resolveDevHost(hostUri) : undefined;
-  if (!devHost || !LAN_HOST_PATTERN.test(devHost)) {
-    return FALLBACK_API_URL;
-  }
-  const apiPortMatch = /:(\d+)(?:\/|$)/.exec(FALLBACK_API_URL);
-  const apiPort = apiPortMatch ? apiPortMatch[1] : "4076";
-  return `http://${devHost}:${apiPort}`;
-};
-
-const BASE_URL = resolveBaseUrl();
+const BASE_URL = resolveApiBaseUrl();
 
 const PERSISTED_TOKEN_KEY = "auth_token";
 
@@ -234,17 +177,13 @@ export const customInstance = async <T>(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const parsedBody = responseText ? JSON.parse(responseText) : undefined;
 
-  // The generated fetcher types this call's result as T from the OpenAPI
-  // spec - for a custom mutator, orval always generates that as the
-  // axios-style { data, status, headers } shape, regardless of what the
-  // mutator itself actually does under the hood (it has no way to
-  // introspect arbitrary user code). Wrap the parsed body to match, or
-  // every generated fetcher's `.data` access silently reads undefined.
-  // Spreading parsedBody (typed any) is what lets this literal's inferred
-  // type flow through as any overall, satisfying the generic T below the
-  // same way returning parsedBody directly used to - a plain `data:
-  // parsedBody` property here would give the object a concrete shape TS
-  // can't prove assignable to an arbitrary T.
+  // Orval always generates a custom mutator's result as the axios-style
+  // { data, status, headers } shape regardless of what it actually does
+  // under the hood - wrap the parsed body to match, or every generated
+  // fetcher's `.data` access silently reads undefined. Spreading
+  // parsedBody (typed any) is what lets this satisfy the generic T below
+  // - a plain `data: parsedBody` property would give this a concrete
+  // shape TS can't prove assignable to an arbitrary T.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const wrappedResponse = {
     ...parsedBody,
