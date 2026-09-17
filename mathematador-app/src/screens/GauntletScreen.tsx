@@ -12,8 +12,9 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 
+import Card from "@/components/common/Card";
 import Layout from "@/components/common/Layout";
-import ThemedText from "@/components/texts/ThemedText";
+import ScreenHeader from "@/components/common/ScreenHeader";
 import { RootState } from "@/redux/store";
 import { challengeStartNew } from "@/src/_generated/api";
 import { Challenge as ApiChallenge } from "@/src/_generated/model";
@@ -86,31 +87,8 @@ const createOfflineChallenge = (
   };
 };
 
-const renderHeader = (
-  navigation: GauntletScreenNavigationProp,
-): JSX.Element => (
-  <View style={styles.screenHeader}>
-    <TouchableOpacity
-      style={styles.headerBackButton}
-      onPress={() => navigation.goBack()}
-    >
-      <Ionicons name="arrow-back" size={24} color={colors.white} />
-    </TouchableOpacity>
-    <ThemedText variant="title" style={styles.gauntletTitle}>
-      Coliseo de los Números
-    </ThemedText>
-    <View style={{ width: 40 }} />
-  </View>
-);
-
 const renderLoadout = (user: RootState["user"]): JSX.Element => (
-  <View
-    style={[
-      styles.overlayCardSubtle,
-      styles.cardDropShadow,
-      styles.gauntletGlassPanel,
-    ]}
-  >
+  <Card style={styles.gauntletGlassPanel}>
     <Text style={styles.gauntletSectionTitle}>
       <Ionicons name="shirt-outline" size={18} /> Equipped Loadout
     </Text>
@@ -149,7 +127,7 @@ const renderLoadout = (user: RootState["user"]): JSX.Element => (
         </Text>
       </View>
     </View>
-  </View>
+  </Card>
 );
 
 interface CardProps {
@@ -158,13 +136,7 @@ interface CardProps {
 }
 
 const ArenaCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
-  <View
-    style={[
-      styles.overlayCardSubtle,
-      styles.cardDropShadow,
-      styles.gauntletGlassPanel,
-    ]}
-  >
+  <Card style={styles.gauntletGlassPanel}>
     <View style={styles.gauntletModeHeader}>
       <View>
         <Text style={styles.gauntletModeTitle}>La Gran Corrida</Text>
@@ -193,17 +165,11 @@ const ArenaCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
         </Text>
       )}
     </TouchableOpacity>
-  </View>
+  </Card>
 );
 
 const DailyCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
-  <View
-    style={[
-      styles.overlayCardSubtle,
-      styles.cardDropShadow,
-      styles.gauntletGlassPanel,
-    ]}
-  >
+  <Card style={styles.gauntletGlassPanel}>
     <View style={styles.gauntletModeHeader}>
       <View>
         <Text style={styles.gauntletModeTitle}>Corrida Diaria</Text>
@@ -234,7 +200,7 @@ const DailyCard = ({ startingMode, onPress }: CardProps): JSX.Element => (
         </Text>
       )}
     </TouchableOpacity>
-  </View>
+  </Card>
 );
 
 const GauntletScreen = (): JSX.Element => {
@@ -298,7 +264,10 @@ const GauntletScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      {renderHeader(navigation)}
+      <ScreenHeader
+        title="Coliseo de los Números"
+        onBack={() => navigation.goBack()}
+      />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {renderLoadout(user)}
@@ -314,13 +283,7 @@ const GauntletScreen = (): JSX.Element => {
         />
 
         {/* Leaderboard panel */}
-        <View
-          style={[
-            styles.overlayCardSubtle,
-            styles.cardDropShadow,
-            styles.gauntletGlassPanel,
-          ]}
-        >
+        <Card style={styles.gauntletGlassPanel}>
           <Text style={styles.gauntletSectionTitle}>
             <Ionicons name="trophy-outline" size={18} /> Arena Leaderboard
           </Text>
@@ -344,7 +307,7 @@ const GauntletScreen = (): JSX.Element => {
             <Text style={styles.gauntletPlayer}>You</Text>
             <Text style={styles.gauntletScore}>Wave 12</Text>
           </View>
-        </View>
+        </Card>
       </ScrollView>
     </Layout>
   );

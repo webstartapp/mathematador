@@ -1,6 +1,7 @@
 import { FC, JSX } from "react";
-import { Switch, View } from "react-native";
+import { Switch } from "react-native";
 
+import ListRow from "@/components/common/ListRow";
 import ThemedText from "@/components/texts/ThemedText";
 import { colors, styles } from "@/theme";
 
@@ -18,27 +19,29 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
   onValueChange,
 }): JSX.Element => {
   return (
-    <View style={styles.settingToggleRow}>
-      <View style={styles.settingToggleTextContainer}>
-        <ThemedText variant="subtitle" style={styles.settingToggleLabel}>
-          {label}
+    <ListRow
+      label={label}
+      accessory={
+        <Switch
+          value={value}
+          onValueChange={onValueChange}
+          trackColor={{
+            false: "rgba(255, 255, 255, 0.3)",
+            true: colors.success,
+          }}
+          thumbColor={colors.white}
+        />
+      }
+    >
+      {description && (
+        <ThemedText
+          variant="description"
+          style={styles.settingToggleDescription}
+        >
+          {description}
         </ThemedText>
-        {description && (
-          <ThemedText
-            variant="description"
-            style={styles.settingToggleDescription}
-          >
-            {description}
-          </ThemedText>
-        )}
-      </View>
-      <Switch
-        value={value}
-        onValueChange={onValueChange}
-        trackColor={{ false: "rgba(255, 255, 255, 0.3)", true: colors.success }}
-        thumbColor={colors.white}
-      />
-    </View>
+      )}
+    </ListRow>
   );
 };
 

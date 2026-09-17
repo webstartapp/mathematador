@@ -5,6 +5,7 @@ import { ActivityIndicator, ScrollView } from "react-native";
 
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
+import ScreenHeader from "@/components/common/ScreenHeader";
 import SettingHistoryRow from "@/components/common/SettingHistoryRow";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";
@@ -78,10 +79,8 @@ const SettingsHistoryScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <CenteredDesk
-        title="Change History"
-        styles={{ container: styles.settingsHistoryCard }}
-      >
+      <ScreenHeader title="Change History" onBack={() => navigation.goBack()} />
+      <CenteredDesk styles={{ container: styles.screenCardMd }}>
         <ScrollView
           style={styles.settingsHistoryList}
           contentContainerStyle={styles.settingsHistoryListContent}
@@ -95,7 +94,6 @@ const SettingsHistoryScreen = (): JSX.Element => {
             />
           )}
         </ScrollView>
-        <Button title="Back to Settings" onPress={() => navigation.goBack()} />
       </CenteredDesk>
     </Layout>
   );

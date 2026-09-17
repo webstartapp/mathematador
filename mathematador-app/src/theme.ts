@@ -190,7 +190,7 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  // Tienda's and Gauntlet's top header bar - identical in both (unlike
+  // Shared by every screen using components/common/ScreenHeader.tsx (unlike
   // ChallengeGameScreen's topBar, which has no back button and a
   // different, timer-focused layout, so isn't merged in here).
   screenHeader: {
@@ -202,11 +202,25 @@ export const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
     width: "100%",
   },
-  // The round back button in that same header - identical in both.
+  // The round back button in that same header.
   headerBackButton: {
     padding: spacing.sm,
     backgroundColor: colors.overlay.medium,
     borderRadius: radii.xl,
+  },
+  screenHeaderTitle: {
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
+    flex: 1,
+    textAlign: "center",
+    marginHorizontal: spacing.sm,
+  },
+  // Same footprint as headerBackButton (icon 24 + padding.sm on both
+  // sides = 40) - rendered in the header's right slot when a screen has
+  // no right-side content, so the title stays centered either way.
+  screenHeaderRightSpacer: {
+    width: 40,
   },
 
   // ---- app/+not-found.tsx ----
@@ -634,8 +648,11 @@ export const styles = StyleSheet.create({
     color: colors.white,
   },
 
-  // ---- components/common/SettingToggleRow.tsx ----
-  settingToggleRow: {
+  // ---- components/common/ListRow.tsx (shared by SettingToggleRow and
+  // SettingHistoryRow - both wanted an identical outer row/text-container/
+  // label shell, differing only in their own secondary lines and their
+  // right-side accessory: a Switch for one, a value Text for the other) ----
+  listRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -644,14 +661,16 @@ export const styles = StyleSheet.create({
     borderBottomColor: colors.wood.border,
     paddingVertical: spacing.md,
   },
-  settingToggleTextContainer: {
+  listRowTextContainer: {
     flex: 1,
     marginRight: spacing.md,
   },
-  settingToggleLabel: {
+  listRowLabel: {
     textAlign: "left",
     ...cardTextShadow,
   },
+
+  // ---- components/common/SettingToggleRow.tsx ----
   settingToggleDescription: {
     color: colors.white,
     marginTop: spacing.xs,
@@ -659,23 +678,6 @@ export const styles = StyleSheet.create({
   },
 
   // ---- components/common/SettingHistoryRow.tsx ----
-  settingHistoryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.wood.border,
-    paddingVertical: spacing.md,
-  },
-  settingHistoryTextContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  settingHistoryLabel: {
-    textAlign: "left",
-    ...cardTextShadow,
-  },
   settingHistoryDate: {
     color: colors.white,
     fontSize: typography.size.sm,
@@ -696,10 +698,8 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/SettingsScreen.tsx ----
-  settingsCard: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
+  // No own card-width key - identical to screenCardMd (the settings/
+  // history screens' shared card width), used directly instead.
   settingsSectionLabel: {
     color: colors.white,
     // Not typography.size.sm (12) - this is a distinct 13px value shared
@@ -724,10 +724,7 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/SettingsHistoryScreen.tsx ----
-  settingsHistoryCard: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
+  // No own card-width key here either - same screenCardMd as Settings.
   // Layout.tsx's own outer ScrollView constrains its content container to
   // height: "100%" rather than letting it grow, so it can't scroll content
   // taller than the viewport on its own (TiendaScreen works around the same
@@ -1026,14 +1023,6 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/GauntletScreen.tsx ----
-  gauntletTitle: {
-    fontSize: typography.size.xl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: spacing.sm,
-  },
   gauntletGlassPanel: {
     padding: spacing.lg,
     marginBottom: spacing.xl,
@@ -1141,14 +1130,6 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/TiendaScreen.tsx ----
-  tiendaTitle: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: spacing.sm,
-  },
   tiendaCoinsWrapper: {
     flexDirection: "row",
     alignItems: "center",

@@ -27,7 +27,11 @@ type CenteredDeskStyleOverrides = Partial<{
 }>;
 
 const CenteredDesk: FC<{
-  title: string;
+  // Optional - a screen with its own top ScreenHeader (e.g.
+  // SettingsScreen) passes no title here, since the header already shows
+  // it; every other caller still passes one to render as this card's own
+  // heading.
+  title?: string;
   subtitles?: string[];
   descriptions?: string[];
   children?: ReactNode;
@@ -42,12 +46,14 @@ const CenteredDesk: FC<{
           styles?.container,
         ]}
       >
-        <ThemedText
-          variant="title"
-          style={[themeStyles.centeredDeskTitle, styles?.title]}
-        >
-          {title}
-        </ThemedText>
+        {title && (
+          <ThemedText
+            variant="title"
+            style={[themeStyles.centeredDeskTitle, styles?.title]}
+          >
+            {title}
+          </ThemedText>
+        )}
         {subtitles?.map((subtitle, index) => (
           <ThemedText
             key={`subtitles_key${index}`}
