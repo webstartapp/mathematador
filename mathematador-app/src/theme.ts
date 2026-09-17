@@ -3,7 +3,7 @@
 // things leave this file: `styles`, the one flat stylesheet (every key a
 // direct top-level entry, no per-screen/per-component nesting - two
 // screens that both want a "card" get distinctly-named flat keys,
-// settingsCard vs authCard, rather than two same-named keys buried in two
+// screenCardMd vs authCard, rather than two same-named keys buried in two
 // different nested objects), and `colors`, the raw color token table -
 // kept separate because it's consumed directly as prop values (an
 // Ionicons `color` prop, an ActivityIndicator `color` prop), not as a
@@ -201,6 +201,13 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: spacing.sm,
     width: "100%",
+    // Position anchor for screenHeaderTitleWrap below - the title is
+    // centered on this row's own full width, not on the space left over
+    // between the back button and `right` (those two rarely match widths
+    // - Tienda's coin pill is wider than the back button - so centering
+    // the title in the leftover flex space would visibly shift it off
+    // center instead).
+    position: "relative",
   },
   // The round back button in that same header.
   headerBackButton: {
@@ -208,13 +215,27 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.overlay.medium,
     borderRadius: radii.xl,
   },
+  // Absolutely positioned across the header's own full width (see
+  // screenHeader's position:"relative") and centered independently of
+  // the back button/right slot - see screenHeader's comment. pointerEvents
+  // "none" (set on the wrapping View in ScreenHeader.tsx) lets touches
+  // outside the title's own text still reach the back button/right slot
+  // beneath this layer.
+  screenHeaderTitleWrap: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 56,
+  },
   screenHeaderTitle: {
     fontSize: typography.size.xxl,
     fontWeight: typography.weight.bold,
     color: colors.white,
-    flex: 1,
     textAlign: "center",
-    marginHorizontal: spacing.sm,
   },
   // Same footprint as headerBackButton (icon 24 + padding.sm on both
   // sides = 40) - rendered in the header's right slot when a screen has
