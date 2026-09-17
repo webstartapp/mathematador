@@ -1,0 +1,97 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "cartoonArcadiaSDXLSD1_xenoArcadiaCX.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": ["1", 0],
+      "clip": ["1", 1],
+      "lora_name": "AnimateLCM_sd15_t2v_lora.safetensors",
+      "strength_model": 1.0,
+      "strength_clip": 1.0
+    }
+  },
+  "3": {
+    "class_type": "ADE_AnimateDiffLoaderWithContext",
+    "inputs": {
+      "model": ["2", 0],
+      "model_name": "AnimateLCM_sd15_t2v.ckpt",
+      "beta_schedule": "lcm >> sqrt_linear"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "intro_portrait_seed2.png"
+    }
+  },
+  "5": {
+    "class_type": "RepeatImageBatch",
+    "inputs": {
+      "image": ["4", 0],
+      "amount": 32
+    }
+  },
+  "6": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": ["5", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a cheerful young Mathematador boy in a bright teal and gold torero outfit, swinging a glowing cape covered in shifting numbers, warm sunlit Spanish arena, colorful banners with math symbols, cheering crowd, golden coins and sparkles floating, Pixar style 3D animation, warm saturated colors, gentle idle sway motion, cape fluttering",
+      "clip": ["2", 1]
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "neon, cyberpunk, futuristic, geometric wireframe, dark background, flat cartoon, thick black outline, deformed, extra limbs, watermark, text, blurry, low quality",
+      "clip": ["2", 1]
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["3", 0],
+      "positive": ["7", 0],
+      "negative": ["8", 0],
+      "latent_image": ["6", 0],
+      "seed": 4343,
+      "steps": 13,
+      "cfg": 2,
+      "sampler_name": "lcm",
+      "scheduler": "beta",
+      "denoise": 0.4
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["9", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "11": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": ["10", 0],
+      "frame_rate": 8,
+      "loop_count": 0,
+      "filename_prefix": "intro_portrait_v2",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 12,
+      "save_metadata": true,
+      "pingpong": false,
+      "save_output": true
+    }
+  }
+}
