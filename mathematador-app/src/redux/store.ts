@@ -57,6 +57,18 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
+      // Default warnAfter (32ms) is tuned for typical web/CI hardware - a
+      // mid-range Android device's JS thread is slow enough that walking
+      // this app's state tree routinely crosses it on an ordinary dispatch
+      // (confirmed live: 39-65ms on a physical device, nothing actually
+      // wrong with any reducer). The check itself stays on - it still
+      // catches a genuine accidental mutation - only the noisy dev-console
+      // warning threshold is raised to match real device performance
+      // instead of a desktop-tuned default. Dev-only either way; this
+      // middleware doesn't run in production builds at all.
+      immutableCheck: {
+        warnAfter: 128,
+      },
     }),
 });
 

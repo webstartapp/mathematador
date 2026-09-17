@@ -1,7 +1,8 @@
 import { FC } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import { ExerciseInputPosition } from "@/src/types/Chalenge";
+import { styles } from "@/theme";
 
 export type ExerciseDigitProps = {
   value?: string;
@@ -25,8 +26,10 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
   isTargetable,
 }) => {
   const containerStyle = [
-    isUnknown ? styles.unknownDigitContainer : styles.digitContainer,
-    isTargetable ? styles.targetableDigitContainer : null,
+    isUnknown
+      ? styles.exerciseDigitUnknownContainer
+      : styles.exerciseDigitContainer,
+    isTargetable ? styles.exerciseDigitTargetable : null,
   ];
   const digitContent = (
     <View
@@ -35,7 +38,11 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
         if (forwardRef) forwardRef(refI);
       }}
     >
-      <Text style={isUnknown ? styles.unknownDigit : styles.digit}>
+      <Text
+        style={
+          isUnknown ? styles.exerciseDigitUnknownText : styles.exerciseDigitText
+        }
+      >
         {value || "?"}
       </Text>
     </View>
@@ -51,45 +58,5 @@ const ExeriseDigit: FC<ExerciseDigitProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  unknownDigitContainer: {
-    borderColor: "#FFFFFF",
-    borderWidth: 5,
-    backgroundColor: "#744b17",
-    borderRadius: 4,
-    padding: 5,
-    margin: 2,
-    minWidth: 75,
-    height: 75,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  digitContainer: {
-    borderColor: "#E4Ab67",
-    borderWidth: 5,
-    backgroundColor: "#d49b57",
-    borderRadius: 4,
-    padding: 5,
-    margin: 2,
-    minWidth: 50,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  targetableDigitContainer: {
-    borderColor: "#FFD700",
-  },
-  unknownDigit: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  digit: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-});
 
 export default ExeriseDigit;

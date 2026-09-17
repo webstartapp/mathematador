@@ -7,13 +7,9 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import {
-  ImageSourcePropType,
-  StyleSheet,
-  View,
-  Animated,
-  Platform,
-} from "react-native";
+import { ImageSourcePropType, View, Animated, Platform } from "react-native";
+
+import { styles } from "@/theme";
 
 type AnimatedImageProps = {
   image: ImageSourcePropType | undefined;
@@ -69,7 +65,7 @@ export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
     <Animated.Image
       source={image}
       style={[
-        styles.backgroundImage,
+        styles.animatedImageBackground,
         {
           transform: [
             { scale: scaleAnim },
@@ -101,7 +97,19 @@ export const useAnimatedBackground = (
     );
   }
   useEffect(() => {
-    context.setBgImage(image);
+    // Deferred a tick, not called directly: this hook's caller (a screen)
+    // sits inside app/index.tsx's own NavigationContainer, nested below
+    // AnimatedBackgroundProvider - updating that ancestor's state right as
+    // the screen's own effect fires can race React Navigation's internal
+    // mount scheduling for that nested tree, which is what was producing
+    // "Can't perform a React state update on a component that hasn't
+    // mounted yet" (confirmed live on Android startup). A macrotask delay
+    // puts this update after whatever mount bookkeeping React Navigation
+    // is still doing for the screen that just rendered.
+    const timeoutId = setTimeout(() => {
+      context.setBgImage(image);
+    }, 0);
+    return () => clearTimeout(timeoutId);
   }, [image, context]);
   return context;
 };
@@ -115,10 +123,13 @@ const AnimatedBackgroundProvider: FC<AnimatedBackgroundProviderProps> = ({
 }) => {
   const [bgImage, setBgImage] = useState<ImageSourcePropType>();
   return (
-    <View style={styles.container}>
+    <View style={styles.animatedImageContainer}>
       <AnimatedImageContext.Provider value={{ bgImage, setBgImage }}>
         <AnimatedImage image={bgImage} />
-        <View style={styles.childrenWrapper} id="AnimatedImageBackground">
+        <View
+          style={styles.animatedImageChildrenWrapper}
+          id="AnimatedImageBackground"
+        >
           {children}
         </View>
       </AnimatedImageContext.Provider>
@@ -127,45 +138,3 @@ const AnimatedBackgroundProvider: FC<AnimatedBackgroundProviderProps> = ({
 };
 
 export default AnimatedBackgroundProvider;
-
-const styles = StyleSheet.create({
-  backgroundImage: {
-    position: "absolute",
-    // Oversized so the scale/translate wobble never exposes the container's
-    // edges. An absolutely-positioned child isn't reliably centered by the
-    // parent's flex alignment alone (confirmed live: without these
-    // offsets, the image drifted almost entirely below the visible area,
-    // leaving only a sliver visible at the bottom) - top/left explicitly
-    // center the oversized box: -(120%-100%)/2 and -(110%-100%)/2.
-    top: "-5%",
-    left: "-10%",
-    width: "120%",
-    height: "110%",
-  },
-  container: {
-    display: "flex",
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  childrenWrapper: {
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    // Was a semi-transparent white scrim, but the only screens using this
-    // background (Home, Auth) put their text inside an opaque card
-    // (CenteredDesk), never directly over the image - so it only ever
-    // washed the image out once it became visible (see index.tsx's
-    // transparentNavigationTheme fix).
-    backgroundColor: "transparent",
-    display: "flex",
-    flex: 1,
-    alignContent: "center",
-    padding: 0,
-    margin: 0,
-  },
-});

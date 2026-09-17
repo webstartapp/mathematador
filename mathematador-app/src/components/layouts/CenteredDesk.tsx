@@ -1,49 +1,22 @@
 import { FC, ReactNode } from "react";
-import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
+import { TextStyle, View, ViewStyle } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
+import { styles as themeStyles } from "@/theme";
 
-const bodyTextShadow = createTextShadow("black", 2, 2, 5);
-
-const localStyles = StyleSheet.create({
-  container: {
-    borderRadius: 10,
-    borderColor: "#E4Ab67",
-    borderWidth: 5,
-    backgroundColor: "#d49b57",
-    color: "#fff",
-    width: "100%",
-    boxShadow: [{ offsetX: 2, offsetY: 2, blurRadius: 0, color: "#B47b37" }],
-  },
-  wrapper: {},
-  title: {
-    fontSize: 30,
-    marginBottom: 10,
-    color: "white",
-    ...bodyTextShadow,
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-  subtitle: {
-    fontSize: 24,
-    marginBottom: 5,
-    color: "white",
-    ...bodyTextShadow,
-    textAlign: "center",
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-  description: {
-    fontSize: 18,
-    marginBottom: 5,
-    color: "white",
-    ...bodyTextShadow,
-    textAlign: "justify",
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-});
+// Not its own flat "container" key in theme.ts - this is styles.woodPanel
+// (the shared wood-card chrome) plus this one override, composed here
+// rather than duplicating woodPanel's fields under a new name. Kept as a
+// style array (not an object spread) - StyleSheet.create's results can be
+// opaque native identifiers rather than plain objects, so spreading one
+// into a new object can silently drop all its fields on native. (The
+// original also set `color: colors.white` here, but `color` isn't a
+// valid View style - a harmless no-op on the <View> below, dropped now
+// that this is an explicitly-typed ViewStyle rather than a loosely
+// inferred StyleSheet.create entry.)
+const containerStyleOverride: ViewStyle = {
+  width: "100%",
+};
 
 type CenteredDeskStyleOverrides = Partial<{
   wrapper: ViewStyle;
@@ -61,16 +34,25 @@ const CenteredDesk: FC<{
   styles?: CenteredDeskStyleOverrides;
 }> = ({ title, subtitles, descriptions, children, styles }) => {
   return (
-    <View style={[localStyles.wrapper, styles?.wrapper]}>
-      <View style={[localStyles.container, styles?.container]}>
-        <ThemedText variant="title" style={[localStyles.title, styles?.title]}>
+    <View style={[themeStyles.centeredDeskWrapper, styles?.wrapper]}>
+      <View
+        style={[
+          themeStyles.woodPanel,
+          containerStyleOverride,
+          styles?.container,
+        ]}
+      >
+        <ThemedText
+          variant="title"
+          style={[themeStyles.centeredDeskTitle, styles?.title]}
+        >
           {title}
         </ThemedText>
         {subtitles?.map((subtitle, index) => (
           <ThemedText
             key={`subtitles_key${index}`}
             variant="subtitle"
-            style={[localStyles.subtitle, styles?.subtitle]}
+            style={[themeStyles.centeredDeskSubtitle, styles?.subtitle]}
           >
             {subtitle}
           </ThemedText>
@@ -79,7 +61,7 @@ const CenteredDesk: FC<{
           <ThemedText
             key={`descriptions_key${index}`}
             variant="description"
-            style={[localStyles.description, styles?.description]}
+            style={[themeStyles.centeredDeskDescription, styles?.description]}
           >
             {description}
           </ThemedText>

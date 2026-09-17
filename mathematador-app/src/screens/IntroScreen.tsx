@@ -5,12 +5,13 @@ import { RouteProp, useRoute } from "expo-router/react-navigation";
 import * as SplashScreen from "expo-splash-screen";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { JSX, useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSessionVerification } from "@/hooks/useSessionVerification";
 import { markIntroPlayed } from "@/navigation/introSession";
+import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type IntroScreenNavigationProp = StackNavigationProp<
@@ -99,46 +100,20 @@ const IntroScreen = (): JSX.Element => {
   }, [player, startMenuMusic]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.introContainer}>
       <VideoView
-        style={styles.video}
+        style={styles.fullBleed}
         player={player}
         contentFit="cover"
         nativeControls={false}
       />
       {showSkip && (
-        <TouchableOpacity style={styles.skipButton} onPress={requestNext}>
-          <Text style={styles.skipText}>Skip</Text>
+        <TouchableOpacity style={styles.introSkipButton} onPress={requestNext}>
+          <Text style={styles.introSkipText}>Skip</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-  video: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-  },
-  skipButton: {
-    position: "absolute",
-    bottom: 40,
-    right: 24,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  skipText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});
 
 export default IntroScreen;

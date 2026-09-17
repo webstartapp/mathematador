@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, JSX } from "react";
-import { Animated, View, StyleSheet } from "react-native";
+import { Animated, View } from "react-native";
+
+import { styles } from "@/theme";
 
 type AnimatedNumberProps = {
   startValue: number;
@@ -37,15 +39,11 @@ const AnimatedNumber = ({
 
   return (
     <View>
-      <Animated.Text style={styles.whiteText}>{displayValue}</Animated.Text>
+      <Animated.Text style={styles.animatedNumberText}>
+        {displayValue}
+      </Animated.Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  whiteText: {
-    color: "#FFFFFF",
-  },
-});
 
 export default AnimatedNumber;

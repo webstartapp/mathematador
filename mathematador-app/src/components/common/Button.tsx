@@ -1,11 +1,8 @@
 import { FC, JSX } from "react";
-import {
-  TouchableOpacity,
-  StyleSheet,
-  GestureResponderEvent,
-} from "react-native";
+import { TouchableOpacity, GestureResponderEvent } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
+import { styles } from "@/theme";
 
 interface ButtonProps {
   title: string;
@@ -22,23 +19,11 @@ const Button: FC<ButtonProps> = ({
 }): JSX.Element => {
   return (
     <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <ThemedText variant="title" style={[styles.text, textStyle]}>
+      <ThemedText variant="title" style={[styles.buttonText, textStyle]}>
         {title}
       </ThemedText>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#704c21",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  text: {},
-});
 
 export default Button;

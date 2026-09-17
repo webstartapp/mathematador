@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { resolveApiBaseUrl } from "@/helpers/resolveApiBaseUrl";
 import { logout } from "@/redux/slices/userSlice";
 import { store } from "@/redux/store";
 
@@ -16,9 +17,7 @@ export class ApiRequestError extends Error {
   }
 }
 
-const BASE_URL = String(
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:4076",
-);
+const BASE_URL = resolveApiBaseUrl();
 
 const PERSISTED_TOKEN_KEY = "auth_token";
 
@@ -178,17 +177,13 @@ export const customInstance = async <T>(
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const parsedBody = responseText ? JSON.parse(responseText) : undefined;
 
-  // The generated fetcher types this call's result as T from the OpenAPI
-  // spec - for a custom mutator, orval always generates that as the
-  // axios-style { data, status, headers } shape, regardless of what the
-  // mutator itself actually does under the hood (it has no way to
-  // introspect arbitrary user code). Wrap the parsed body to match, or
-  // every generated fetcher's `.data` access silently reads undefined.
-  // Spreading parsedBody (typed any) is what lets this literal's inferred
-  // type flow through as any overall, satisfying the generic T below the
-  // same way returning parsedBody directly used to - a plain `data:
-  // parsedBody` property here would give the object a concrete shape TS
-  // can't prove assignable to an arbitrary T.
+  // Orval always generates a custom mutator's result as the axios-style
+  // { data, status, headers } shape regardless of what it actually does
+  // under the hood - wrap the parsed body to match, or every generated
+  // fetcher's `.data` access silently reads undefined. Spreading
+  // parsedBody (typed any) is what lets this satisfy the generic T below
+  // - a plain `data: parsedBody` property would give this a concrete
+  // shape TS can't prove assignable to an arbitrary T.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const wrappedResponse = {
     ...parsedBody,

@@ -1,13 +1,8 @@
 import { FC, JSX } from "react";
-import { StyleSheet, Switch, View } from "react-native";
+import { Switch, View } from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
-import { createTextShadow } from "@/helpers/createTextShadow";
-
-// Same recipe CenteredDesk.tsx/InfoPageScreen.tsx use for text on this
-// exact tan/gold card (#d49b57) - the black halo is what makes flat
-// white text legible on it.
-const rowTextShadow = createTextShadow("black", 2, 2, 5);
+import { colors, styles } from "@/theme";
 
 interface SettingToggleRowProps {
   label: string;
@@ -23,13 +18,16 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
   onValueChange,
 }): JSX.Element => {
   return (
-    <View style={styles.row}>
-      <View style={styles.textContainer}>
-        <ThemedText variant="subtitle" style={styles.label}>
+    <View style={styles.settingToggleRow}>
+      <View style={styles.settingToggleTextContainer}>
+        <ThemedText variant="subtitle" style={styles.settingToggleLabel}>
           {label}
         </ThemedText>
         {description && (
-          <ThemedText variant="description" style={styles.description}>
+          <ThemedText
+            variant="description"
+            style={styles.settingToggleDescription}
+          >
             {description}
           </ThemedText>
         )}
@@ -37,36 +35,11 @@ const SettingToggleRow: FC<SettingToggleRowProps> = ({
       <Switch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: "rgba(255, 255, 255, 0.3)", true: "#4CD964" }}
-        thumbColor="#fff"
+        trackColor={{ false: "rgba(255, 255, 255, 0.3)", true: colors.success }}
+        thumbColor={colors.white}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: "#B47b37",
-    paddingVertical: 12,
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  label: {
-    textAlign: "left",
-    ...rowTextShadow,
-  },
-  description: {
-    color: "#fff",
-    marginTop: 4,
-    ...rowTextShadow,
-  },
-});
 
 export default SettingToggleRow;
