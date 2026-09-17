@@ -1,0 +1,64 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "JuggernautXL_v9.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "home_seed3.png"
+    }
+  },
+  "3": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": ["2", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "Pixar style 3D animation still, exactly two characters only, a cheerful young Mathematador boy and his friendly rounded bull companion Toro Numerico standing together in a warm sunlit Spanish arena at golden hour, the arena architecture and blue sky extend upward, the sandy arena floor extends downward, colorful banners with math symbols, cheering crowd silhouettes in the stands, golden coins and sparkles floating, vertical portrait composition, warm saturated colors, cinematic lighting, highly detailed, sharp focus, seamless continuation of the scene",
+      "clip": ["1", 1]
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "neon, cyberpunk, futuristic, wireframe, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, blurry, low quality, deformed, extra limbs, seam, hard edge, visible border, extra character, third character, extra animal, statue, weapon, violence, scary",
+      "clip": ["1", 1]
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["4", 0],
+      "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 831,
+      "steps": 35,
+      "cfg": 7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.48
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "screen_home_img2img",
+      "images": ["7", 0]
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "JuggernautXL_v9.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "game_seed.png"
+    }
+  },
+  "3": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": ["2", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "Pixar style 3D animation still, a cheerful young Mathematador boy in a teal and gold torero outfit and his friendly rounded bull companion Toro Numerico running together energetically into a warm sunlit Spanish arena at golden hour, confetti and sparkles flying, colorful banners with math symbols, cheering crowd in the stands, dynamic motion, the arena architecture and blue sky extend upward, the sandy floor extends downward, vertical portrait composition, warm saturated colors, cinematic lighting, highly detailed, sharp focus, seamless continuation of the scene",
+      "clip": ["1", 1]
+    }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "neon, cyberpunk, futuristic, wireframe, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, blurry, low quality, deformed, extra limbs, seam, hard edge, visible border, extra character, weapon, violence, scary",
+      "clip": ["1", 1]
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["4", 0],
+      "negative": ["5", 0],
+      "latent_image": ["3", 0],
+      "seed": 822,
+      "steps": 35,
+      "cfg": 7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.5
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "screen_game_couple",
+      "images": ["7", 0]
+    }
+  }
+}
