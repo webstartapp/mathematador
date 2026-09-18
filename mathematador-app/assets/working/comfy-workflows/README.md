@@ -60,6 +60,20 @@ it immediately, first try, every time. Cause unconfirmed, but treat it as a
 hard rule: never generate the boy+bull together in a static standing pose:
 always seed from / describe an active pose.
 
+## Key finding: img2img at denoise ≥0.42 erases the bull's numbers
+
+The bull's glowing numbers-on-fur texture is present in every real source
+frame, but img2img at denoise 0.42-0.6 reliably wipes it out even with the
+numbers explicitly described in the prompt (positive: "dozens of glowing
+soft white numbers and math symbols floating on and embedded in its fur...";
+negative: "two-tone fur, white belly patch, wearing clothes, vest, pants,
+plain fur, no markings") — the model treats the source's own number texture
+as noise to smooth away during resampling, and doesn't reliably repaint it
+from text either. **Denoise 0.3 (with steps bumped to 40 to compensate) is
+what actually preserves it.** All three couple-scene workflows now use this;
+apply it to any future one seeding from a frame where the bull's numbers
+need to stay legible.
+
 ## Files
 
 - `icon-settings.json` / `icon-shop.json` / `icon-docs.json` — Home-screen nav
