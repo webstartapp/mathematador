@@ -1,0 +1,59 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "JuggernautXL_v9.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "single mobile game app icon, a neat stack of three round gold coins, Pixar style 3D render, warm golden hour lighting, glossy toy-like material, warm gold with teal enamel rim accents, rounded friendly shapes, warm saturated colors, plain warm sandy background, centered composition, single object only, no character, no face, product icon render, highly detailed, sharp focus, octane render, studio lighting",
+      "clip": ["1", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "neon, cyberpunk, futuristic, wireframe, dark background, character, mascot, creature, animal, person, face, eyes, body, hands, watermark, text, blurry, low quality, flat 2D, cel shading, thick black outline, photorealistic metal, rust, star, pentagram",
+      "clip": ["1", 1]
+    }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 702,
+      "steps": 35,
+      "cfg": 7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "6": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["5", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "icon_shop_juggernaut",
+      "images": ["6", 0]
+    }
+  }
+}
