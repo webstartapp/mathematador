@@ -74,7 +74,31 @@ what actually preserves it.** All three couple-scene workflows now use this;
 apply it to any future one seeding from a frame where the bull's numbers
 need to stay legible.
 
-## Key finding: the low-denoise couple scenes need a second masked pass
+## The visual, tweakable graph — `mathematador-universal.json`
+
+Everything above was submitted straight to ComfyUI's `/prompt` API
+(`comfy-mcp`'s `run_workflow`), which runs a workflow but never loads it into
+the ComfyUI GUI's canvas — nothing was ever visible/tweakable in the app
+window. `mathematador-universal.json` fixes that: it's a proper UI-format
+graph (node positions, visible links, an on-canvas usage note), saved at
+`D:\confyiu\user\default\workflows\mathematador.json` so it shows up directly
+in the ComfyUI Desktop app's own Workflows sidebar — open it there to inspect
+or hand-tweak any node. This copy in the repo is a backup; the live one to
+edit is the one in ComfyUI's own user-data folder.
+
+It also uses a cleaner technique than the two-pass hack below: ComfyUI's
+built-in `ImagePadForOutpaint` + `VAEEncodeForInpaint` nodes do the
+pad+feather+mask in one built-for-purpose step, instead of a hand-rolled
+Python mask script and a separate second workflow. Feed it any unpadded
+character crop (`reference-couple-gesture-unpadded.png` is the one currently
+loaded) and it extends it to a full portrait background in a single
+KSampler pass, with the character region fully protected regardless of the
+(intentionally 1.0) denoise value — read the note node on the canvas itself
+for the exact how-to. **Prefer this graph over the `screen-*.json` /
+`screen-*-extend.json` two-pass approach below for anything new**; that
+section is kept only as a record of what didn't work as well.
+
+## Key finding: the low-denoise couple scenes need a second masked pass (superseded, see above)
 
 The denoise-0.3 fix above (preserving the bull's numbers) leaves the solid
 sky-blue/sand-tan padding bands from the seed-image construction almost
