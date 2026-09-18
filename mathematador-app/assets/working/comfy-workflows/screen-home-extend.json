@@ -1,0 +1,84 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "JuggernautXL_v9.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "screen_home_img2img_00004_.png"
+    }
+  },
+  "3": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "mask_home2.png"
+    }
+  },
+  "4": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": ["3", 0],
+      "channel": "red"
+    }
+  },
+  "5": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": ["2", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "6": {
+    "class_type": "SetLatentNoiseMask",
+    "inputs": {
+      "samples": ["5", 0],
+      "mask": ["4", 0]
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "Pixar style 3D animation still, a warm sunlit Spanish arena at golden hour, tall arched colonnade architecture with terracotta roof tiles, blue sky, colorful banners with math symbols, cheering crowd silhouettes in the stands, sandy arena floor, warm saturated colors, cinematic lighting, highly detailed, sharp focus",
+      "clip": ["1", 1]
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "character, person, boy, bull, animal, face, watermark, text overlay, logo, blurry, low quality, seam, hard edge, flat color, solid color band",
+      "clip": ["1", 1]
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["7", 0],
+      "negative": ["8", 0],
+      "latent_image": ["6", 0],
+      "seed": 911,
+      "steps": 35,
+      "cfg": 7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.95
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["9", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "screen_home_extend",
+      "images": ["10", 0]
+    }
+  }
+}

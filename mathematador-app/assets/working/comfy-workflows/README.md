@@ -74,6 +74,31 @@ what actually preserves it.** All three couple-scene workflows now use this;
 apply it to any future one seeding from a frame where the bull's numbers
 need to stay legible.
 
+## Key finding: the low-denoise couple scenes need a second masked pass
+
+The denoise-0.3 fix above (preserving the bull's numbers) leaves the solid
+sky-blue/sand-tan padding bands from the seed-image construction almost
+untouched too — they read as flat, obviously-fake color gaps top and bottom.
+Fix: a **second pass**, `screen-*-extend.json`, that masks OUT the already-
+correct character band (protect, denoise ~0) and masks IN just the top/bottom
+padding (regenerate at denoise 0.95) via `SetLatentNoiseMask` + a hand-built
+soft-edge mask PNG (`mask-*.png` — white=regenerate, black=protect, black,
+~150-180px gaussian-style feather at the boundary; a hard-edge mask produces
+a visible seam even at full protect/regenerate contrast). Two more gotchas
+found fixing this:
+- The single `CLIPTextEncode` conditions the WHOLE masked region (both top
+  and bottom bands) at once — describing only the top ("terracotta roof
+  tiles above") bled into the bottom too and produced upside-down roof tiles
+  where a sandy floor should be. Write the prompt as two explicit clauses,
+  one for "above the roofline" content, one for "below the floor" content.
+  A generic archway/architecture description can also get invented for the
+  top if the prompt doesn't explicitly ask for a *continuation of the same*
+  wall — negative-prompt "archway, arch, tunnel, foreground pillar" to
+  suppress that.
+- Feather narrower than ~150px still leaves a faint but visible ring at the
+  boundary. Widen it rather than trying to hide it with a fully-opaque
+  boundary.
+
 ## Files
 
 - `icon-settings.json` / `icon-shop.json` / `icon-docs.json` — Home-screen nav
@@ -84,16 +109,25 @@ need to stay legible.
 - `screen-settings.json` / `screen-public.json` / `screen-shop.json` — no
   characters, pure txt2img, 768x1344 portrait, same prompt vocabulary as the
   icons. Reliable, no gotchas.
-- `screen-home.json` / `screen-game.json` / `screen-result.json` — both
-  characters together, in the correct portrait dimensions React Native
+- `screen-home.json` / `screen-game.json` / `screen-result.json` — pass 1:
+  both characters together, in the correct portrait dimensions React Native
   actually needs (768x1344, not the intro.mp4's cropped landscape). img2img,
-  denoise ~0.48-0.5, seeded from a **dynamic-pose** crop of a real `intro.mp4`
-  frame (`reference-couple-gesture.png`, `-running.png`, `-jumping.png`) that's
-  been resized to 768 wide and padded top/bottom with solid sky-blue /
-  sand-tan fill (not stretched — that caused a separate leg-artifact bug, see
-  `intro-video.json`'s note below) to reach 1344 tall, letting the model blend
-  the seam naturally. `reference-boy-alone.png` / `reference-bull-alone.png`
-  are separate single-character crops, prepared for IPAdapter but not yet used.
+  denoise 0.3 (see the numbers-preservation finding below), seeded from a
+  **dynamic-pose** crop of a real `intro.mp4` frame (`reference-couple-
+  gesture.png`, `-running.png`, `-jumping.png`) that's been resized to 768
+  wide and padded top/bottom with solid sky-blue / sand-tan fill (not
+  stretched — that caused a separate leg-artifact bug, see `intro-video.json`'s
+  note below) to reach 1344 tall. `reference-boy-alone.png` /
+  `reference-bull-alone.png` are separate single-character crops, prepared for
+  IPAdapter but not yet used.
+- `screen-home-extend.json` / `screen-game-extend.json` /
+  `screen-result-extend.json` — pass 2, run on pass 1's own output (re-upload
+  it to ComfyUI's input folder first) with `mask-home.png` / `mask-game.png` /
+  `mask-result.png`: replaces the flat padding bands with real extended scenery
+  while leaving the character band untouched. See the masked-pass finding
+  above before reusing this on a new image — the mask boundaries
+  (`pad_top`/`pad_bottom` baked into each PNG) are specific to that image's
+  own crop, not reusable as-is for a different composition.
 - `intro-video.json` — AnimateDiff/LCM portrait video (576x1024, 32 frames,
   8fps). Seeded from `reference-crop-intro-portrait.png`, edge-STRETCHED
   (not solid-fill) padding — **known bug**: at denoise 0.4 the legs render as
