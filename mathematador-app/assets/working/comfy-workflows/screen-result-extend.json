@@ -8,77 +8,70 @@
   "2": {
     "class_type": "LoadImage",
     "inputs": {
-      "image": "screen_result_couple_00004_.png"
+      "image": "result_unpadded.png"
     }
   },
   "3": {
-    "class_type": "LoadImage",
+    "class_type": "ImagePadForOutpaint",
     "inputs": {
-      "image": "mask_result2.png"
+      "image": ["2", 0],
+      "left": 0,
+      "top": 388,
+      "right": 0,
+      "bottom": 167,
+      "feathering": 80
     }
   },
   "4": {
-    "class_type": "ImageToMask",
+    "class_type": "VAEEncodeForInpaint",
     "inputs": {
-      "image": ["3", 0],
-      "channel": "red"
+      "pixels": ["3", 0],
+      "vae": ["1", 2],
+      "mask": ["3", 1],
+      "grow_mask_by": 6
     }
   },
   "5": {
-    "class_type": "VAEEncode",
+    "class_type": "CLIPTextEncode",
     "inputs": {
-      "pixels": ["2", 0],
-      "vae": ["1", 2]
+      "text": "Pixar style 3D animation still. Above the arena roofline: open blue sky at golden hour, small distant flags, no new structure, no archway. Below the arena floor seen in the middle: continuing sandy arena floor with scattered confetti, matching perspective, no walls, no roof, no architecture. warm saturated colors, cinematic lighting, highly detailed, sharp focus",
+      "clip": ["1", 1]
     }
   },
   "6": {
-    "class_type": "SetLatentNoiseMask",
+    "class_type": "CLIPTextEncode",
     "inputs": {
-      "samples": ["5", 0],
-      "mask": ["4", 0]
+      "text": "character, person, boy, bull, animal, face, archway, arch, tunnel, foreground pillar, dark stone frame, roof tiles at the bottom, rooftop at the bottom, building at the bottom, watermark, text overlay, logo, blurry, low quality, seam, hard edge, flat color, solid color band",
+      "clip": ["1", 1]
     }
   },
   "7": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "text": "Pixar style 3D animation still, a warm sunlit Spanish arena at golden hour, tall arched colonnade architecture with terracotta roof tiles, blue sky, colorful banners with math symbols, cheering crowd silhouettes in the stands, sandy arena floor, warm saturated colors, cinematic lighting, highly detailed, sharp focus",
-      "clip": ["1", 1]
-    }
-  },
-  "8": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "text": "character, person, boy, bull, animal, face, watermark, text overlay, logo, blurry, low quality, seam, hard edge, flat color, solid color band",
-      "clip": ["1", 1]
-    }
-  },
-  "9": {
     "class_type": "KSampler",
     "inputs": {
       "model": ["1", 0],
-      "positive": ["7", 0],
-      "negative": ["8", 0],
-      "latent_image": ["6", 0],
-      "seed": 913,
+      "positive": ["5", 0],
+      "negative": ["6", 0],
+      "latent_image": ["4", 0],
+      "seed": 1003,
       "steps": 35,
       "cfg": 7,
       "sampler_name": "dpmpp_2m",
       "scheduler": "karras",
-      "denoise": 0.95
+      "denoise": 1
     }
   },
-  "10": {
+  "8": {
     "class_type": "VAEDecode",
     "inputs": {
-      "samples": ["9", 0],
+      "samples": ["7", 0],
       "vae": ["1", 2]
     }
   },
-  "11": {
+  "9": {
     "class_type": "SaveImage",
     "inputs": {
-      "filename_prefix": "screen_result_extend",
-      "images": ["10", 0]
+      "filename_prefix": "result_outpaint",
+      "images": ["8", 0]
     }
   }
 }

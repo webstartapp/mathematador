@@ -27,8 +27,27 @@ concept sketch — **not** this reference. Don't seed generations from it.
 
 ## Setup this assumes
 
-- A running ComfyUI instance (the user's ComfyUI Desktop app, `D:\confyiu`, port 8000
-  in this session — adjust host/port to whatever's current).
+- A running ComfyUI instance. **As of 2026-09-21, this moved**: the original
+  instance (`D:\confyiu`, port 8000) had its Desktop-app instance record and
+  its `.venv` deleted by accident. Rather than restore it, a fresh instance
+  was created through the Desktop app's own "New Instance" flow — it lives at
+  `D:\Comfy-Desktop\ComfyUI-Installs\ComfyUI\ComfyUI`, **port 8188** (auto-
+  assigned; check `C:\Users\<user>\AppData\Roaming\Comfy Desktop\port-locks\`
+  if it's changed again). `D:\confyiu` itself is untouched and still holds
+  every model/checkpoint — the new instance reads them via
+  `D:\Comfy-Desktop\ComfyUI-Installs\ComfyUI\ComfyUI\extra_model_paths.yaml`
+  (base_path `D:\confyiu\models`), so they were never re-downloaded. The five
+  custom node folders were copied by hand into the new instance's own
+  `custom_nodes/` (not shareable via extra_model_paths — ComfyUI loads node
+  code from its own folder) and their `requirements.txt` installed into the
+  new `.venv` with `UV_SYSTEM_CERTS=1` set first (same corporate-TLS
+  workaround as everywhere else in this repo). **`comfy-mcp`'s `COMFYUI_URL`
+  in `~/.claude.json` still points at the old port 8000** — updating it needs
+  the MCP connection restarted, which didn't happen this session, so this
+  session drove the new instance with raw `curl` against `/prompt`,
+  `/history/<id>`, `/upload/image`, `/view` directly instead. Update that env
+  var (or just keep using curl) before assuming `run_workflow` etc. work
+  again.
 - **`JuggernautXL_v9.safetensors`** (`RunDiffusion/Juggernaut-XL-v9` on Hugging Face,
   ~7.1GB) — the current checkpoint for stills. SDXL, native 1024x1024, far
   stronger prompt adherence than the SD1.5 checkpoints below. Slower per
@@ -74,54 +93,58 @@ what actually preserves it.** All three couple-scene workflows now use this;
 apply it to any future one seeding from a frame where the bull's numbers
 need to stay legible.
 
-## The visual, tweakable graph — `mathematador-universal.json`
+## The current technique: `ImagePadForOutpaint` + `VAEEncodeForInpaint`, one pass
 
-Everything above was submitted straight to ComfyUI's `/prompt` API
-(`comfy-mcp`'s `run_workflow`), which runs a workflow but never loads it into
-the ComfyUI GUI's canvas — nothing was ever visible/tweakable in the app
-window. `mathematador-universal.json` fixes that: it's a proper UI-format
-graph (node positions, visible links, an on-canvas usage note), saved at
-`D:\confyiu\user\default\workflows\mathematador.json` so it shows up directly
-in the ComfyUI Desktop app's own Workflows sidebar — open it there to inspect
-or hand-tweak any node. This copy in the repo is a backup; the live one to
-edit is the one in ComfyUI's own user-data folder.
+Earlier attempts (kept below for context, but don't repeat them) used a
+hand-rolled two-pass approach: pad the character crop with solid-color bands
+in Python, generate the character at low denoise, then run a *second*
+workflow with a hand-built soft-edge mask PNG to regenerate just the padding.
+It worked but always left at least a faint seam.
 
-It also uses a cleaner technique than the two-pass hack below: ComfyUI's
-built-in `ImagePadForOutpaint` + `VAEEncodeForInpaint` nodes do the
-pad+feather+mask in one built-for-purpose step, instead of a hand-rolled
-Python mask script and a separate second workflow. Feed it any unpadded
-character crop (`reference-couple-gesture-unpadded.png` is the one currently
-loaded) and it extends it to a full portrait background in a single
-KSampler pass, with the character region fully protected regardless of the
-(intentionally 1.0) denoise value — read the note node on the canvas itself
-for the exact how-to. **Prefer this graph over the `screen-*.json` /
-`screen-*-extend.json` two-pass approach below for anything new**; that
-section is kept only as a record of what didn't work as well.
+**`screen-home-extend.json` / `screen-game-extend.json` /
+`screen-result-extend.json` now all use ComfyUI's own built-in outpainting
+nodes instead — one pass, no Python mask script:**
 
-## Key finding: the low-denoise couple scenes need a second masked pass (superseded, see above)
+1. `LoadImage` — an **unpadded** character crop (`reference-couple-*-
+   unpadded.png`; a real `intro.mp4` frame, dynamic pose, resized to 768 wide,
+   no color bands added).
+2. `ImagePadForOutpaint(image, left, top, right, bottom, feathering=80)` —
+   pads to the target canvas (768x1344) and outputs both the padded image
+   and a correctly-feathered mask in one step. `feathering` below ~80 still
+   leaves a visible ring at the boundary; 80 is the current minimum that
+   doesn't.
+3. `VAEEncodeForInpaint(pixels, vae, mask, grow_mask_by=6)` → `KSampler`
+   at **denoise 1.0** — this is correct, not a bug: the mask (not denoise)
+   is what protects the character region regardless of the denoise value.
+4. One `CLIPTextEncode` conditions the *entire* masked region (both the top
+   and bottom bands) at once — write it as two explicit clauses ("above the
+   roofline: ...", "below the floor: ...") or content invented for one end
+   bleeds into the other (an early attempt asked only for "terracotta roof
+   tiles above" and got upside-down roof tiles at the bottom too). Negative-
+   prompt "archway, arch, tunnel, foreground pillar" — otherwise the model
+   invents an unrelated foreground structure at the top instead of
+   continuing the same wall.
 
-The denoise-0.3 fix above (preserving the bull's numbers) leaves the solid
-sky-blue/sand-tan padding bands from the seed-image construction almost
-untouched too — they read as flat, obviously-fake color gaps top and bottom.
-Fix: a **second pass**, `screen-*-extend.json`, that masks OUT the already-
-correct character band (protect, denoise ~0) and masks IN just the top/bottom
-padding (regenerate at denoise 0.95) via `SetLatentNoiseMask` + a hand-built
-soft-edge mask PNG (`mask-*.png` — white=regenerate, black=protect, black,
-~150-180px gaussian-style feather at the boundary; a hard-edge mask produces
-a visible seam even at full protect/regenerate contrast). Two more gotchas
-found fixing this:
-- The single `CLIPTextEncode` conditions the WHOLE masked region (both top
-  and bottom bands) at once — describing only the top ("terracotta roof
-  tiles above") bled into the bottom too and produced upside-down roof tiles
-  where a sandy floor should be. Write the prompt as two explicit clauses,
-  one for "above the roofline" content, one for "below the floor" content.
-  A generic archway/architecture description can also get invented for the
-  top if the prompt doesn't explicitly ask for a *continuation of the same*
-  wall — negative-prompt "archway, arch, tunnel, foreground pillar" to
-  suppress that.
-- Feather narrower than ~150px still leaves a faint but visible ring at the
-  boundary. Widen it rather than trying to hide it with a fully-opaque
-  boundary.
+`mathematador-universal.json` is the same technique authored as a proper
+UI-format graph (node positions, visible links, an on-canvas usage note)
+instead of a raw API-format file — it's saved live at
+`D:\Comfy-Desktop\ComfyUI-Installs\ComfyUI\ComfyUI\user\default\workflows\
+mathematador.json` (the *original* copy was at the old instance's
+`D:\confyiu\user\...` before the instance move above) so it shows up
+directly in the ComfyUI Desktop app's own Workflows sidebar — open it there
+to inspect or hand-tweak any node. This repo copy is a backup; the live one
+to actually edit is the one in ComfyUI's own user-data folder. Its `LoadImage`
+still points at the old `home_unpadded.png` filename — re-upload whichever
+crop you want and repoint that node before running it again.
+
+## Key finding: the low-denoise couple scenes need the padding regenerated separately
+
+The denoise-0.3 fix above (preserving the bull's numbers) only touches the
+character region — the solid sky-blue/sand-tan padding bands from the
+seed-image construction come out of that pass almost untouched, reading as
+flat, obviously-fake color gaps top and bottom. That's what the outpainting
+pass above fixes; it doesn't fix itself; you need both passes in sequence
+(character generation, *then* outpaint extension) for a finished image.
 
 ## Files
 
@@ -145,13 +168,14 @@ found fixing this:
   `reference-bull-alone.png` are separate single-character crops, prepared for
   IPAdapter but not yet used.
 - `screen-home-extend.json` / `screen-game-extend.json` /
-  `screen-result-extend.json` — pass 2, run on pass 1's own output (re-upload
-  it to ComfyUI's input folder first) with `mask-home.png` / `mask-game.png` /
-  `mask-result.png`: replaces the flat padding bands with real extended scenery
-  while leaving the character band untouched. See the masked-pass finding
-  above before reusing this on a new image — the mask boundaries
-  (`pad_top`/`pad_bottom` baked into each PNG) are specific to that image's
-  own crop, not reusable as-is for a different composition.
+  `screen-result-extend.json` — pass 2: takes the corresponding **unpadded**
+  reference crop directly (`reference-couple-gesture-unpadded.png` /
+  `-running-unpadded.png` / `-jumping-unpadded.png`) and runs it through the
+  `ImagePadForOutpaint` + `VAEEncodeForInpaint` technique above — no
+  intermediate pass-1 output or hand-built mask needed. The `top`/`bottom`
+  pad amounts baked into each file are specific to that crop's own height;
+  recompute them (`1344 - crop_height`, split however you want between top
+  and bottom) for a different crop.
 - `intro-video.json` — AnimateDiff/LCM portrait video (576x1024, 32 frames,
   8fps). Seeded from `reference-crop-intro-portrait.png`, edge-STRETCHED
   (not solid-fill) padding — **known bug**: at denoise 0.4 the legs render as
