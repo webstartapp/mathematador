@@ -153,6 +153,42 @@ flat, obviously-fake color gaps top and bottom. That's what the outpainting
 pass above fixes; it doesn't fix itself; you need both passes in sequence
 (character generation, *then* outpaint extension) for a finished image.
 
+## Key finding: strip the background/shadow with `rembg`, not the prompt
+
+The icons need a transparent background for actual UI use (no baked-in
+gradient rectangle or shadow) — rather than fight the generation prompt to
+produce one directly (unreliable, and this checkpoint doesn't do transparency
+at all), generate against the consistent grounded/shadowed composition above,
+then run the PNG through `rembg` (`pip install rembg` into the ComfyUI venv)
+as a separate post-process:
+
+```python
+from rembg import remove
+from PIL import Image
+out = remove(Image.open("icon.png"))  # -> RGBA, transparent outside the subject
+out.save("icon-transparent.png")
+```
+
+Two gotchas hit doing this:
+- `rembg`'s first run downloads a ~1GB ONNX model
+  (`bria-rmbg-2.0.onnx`) from a GitHub release URL — same corporate-TLS-
+  interception failure as everywhere else in this repo, and it fails
+  *silently* inside `pooch`'s downloader (no Python traceback, just an
+  `OPENSSL_Uplink` line and a 0-byte temp file). Don't chase it through
+  `rembg`/`pooch` — just `curl -L` the same URL directly to
+  `~/.rembg/models/bria-rmbg/bria-rmbg.onnx` (the exact path is in the failed
+  download's own log line) and it picks it up fine.
+- **Do not `pip install pip-system-certs` into this venv** to try to fix the
+  above — it broke Python startup entirely (every invocation, even a bare
+  `python -c "print(1)"`, crashed with that same `OPENSSL_Uplink` message and
+  exit code 1, no traceback). Its `.pth` auto-patch runs on every interpreter
+  start and something about it conflicts with this venv's OpenSSL. Fix if it
+  happens again: delete/rename `Lib\site-packages\pip_system_certs.pth` (not
+  the package itself, just the `.pth` file) — Python starts fine again
+  immediately, no reinstall needed. `UV_SYSTEM_CERTS=1` (the fix used
+  everywhere else in this repo) is unaffected and still fine to use for `uv`
+  specifically; it's only this particular package that's broken here.
+
 ## Key finding: icons need one locked composition template, not three ad-hoc ones
 
 The first icon set (settings/shop/docs) was generated independently, one
