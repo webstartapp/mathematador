@@ -13,8 +13,9 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
+import Card from "@/components/common/Card";
 import Layout from "@/components/common/Layout";
-import ThemedText from "@/components/texts/ThemedText";
+import ScreenHeader from "@/components/common/ScreenHeader";
 import {
   buyCosmetic,
   equipCosmetic,
@@ -170,10 +171,8 @@ const CosmeticCard = ({
   };
 
   return (
-    <View
+    <Card
       style={[
-        styles.overlayCardSubtle,
-        styles.cardDropShadow,
         styles.tiendaCard,
         isEquipped && styles.tiendaCardEquipped,
         isLocked && styles.tiendaCardLocked,
@@ -223,7 +222,7 @@ const CosmeticCard = ({
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </Card>
   );
 };
 
@@ -386,21 +385,16 @@ const TiendaScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.screenHeader}>
-        <TouchableOpacity
-          style={styles.headerBackButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.white} />
-        </TouchableOpacity>
-        <ThemedText variant="title" style={styles.tiendaTitle}>
-          Tienda de Torero
-        </ThemedText>
-        <View style={styles.tiendaCoinsWrapper}>
-          <Text style={styles.tiendaCoinsEmoji}>🪙</Text>
-          <Text style={styles.tiendaCoinsCount}>{user.coins}</Text>
-        </View>
-      </View>
+      <ScreenHeader
+        title="Tienda de Torero"
+        onBack={() => navigation.goBack()}
+        right={
+          <View style={styles.tiendaCoinsWrapper}>
+            <Text style={styles.tiendaCoinsEmoji}>🪙</Text>
+            <Text style={styles.tiendaCoinsCount}>{user.coins}</Text>
+          </View>
+        }
+      />
 
       {/* Categories Tabs */}
       <View style={[styles.overlayCardSubtle, styles.tiendaTabBar]}>

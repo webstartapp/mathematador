@@ -1,0 +1,162 @@
+{
+  "id": "c1a2b3c4-5d6e-4f70-8a9b-0c1d2e3f4a5b",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 9,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [-50, 0],
+      "size": [320, 100],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [1]},
+        {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
+        {"name": "VAE", "type": "VAE", "links": [4]}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["JuggernautXL_v9.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "EmptyLatentImage",
+      "pos": [-50, 150],
+      "size": [320, 120],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [5]}
+      ],
+      "properties": {"Node name for S&R": "EmptyLatentImage"},
+      "widgets_values": [768, 1344, 1]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [320, 0],
+      "size": [460, 260],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 2}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [6]}
+      ],
+      "title": "Positive - ONLY change the last clause (the mood)",
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["Pixar style 3D animation still, an open-air Spanish arena establishing shot at golden hour, sunlit outdoor plaza under a clear open blue sky, no roof or canopy overhead, colorful banners with math symbols hanging from stone archways, empty arena floor with golden coins and confetti scattered on the ground, celebratory victorious mood, vertical portrait composition, warm saturated colors, cinematic lighting, highly detailed, sharp focus throughout, crisp detail"]
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncode",
+      "pos": [320, 290],
+      "size": [460, 160],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 3}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [7]}
+      ],
+      "title": "Negative - keep as-is",
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["roof, ceiling, canopy overhead, covered stands, indoor, tent, awning overhead, blurry, soft focus, out of focus, low contrast, hazy, bokeh, neon, cyberpunk, futuristic, wireframe, dark background, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, low quality, deformed, character, person, boy, bull, animal, face, weapon, violence, scary"]
+    },
+    {
+      "id": 5,
+      "type": "KSampler",
+      "pos": [820, 0],
+      "size": [280, 300],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1},
+        {"name": "positive", "type": "CONDITIONING", "link": 6},
+        {"name": "negative", "type": "CONDITIONING", "link": 7},
+        {"name": "latent_image", "type": "LATENT", "link": 5}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [8]}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [907, "randomize", 35, 7, "dpmpp_2m", "karras", 1]
+    },
+    {
+      "id": 6,
+      "type": "VAEDecode",
+      "pos": [1140, 0],
+      "size": [210, 60],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 8},
+        {"name": "vae", "type": "VAE", "link": 4}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [9]}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"},
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "SaveImage",
+      "pos": [1390, 0],
+      "size": [320, 300],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 9}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "SaveImage"},
+      "widgets_values": ["mathematador_screen"]
+    },
+    {
+      "id": 8,
+      "type": "MarkdownNote",
+      "pos": [-50, 320],
+      "size": [400, 560],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "How to use",
+      "properties": {},
+      "widgets_values": [
+        "### Mathematador screen-background generator\n\nGenerates one full-screen portrait background (768x1344, no characters) per run — an open-air, sharp-focus Spanish arena establishing shot. All six current screen backgrounds (Home, Settings, Public, Game, Result, Shop) share this exact template; only the last clause of the positive prompt (the mood/detail, right before \"vertical portrait composition\") differs between them.\n\n**To generate a screen**: edit ONLY that last clause. Leave the rest of the positive prompt, and the whole negative prompt, untouched — that's what keeps the six looking like one consistent set.\n\n**Current mood clauses** (positive prompt currently loaded is Result's):\n- Home: \"peaceful and inviting mood, ready for a warm welcome\"\n- Settings: (own composition, not this template — a cozy backstage prep room; see icon-settings-style workflows / README if regenerating)\n- Public: \"peaceful and inviting mood\" (sits behind readable text on /info/* pages — if legibility becomes an issue there, that's a real reason to soften contrast again for this one only)\n- Game: \"empty arena floor with confetti scattered and drifting through the air ... energetic and lively atmosphere\"\n- Result: \"empty arena floor with golden coins and confetti scattered on the ground ... celebratory victorious mood\" (currently loaded)\n- Shop: (own composition, not this template — a market stall; see README)\n\n**Gotcha**: without the negative prompt's \"roof, ceiling, canopy overhead, covered stands, indoor, tent\" the model drifts back to a covered/indoor-reading composition even though the positive prompt says \"open-air\" — keep those negative terms in place.\n\nSee `mathematador-app/assets/working/comfy-workflows/README.md` in the repo for full history and the retired character-scene technique (kept in case a future screen wants the boy/bull couple again)."
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    }
+  ],
+  "links": [
+    [1, 1, 0, 5, 0, "MODEL"],
+    [2, 1, 1, 3, 0, "CLIP"],
+    [3, 1, 1, 4, 0, "CLIP"],
+    [4, 1, 2, 6, 1, "VAE"],
+    [5, 2, 0, 5, 3, "LATENT"],
+    [6, 3, 0, 5, 1, "CONDITIONING"],
+    [7, 4, 0, 5, 2, "CONDITIONING"],
+    [8, 5, 0, 6, 0, "LATENT"],
+    [9, 6, 0, 7, 0, "IMAGE"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"ds": {"scale": 0.7, "offset": [80, 40]}},
+  "version": 0.4
+}

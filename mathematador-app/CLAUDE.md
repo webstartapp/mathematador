@@ -36,6 +36,26 @@ Two parallel user flows both end up at the same `ChallengeGameScreen`:
 
 Fetches `cosmeticsGetAll()` on mount; on any failure (almost certainly triggered in practice by the broken auth above) falls back to a hardcoded `FALLBACK_COSMETICS` array that mirrors the DB seed exactly. Buy/equip call `cosmeticsBuy`/`cosmeticsEquip` and merge the response via `syncProgress`; on failure they fall back to local-only `buyCosmetic`/`equipCosmetic` reducers with no server persistence. If you change the cosmetics schema, update both the DB seed (`server/src/migrations/20260915100000_initial_schema.js`) and `FALLBACK_COSMETICS` together or the two will drift.
 
+## Regenerating visual assets (`assets/images/home-icon-*.png`, `screen-bg-*.png`)
+
+These are generated locally via a ComfyUI instance, not hand-drawn or
+sourced externally. **Read
+[`assets/working/comfy-workflows/README.md`](assets/working/comfy-workflows/README.md)
+before touching any of them** — it has the current ComfyUI instance's
+location/port, the exact prompt templates each image set shares (so a new
+one matches the existing set instead of looking like a one-off), and a
+"Retired" section documenting techniques (character scenes, img2img
+identity-preservation, outpainting) that look tempting but have real,
+already-discovered failure modes. Don't regenerate these from a
+first-principles prompt without reading it first — that folder exists
+specifically because that route was tried and repeatedly produced
+inconsistent-looking results across the set.
+
+The workflows themselves are also loadable as real graphs in the ComfyUI
+Desktop app's own Workflows sidebar (`mathematador-screens`,
+`mathematador-iconset`) for a human to open and hand-tweak, not just raw
+JSON an agent submits headlessly.
+
 ## Dead code specific to this workspace
 
 See the root `CLAUDE.md`'s "Dead / vestigial code" list — most of it is frontend-specific: `gameSlice.ts`, `configs/challengeExercises.ts`, `types/enums.ts`, `hooks/useTypedSelector.ts` (empty file), `HeaderModule`/`HeaderEvents.ts` (no native module ever registered), `GauntletScreen.tsx`'s hardcoded fake leaderboard, the unused `QueryClientProvider`.

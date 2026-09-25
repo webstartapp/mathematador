@@ -1,0 +1,162 @@
+{
+  "id": "8e3fcb55-1a25-43c2-9bdf-34ce153a1a11",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 9,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [-50, 0],
+      "size": [320, 100],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [1]},
+        {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
+        {"name": "VAE", "type": "VAE", "links": [4]}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["JuggernautXL_v9.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "EmptyLatentImage",
+      "pos": [-50, 150],
+      "size": [320, 120],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [5]}
+      ],
+      "properties": {"Node name for S&R": "EmptyLatentImage"},
+      "widgets_values": [1024, 1024, 1]
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [320, 0],
+      "size": [460, 260],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 2}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [6]}
+      ],
+      "title": "Positive - ONLY change the first clause (the subject)",
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["single mobile game app icon, one closed leather-bound book standing upright with a gold buckle clasp and gold page edges, resting on a flat surface, Pixar style 3D render, warm golden hour lighting from upper left, glossy toy-like material, warm gold with teal enamel accents, rounded friendly shapes, warm saturated colors, plain warm sandy gradient background, soft contact shadow beneath the object, camera at a slight elevated three-quarter angle, object centered filling about 60% of frame height, sharp focus on the object, background softly out of focus, product icon render, octane render, studio lighting"]
+    },
+    {
+      "id": 4,
+      "type": "CLIPTextEncode",
+      "pos": [320, 290],
+      "size": [460, 160],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 3}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [9]}
+      ],
+      "title": "Negative - keep as-is",
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["neon, cyberpunk, futuristic, wireframe, dark background, character, mascot, creature, animal, person, face, eyes, body, hands, watermark, text, blurry, low quality, flat 2D, cel shading, thick black outline, photorealistic metal, rust, floating with no shadow, heavy bokeh, blurred foreground, extreme close-up, off-center, cropped"]
+    },
+    {
+      "id": 5,
+      "type": "KSampler",
+      "pos": [820, 0],
+      "size": [280, 300],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1},
+        {"name": "positive", "type": "CONDITIONING", "link": 6},
+        {"name": "negative", "type": "CONDITIONING", "link": 9},
+        {"name": "latent_image", "type": "LATENT", "link": 5}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [7]}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [701, "randomize", 35, 7, "dpmpp_2m", "karras", 1]
+    },
+    {
+      "id": 6,
+      "type": "MarkdownNote",
+      "pos": [-50, 320],
+      "size": [340, 480],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "How to use",
+      "properties": {},
+      "widgets_values": [
+        "### Mathematador icon set generator\n\nGenerates one Home-screen nav icon per run, at a fixed 1024x1024, in a **single consistent composition** (grounded on a surface, centered, three-quarter elevated camera, sharp focus, softly blurred warm gradient background, soft contact shadow) so the set matches visually — this graph exists because Settings/Shop/Docs previously all used different framing (one floating, one heavy-bokeh macro-photo, one grounded-sharp) and looked like three unrelated icons.\n\n**To generate a new icon**: edit ONLY the first clause of the **positive** prompt (up to the first \"Pixar style 3D render\") to describe the new subject as a single, clearly-recognizable physical object. Leave everything after that, and the whole negative prompt, untouched — that's what keeps the set consistent.\n\n**Known subjects that work**:\n- Settings: \"one mechanical gear cog with thick trapezoidal teeth\"\n- Shop: \"a neat stack of three round gold coins, resting flat\"\n- Docs: \"one closed leather-bound book standing upright with a gold buckle clasp and gold page edges\"\n\n**Gotcha**: this checkpoint (Juggernaut XL) has a strong bias toward drawing a character/mascot instead of an object when the subject phrase is ambiguous or resembles clothing/a creature (\"cape\", \"coin\" alone without \"stack\", etc.) — keep the negative prompt's character/mascot/face terms in place, and if a generation comes back as a character, make the subject phrase more explicitly an inanimate object (add \"single object only, no character, no face\" if it starts drifting).\n\nSee `mathematador-app/assets/working/comfy-workflows/README.md` in the repo for more background."
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 7,
+      "type": "VAEDecode",
+      "pos": [1140, 0],
+      "size": [210, 60],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 7},
+        {"name": "vae", "type": "VAE", "link": 4}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [8]}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"},
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "SaveImage",
+      "pos": [1390, 0],
+      "size": [320, 300],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 8}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "SaveImage"},
+      "widgets_values": ["mathematador_icon"]
+    }
+  ],
+  "links": [
+    [1, 1, 0, 5, 0, "MODEL"],
+    [2, 1, 1, 3, 0, "CLIP"],
+    [3, 1, 1, 4, 0, "CLIP"],
+    [4, 1, 2, 7, 1, "VAE"],
+    [5, 2, 0, 5, 3, "LATENT"],
+    [6, 3, 0, 5, 1, "CONDITIONING"],
+    [9, 4, 0, 5, 2, "CONDITIONING"],
+    [7, 5, 0, 7, 0, "LATENT"],
+    [8, 7, 0, 8, 0, "IMAGE"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"ds": {"scale": 0.7, "offset": [80, 40]}},
+  "version": 0.4
+}
