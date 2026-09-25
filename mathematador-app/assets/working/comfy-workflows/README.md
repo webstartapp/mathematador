@@ -137,6 +137,13 @@ to actually edit is the one in ComfyUI's own user-data folder. Its `LoadImage`
 still points at the old `home_unpadded.png` filename — re-upload whichever
 crop you want and repoint that node before running it again.
 
+`mathematador-iconset.json` is the equivalent visual graph for the icon set
+(see the composition-consistency finding right below) — also saved live at
+`...\ComfyUI\ComfyUI\user\default\workflows\mathematador-iconset.json`, shows
+up in the same Workflows sidebar. Its on-canvas note lists the exact subject
+clause used for each of the three current icons; to add a fourth, only the
+first clause of the positive prompt needs to change.
+
 ## Key finding: the low-denoise couple scenes need the padding regenerated separately
 
 The denoise-0.3 fix above (preserving the bull's numbers) only touches the
@@ -146,13 +153,28 @@ flat, obviously-fake color gaps top and bottom. That's what the outpainting
 pass above fixes; it doesn't fix itself; you need both passes in sequence
 (character generation, *then* outpaint extension) for a finished image.
 
+## Key finding: icons need one locked composition template, not three ad-hoc ones
+
+The first icon set (settings/shop/docs) was generated independently, one
+prompt at a time, and came out visually inconsistent as a *set* even though
+each one looked fine alone: the gear floated with no ground contact, the
+coins were shot as a heavy-bokeh macro-photo, the book was grounded and sharp
+— three different "cameras". Fix: one shared composition template, with only
+the subject clause swapped between icons — "resting on a flat surface...
+camera at a slight elevated three-quarter angle, object centered filling
+about 60% of frame height, sharp focus on the object, background softly out
+of focus... soft contact shadow beneath the object", plus negative-prompting
+away from the specific failure modes seen before ("floating with no shadow,
+heavy bokeh, blurred foreground, extreme close-up"). `mathematador-
+iconset.json` is this template as a visual graph (see below); `icon-*.json`
+are the same template's three current subject variants in API format.
+
 ## Files
 
 - `icon-settings.json` / `icon-shop.json` / `icon-docs.json` — Home-screen nav
-  icon set. Juggernaut XL, native 1024x1024, no image conditioning (this
-  checkpoint follows "Pixar style 3D render, warm golden hour lighting, glossy
-  toy-like material, warm gold with teal enamel accents... product icon
-  render, octane render, studio lighting" faithfully on its own).
+  icon set. Juggernaut XL, native 1024x1024, no image conditioning, using the
+  shared composition template above (only the subject clause differs between
+  the three files).
 - `screen-settings.json` / `screen-public.json` / `screen-shop.json` — no
   characters, pure txt2img, 768x1344 portrait, same prompt vocabulary as the
   icons. Reliable, no gotchas.

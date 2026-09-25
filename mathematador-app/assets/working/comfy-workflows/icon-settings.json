@@ -1,59 +1,39 @@
 {
   "1": {
     "class_type": "CheckpointLoaderSimple",
-    "inputs": {
-      "ckpt_name": "JuggernautXL_v9.safetensors"
-    }
+    "inputs": {"ckpt_name": "JuggernautXL_v9.safetensors"}
   },
   "2": {
     "class_type": "EmptyLatentImage",
-    "inputs": {
-      "width": 1024,
-      "height": 1024,
-      "batch_size": 1
-    }
+    "inputs": {"width": 1024, "height": 1024, "batch_size": 1}
   },
   "3": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "single mobile game app icon, one mechanical gear cog, Pixar style 3D render, warm golden hour lighting, glossy toy-like plastic material, warm gold with teal enamel accents, rounded friendly shapes, warm saturated colors, plain warm sandy background, centered composition, single object only, no character, no face, product icon render, highly detailed, sharp focus, octane render, studio lighting",
+      "text": "single mobile game app icon, one mechanical gear cog with thick trapezoidal teeth, resting on a flat surface, Pixar style 3D render, warm golden hour lighting from upper left, glossy toy-like material, warm gold with teal enamel accents, rounded friendly shapes, warm saturated colors, plain warm sandy gradient background, soft contact shadow beneath the object, camera at a slight elevated three-quarter angle, object centered filling about 60% of frame height, sharp focus on the object, background softly out of focus, product icon render, octane render, studio lighting",
       "clip": ["1", 1]
     }
   },
   "4": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "neon, cyberpunk, futuristic, wireframe, dark background, character, mascot, creature, animal, person, face, eyes, body, hands, watermark, text, blurry, low quality, flat 2D, cel shading, thick black outline, photorealistic metal, rust",
+      "text": "neon, cyberpunk, futuristic, wireframe, dark background, character, mascot, creature, animal, person, face, eyes, body, hands, watermark, text, blurry, low quality, flat 2D, cel shading, thick black outline, photorealistic metal, rust, floating with no shadow, heavy bokeh, blurred foreground, extreme close-up, off-center, cropped",
       "clip": ["1", 1]
     }
   },
   "5": {
     "class_type": "KSampler",
     "inputs": {
-      "model": ["1", 0],
-      "positive": ["3", 0],
-      "negative": ["4", 0],
-      "latent_image": ["2", 0],
-      "seed": 701,
-      "steps": 35,
-      "cfg": 7,
-      "sampler_name": "dpmpp_2m",
-      "scheduler": "karras",
-      "denoise": 1
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0], "latent_image": ["2", 0],
+      "seed": 701, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
     }
   },
   "6": {
     "class_type": "VAEDecode",
-    "inputs": {
-      "samples": ["5", 0],
-      "vae": ["1", 2]
-    }
+    "inputs": {"samples": ["5", 0], "vae": ["1", 2]}
   },
   "7": {
     "class_type": "SaveImage",
-    "inputs": {
-      "filename_prefix": "icon_settings_juggernaut",
-      "images": ["6", 0]
-    }
+    "inputs": {"filename_prefix": "icon_settings_v2", "images": ["6", 0]}
   }
 }
