@@ -10,14 +10,14 @@
   "3": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "Pixar style 3D animation still, a soft defocused establishing shot of a warm sunlit Spanish arena at golden hour, colorful banners with math symbols hanging blurred in the background, empty arena floor, no characters, no crowd detail, gentle warm bokeh, low contrast, energetic warm lighting, faint motion blur of confetti drifting, suitable as a lively gameplay background, vertical portrait composition, warm saturated colors, cinematic lighting",
+      "text": "Pixar style 3D animation still, an open-air Spanish arena establishing shot at golden hour, sunlit outdoor plaza under a clear open blue sky, no roof or canopy overhead, colorful banners with math symbols hanging from stone archways, empty arena floor with confetti scattered and drifting through the air, no characters, no crowd detail, sharp focus throughout, crisp detail, energetic and lively atmosphere, vertical portrait composition, warm saturated colors, cinematic lighting, highly detailed",
       "clip": ["1", 1]
     }
   },
   "4": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "neon, cyberpunk, futuristic, wireframe, dark background, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, low quality, deformed, character, person, boy, bull, animal, face, sharp detailed crowd, high contrast, busy, weapon, violence, scary",
+      "text": "roof, ceiling, canopy overhead, covered stands, indoor, tent, awning overhead, blurry, soft focus, out of focus, low contrast, hazy, bokeh, neon, cyberpunk, futuristic, wireframe, dark background, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, low quality, deformed, character, person, boy, bull, animal, face, weapon, violence, scary",
       "clip": ["1", 1]
     }
   },
@@ -25,7 +25,7 @@
     "class_type": "KSampler",
     "inputs": {
       "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0], "latent_image": ["2", 0],
-      "seed": 902, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
+      "seed": 906, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
     }
   },
   "6": {
@@ -34,6 +34,6 @@
   },
   "7": {
     "class_type": "SaveImage",
-    "inputs": {"filename_prefix": "screen_game_v2", "images": ["6", 0]}
+    "inputs": {"filename_prefix": "screen_game_v3", "images": ["6", 0]}
   }
 }

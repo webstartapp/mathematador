@@ -70,14 +70,28 @@ concept sketch — **not** this reference. Don't seed generations from it.
 ## Status update (2026-09-25): Home/Game/Result no longer feature characters
 
 All six screen backgrounds (Home, Settings, Public, Game, Result, Shop) are
-now the **same kind of asset**: a character-free, softly-blurred arena
-establishing shot, matching `screen-public.json`'s original style — no boy,
-no bull, just scenery, with per-screen mood details (Home: calm empty arena;
-Game: drifting confetti, more energetic; Result: golden coins/confetti on
+now the **same kind of asset**: a character-free arena establishing shot, no
+boy, no bull, just scenery, with per-screen mood details (Home: calm plaza;
+Game: confetti scattered on the ground, energetic; Result: golden coins on
 the ground, celebratory). This was a deliberate simplification, not a
 regression — it also sidesteps every finding in the next few sections
 (character fusion, the bull's numbers being erased, outpainting seams all
 existed *because* these three used to feature both characters via img2img).
+
+**Also updated same day**: the first pass of this (Home/Game/Result/Public)
+used a deliberately soft-defocused, low-contrast prompt ("gentle warm bokeh,
+low contrast, subdued muted lighting") meant to sit unobtrusively behind UI
+text, and framed the arena looking up into a covered stand roof/canopy. Both
+were wrong per feedback — Settings/Shop were sharp and read as outdoor, so
+all four got rebuilt to match: sharp focus throughout, no bokeh, and
+explicitly **open-air** ("under a clear open blue sky, no roof or canopy
+overhead" positive; "roof, ceiling, canopy overhead, covered stands, indoor,
+tent" negative — without the negative prompt the model kept drifting back to
+a covered/indoor read). One thing worth watching: `screen-public.json` sits
+behind actual readable text on the `/info/*` pages, and full sharpness/
+contrast trades away some of the "safe to put text over this" quality the
+original soft version had on purpose — if legibility becomes an issue there,
+that's the tradeoff to revisit, not a sign this rebuild did something wrong.
 
 Everything below through "the low-denoise couple scenes need the padding
 regenerated separately" describes that **retired** character-scene
