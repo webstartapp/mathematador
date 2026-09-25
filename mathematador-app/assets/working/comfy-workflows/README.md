@@ -67,7 +67,31 @@ concept sketch — **not** this reference. Don't seed generations from it.
   from `h94/IP-Adapter` on Hugging Face). Not yet used by any workflow here —
   all couple scenes below use plain img2img instead.
 
-## Key finding: static poses fuse the two characters, dynamic poses don't
+## Status update (2026-09-25): Home/Game/Result no longer feature characters
+
+All six screen backgrounds (Home, Settings, Public, Game, Result, Shop) are
+now the **same kind of asset**: a character-free, softly-blurred arena
+establishing shot, matching `screen-public.json`'s original style — no boy,
+no bull, just scenery, with per-screen mood details (Home: calm empty arena;
+Game: drifting confetti, more energetic; Result: golden coins/confetti on
+the ground, celebratory). This was a deliberate simplification, not a
+regression — it also sidesteps every finding in the next few sections
+(character fusion, the bull's numbers being erased, outpainting seams all
+existed *because* these three used to feature both characters via img2img).
+
+Everything below through "the low-denoise couple scenes need the padding
+regenerated separately" describes that **retired** character-scene
+technique. It's kept because the findings (character fusion on static
+poses, numbers erased above denoise 0.4, outpainting seams) are real and
+would bite again if a *future* screen (or the video work in
+`intro-video.json`, which still does feature both characters) goes back to
+generating them together. The actual files it referenced
+(`screen-*-extend.json`, `reference-couple-*.png`, the couple's numbers
+work) have been deleted from this folder now that nothing here uses them —
+recreate them from this section's description if that need comes back
+rather than expecting the files to still exist.
+
+## Key finding: static poses fuse the two characters, dynamic poses don't (retired technique)
 
 Repeated attempts at a **static, standing-side-by-side** pose for the boy and
 bull (plain txt2img and img2img alike) kept fusing them into one hybrid
@@ -79,7 +103,7 @@ it immediately, first try, every time. Cause unconfirmed, but treat it as a
 hard rule: never generate the boy+bull together in a static standing pose:
 always seed from / describe an active pose.
 
-## Key finding: img2img at denoise ≥0.42 erases the bull's numbers
+## Key finding: img2img at denoise ≥0.42 erases the bull's numbers (retired technique)
 
 The bull's glowing numbers-on-fur texture is present in every real source
 frame, but img2img at denoise 0.42-0.6 reliably wipes it out even with the
@@ -93,7 +117,7 @@ what actually preserves it.** All three couple-scene workflows now use this;
 apply it to any future one seeding from a frame where the bull's numbers
 need to stay legible.
 
-## The current technique: `ImagePadForOutpaint` + `VAEEncodeForInpaint`, one pass
+## `ImagePadForOutpaint` + `VAEEncodeForInpaint`, one pass (retired technique)
 
 Earlier attempts (kept below for context, but don't repeat them) used a
 hand-rolled two-pass approach: pad the character crop with solid-color bands
@@ -101,13 +125,11 @@ in Python, generate the character at low denoise, then run a *second*
 workflow with a hand-built soft-edge mask PNG to regenerate just the padding.
 It worked but always left at least a faint seam.
 
-**`screen-home-extend.json` / `screen-game-extend.json` /
-`screen-result-extend.json` now all use ComfyUI's own built-in outpainting
-nodes instead — one pass, no Python mask script:**
+**Use ComfyUI's own built-in outpainting nodes instead — one pass, no
+Python mask script:**
 
-1. `LoadImage` — an **unpadded** character crop (`reference-couple-*-
-   unpadded.png`; a real `intro.mp4` frame, dynamic pose, resized to 768 wide,
-   no color bands added).
+1. `LoadImage` — an **unpadded** character crop (a real `intro.mp4` frame,
+   dynamic pose, resized to 768 wide, no color bands added).
 2. `ImagePadForOutpaint(image, left, top, right, bottom, feathering=80)` —
    pads to the target canvas (768x1344) and outputs both the padded image
    and a correctly-feathered mask in one step. `feathering` below ~80 still
@@ -125,17 +147,17 @@ nodes instead — one pass, no Python mask script:**
    invents an unrelated foreground structure at the top instead of
    continuing the same wall.
 
-`mathematador-universal.json` is the same technique authored as a proper
-UI-format graph (node positions, visible links, an on-canvas usage note)
-instead of a raw API-format file — it's saved live at
+`mathematador-universal.json` is the same (now-retired) technique authored
+as a proper UI-format graph (node positions, visible links, an on-canvas
+usage note) instead of a raw API-format file — it's saved live at
 `D:\Comfy-Desktop\ComfyUI-Installs\ComfyUI\ComfyUI\user\default\workflows\
-mathematador.json` (the *original* copy was at the old instance's
-`D:\confyiu\user\...` before the instance move above) so it shows up
-directly in the ComfyUI Desktop app's own Workflows sidebar — open it there
-to inspect or hand-tweak any node. This repo copy is a backup; the live one
-to actually edit is the one in ComfyUI's own user-data folder. Its `LoadImage`
-still points at the old `home_unpadded.png` filename — re-upload whichever
-crop you want and repoint that node before running it again.
+mathematador.json` so it shows up directly in the ComfyUI Desktop app's own
+Workflows sidebar. Left in place (both here and live) in case a future
+screen wants a character featured again; not deleted along with the other
+retired files since it's a reusable *template* rather than a specific
+image's recipe. Its `LoadImage` still points at a filename that no longer
+exists in the input folder — re-upload whichever crop you want and repoint
+that node before running it again.
 
 `mathematador-iconset.json` is the equivalent visual graph for the icon set
 (see the composition-consistency finding right below) — also saved live at
@@ -144,7 +166,7 @@ up in the same Workflows sidebar. Its on-canvas note lists the exact subject
 clause used for each of the three current icons; to add a fourth, only the
 first clause of the positive prompt needs to change.
 
-## Key finding: the low-denoise couple scenes need the padding regenerated separately
+## Key finding: the low-denoise couple scenes need the padding regenerated separately (retired technique)
 
 The denoise-0.3 fix above (preserving the bull's numbers) only touches the
 character region — the solid sky-blue/sand-tan padding bands from the
@@ -211,29 +233,13 @@ are the same template's three current subject variants in API format.
   icon set. Juggernaut XL, native 1024x1024, no image conditioning, using the
   shared composition template above (only the subject clause differs between
   the three files).
-- `screen-settings.json` / `screen-public.json` / `screen-shop.json` — no
-  characters, pure txt2img, 768x1344 portrait, same prompt vocabulary as the
-  icons. Reliable, no gotchas.
-- `screen-home.json` / `screen-game.json` / `screen-result.json` — pass 1:
-  both characters together, in the correct portrait dimensions React Native
-  actually needs (768x1344, not the intro.mp4's cropped landscape). img2img,
-  denoise 0.3 (see the numbers-preservation finding below), seeded from a
-  **dynamic-pose** crop of a real `intro.mp4` frame (`reference-couple-
-  gesture.png`, `-running.png`, `-jumping.png`) that's been resized to 768
-  wide and padded top/bottom with solid sky-blue / sand-tan fill (not
-  stretched — that caused a separate leg-artifact bug, see `intro-video.json`'s
-  note below) to reach 1344 tall. `reference-boy-alone.png` /
-  `reference-bull-alone.png` are separate single-character crops, prepared for
-  IPAdapter but not yet used.
-- `screen-home-extend.json` / `screen-game-extend.json` /
-  `screen-result-extend.json` — pass 2: takes the corresponding **unpadded**
-  reference crop directly (`reference-couple-gesture-unpadded.png` /
-  `-running-unpadded.png` / `-jumping-unpadded.png`) and runs it through the
-  `ImagePadForOutpaint` + `VAEEncodeForInpaint` technique above — no
-  intermediate pass-1 output or hand-built mask needed. The `top`/`bottom`
-  pad amounts baked into each file are specific to that crop's own height;
-  recompute them (`1344 - crop_height`, split however you want between top
-  and bottom) for a different crop.
+- `screen-settings.json` / `screen-public.json` / `screen-shop.json` /
+  `screen-home.json` / `screen-game.json` / `screen-result.json` — all six
+  screen backgrounds, same recipe: no characters, pure txt2img, 768x1344
+  portrait, a soft-defocused-arena-establishing-shot prompt (see the status
+  update above) with small per-screen mood tweaks in the last clause before
+  "vertical portrait composition". Reliable, no gotchas, no image
+  conditioning needed for any of them.
 - `intro-video.json` — AnimateDiff/LCM portrait video (576x1024, 32 frames,
   8fps). Seeded from `reference-crop-intro-portrait.png`, edge-STRETCHED
   (not solid-fill) padding — **known bug**: at denoise 0.4 the legs render as

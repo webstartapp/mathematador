@@ -1,64 +1,39 @@
 {
   "1": {
     "class_type": "CheckpointLoaderSimple",
-    "inputs": {
-      "ckpt_name": "JuggernautXL_v9.safetensors"
-    }
+    "inputs": {"ckpt_name": "JuggernautXL_v9.safetensors"}
   },
   "2": {
-    "class_type": "LoadImage",
-    "inputs": {
-      "image": "home_seed3.png"
-    }
+    "class_type": "EmptyLatentImage",
+    "inputs": {"width": 768, "height": 1344, "batch_size": 1}
   },
   "3": {
-    "class_type": "VAEEncode",
+    "class_type": "CLIPTextEncode",
     "inputs": {
-      "pixels": ["2", 0],
-      "vae": ["1", 2]
+      "text": "Pixar style 3D animation still, a soft defocused establishing shot of a warm sunlit Spanish arena at golden hour, colorful banners with math symbols hanging blurred in the background, empty arena floor, no characters, no crowd detail, gentle warm bokeh, low contrast, subdued muted lighting suitable as a calm menu background, vertical portrait composition, warm saturated colors, cinematic lighting",
+      "clip": ["1", 1]
     }
   },
   "4": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "Pixar style 3D animation still, exactly two characters only, a cheerful young Mathematador boy and his friendly rounded bull companion Toro Numerico in a warm sunlit Spanish arena at golden hour. The bull has uniform warm cream and tan fur all over its whole body with no color patches or markings, and dozens of glowing soft white numbers and math symbols floating on and embedded in its fur, covering its belly, chest and legs, magical sparkling light aura. The arena architecture and blue sky extend upward, the sandy arena floor extends downward, colorful banners with math symbols, cheering crowd silhouettes in the stands, golden coins and sparkles floating, vertical portrait composition, warm saturated colors, cinematic lighting, highly detailed, sharp focus, seamless continuation of the scene",
+      "text": "neon, cyberpunk, futuristic, wireframe, dark background, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, low quality, deformed, character, person, boy, bull, animal, face, sharp detailed crowd, high contrast, busy, weapon, violence, scary",
       "clip": ["1", 1]
     }
   },
   "5": {
-    "class_type": "CLIPTextEncode",
+    "class_type": "KSampler",
     "inputs": {
-      "text": "two-tone fur, white belly patch, color-blocked fur, wearing clothes, vest, pants, shirt, plain fur, no markings, solid color body, bare skin, neon, cyberpunk, futuristic, wireframe, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, blurry, low quality, deformed, extra limbs, seam, hard edge, visible border, extra character, third character, extra animal, statue, weapon, violence, scary",
-      "clip": ["1", 1]
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0], "latent_image": ["2", 0],
+      "seed": 901, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
     }
   },
   "6": {
-    "class_type": "KSampler",
-    "inputs": {
-      "model": ["1", 0],
-      "positive": ["4", 0],
-      "negative": ["5", 0],
-      "latent_image": ["3", 0],
-      "seed": 837,
-      "steps": 40,
-      "cfg": 7,
-      "sampler_name": "dpmpp_2m",
-      "scheduler": "karras",
-      "denoise": 0.3
-    }
+    "class_type": "VAEDecode",
+    "inputs": {"samples": ["5", 0], "vae": ["1", 2]}
   },
   "7": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": ["6", 0],
-      "vae": ["1", 2]
-    }
-  },
-  "8": {
     "class_type": "SaveImage",
-    "inputs": {
-      "filename_prefix": "screen_home_img2img",
-      "images": ["7", 0]
-    }
+    "inputs": {"filename_prefix": "screen_home_v2", "images": ["6", 0]}
   }
 }
