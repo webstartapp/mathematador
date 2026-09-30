@@ -1314,6 +1314,28 @@ export const styles = StyleSheet.create({
     fontSize: typography.size.base,
   },
 
+  // ---- components/toro/CharacterReaction.tsx ----
+  characterReactionRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    gap: spacing.md,
+  },
+  characterReactionImage: {
+    width: 110,
+    height: 160,
+  },
+  tiendaReactionOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+  },
+
   // ---- screens/ChallengeGameScreen.tsx ----
   challengeTopBar: {
     flexDirection: "row",

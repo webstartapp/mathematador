@@ -7,6 +7,7 @@ import { View } from "react-native";
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
+import CharacterReaction from "@/components/toro/CharacterReaction";
 import { operations } from "@/configs/operations";
 import { styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
@@ -67,6 +68,7 @@ const ChallengeResultScreen = ({
             `XP Earned: ${xp}`,
           ]}
         >
+          <CharacterReaction variant={successful ? "success" : "failure"} />
           <Button title="Continue" onPress={handleReturn} />
         </CenteredDesk>
         <CenteredDesk

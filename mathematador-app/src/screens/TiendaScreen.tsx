@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Card from "@/components/common/Card";
 import Layout from "@/components/common/Layout";
 import ScreenHeader from "@/components/common/ScreenHeader";
+import CharacterReaction from "@/components/toro/CharacterReaction";
 import {
   buyCosmetic,
   equipCosmetic,
@@ -282,6 +283,8 @@ type TiendaScreenNavigationProp = StackNavigationProp<
   "Tienda"
 >;
 
+const REACTION_DISPLAY_MS = 1800;
+
 const TiendaScreen = (): JSX.Element => {
   const dispatch = useDispatch();
   const navigation = useNavigation<TiendaScreenNavigationProp>();
@@ -292,6 +295,7 @@ const TiendaScreen = (): JSX.Element => {
     useState<CosmeticItem[]>(FALLBACK_COSMETICS);
   const [loading, setLoading] = useState(false);
   const [actionLoadingId, setLoadingId] = useState<string | null>(null);
+  const [showPurchaseReaction, setShowPurchaseReaction] = useState(false);
 
   // Fetch cosmetics on load
   const loadCosmetics = async (): Promise<void> => {
@@ -341,15 +345,20 @@ const TiendaScreen = (): JSX.Element => {
       const purchaseResponse = await cosmeticsBuy({ cosmeticId: item.id });
       if (purchaseResponse && purchaseResponse.data) {
         dispatch(syncProgress(purchaseResponse.data));
-        Alert.alert("Success", `${item.name} purchased!`);
+        showPurchaseCelebration();
       }
     } catch {
       // Fallback offline purchase
       dispatch(buyCosmetic({ cosmeticId: item.id, price: item.price }));
-      Alert.alert("Success", `${item.name} purchased offline!`);
+      showPurchaseCelebration();
     } finally {
       setLoadingId(null);
     }
+  };
+
+  const showPurchaseCelebration = (): void => {
+    setShowPurchaseReaction(true);
+    setTimeout(() => setShowPurchaseReaction(false), REACTION_DISPLAY_MS);
   };
 
   const handleEquipToggle = async (
@@ -429,6 +438,12 @@ const TiendaScreen = (): JSX.Element => {
           onBuy: handleBuy,
         })}
       </ScrollView>
+
+      {showPurchaseReaction && (
+        <View style={styles.tiendaReactionOverlay} pointerEvents="none">
+          <CharacterReaction variant="success" />
+        </View>
+      )}
     </Layout>
   );
 };
