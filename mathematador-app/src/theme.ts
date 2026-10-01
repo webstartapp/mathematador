@@ -1335,6 +1335,15 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.35)",
   },
+  tiendaReactionCaption: {
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.xl,
+    color: colors.white,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.base,
+    textAlign: "center",
+    ...cardTextShadow,
+  },
 
   // ---- screens/ChallengeGameScreen.tsx ----
   challengeTopBar: {

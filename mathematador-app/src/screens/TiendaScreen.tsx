@@ -4,6 +4,7 @@ import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, JSX, useState } from "react";
 import {
+  AccessibilityInfo,
   View,
   Text,
   ScrollView,
@@ -296,6 +297,7 @@ const TiendaScreen = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [actionLoadingId, setLoadingId] = useState<string | null>(null);
   const [showPurchaseReaction, setShowPurchaseReaction] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState("");
 
   // Fetch cosmetics on load
   const loadCosmetics = async (): Promise<void> => {
@@ -345,19 +347,25 @@ const TiendaScreen = (): JSX.Element => {
       const purchaseResponse = await cosmeticsBuy({ cosmeticId: item.id });
       if (purchaseResponse && purchaseResponse.data) {
         dispatch(syncProgress(purchaseResponse.data));
-        showPurchaseCelebration();
+        showPurchaseCelebration(`${item.name} purchased!`);
       }
     } catch {
-      // Fallback offline purchase
+      // Fallback offline purchase - only saved to local Redux state, not
+      // synced to the account, so this must read differently from a
+      // server-confirmed purchase rather than looking identical to one.
       dispatch(buyCosmetic({ cosmeticId: item.id, price: item.price }));
-      showPurchaseCelebration();
+      showPurchaseCelebration(
+        `${item.name} purchased offline — will sync once you're back online.`,
+      );
     } finally {
       setLoadingId(null);
     }
   };
 
-  const showPurchaseCelebration = (): void => {
+  const showPurchaseCelebration = (message: string): void => {
+    setPurchaseMessage(message);
     setShowPurchaseReaction(true);
+    AccessibilityInfo.announceForAccessibility(message);
     setTimeout(() => setShowPurchaseReaction(false), REACTION_DISPLAY_MS);
   };
 
@@ -442,6 +450,13 @@ const TiendaScreen = (): JSX.Element => {
       {showPurchaseReaction && (
         <View style={styles.tiendaReactionOverlay} pointerEvents="none">
           <CharacterReaction variant="success" />
+          <Text
+            style={styles.tiendaReactionCaption}
+            accessibilityLiveRegion="polite"
+            accessibilityRole="text"
+          >
+            {purchaseMessage}
+          </Text>
         </View>
       )}
     </Layout>

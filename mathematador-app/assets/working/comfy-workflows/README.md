@@ -12,10 +12,11 @@ any of those images later without re-deriving the setup from scratch.
 2. **Open the right visual workflow** in the ComfyUI Desktop app's Workflows
    sidebar (the folder icon in the left rail) — don't hand-write JSON from
    scratch, these already encode the right checkpoint/settings/composition:
-   - **`mathematador-screens`** — the six screen backgrounds (Home, Settings,
-     Public, Game, Result, Shop): a character-free, sharp, open-air arena
-     shot, 768x1344. Edit only the last clause of the positive prompt (the
-     mood), per the on-canvas note.
+   - **`mathematador-screens`** — four of the six screen backgrounds (Home,
+     Public, Game, Result — **not** Settings or Shop, which are their own
+     distinct compositions, `screen-settings.json`/`screen-shop.json`): a
+     character-free, sharp, open-air arena shot, 768x1344. Edit only the
+     last clause of the positive prompt (the mood), per the on-canvas note.
    - **`mathematador-iconset`** — the three Home-screen nav icons (Settings,
      Shop, Docs): a grounded product-render, 1024x1024. Edit only the first
      clause of the positive prompt (the subject), per the on-canvas note.
@@ -34,16 +35,19 @@ any of those images later without re-deriving the setup from scratch.
 If a workflow needs to be run headless (an agent doing this without a human
 watching the GUI) rather than through the app: POST the workflow's
 API-format JSON (the `.json` files in this folder, not the visual graphs
-above — see "API-format files" below) to `/prompt`, poll
-`/history/<prompt_id>` until non-empty, then `GET /view` the output filename
-it reports. `comfy-mcp`'s `run_workflow`/`job` tools do exactly this if its
-`COMFYUI_URL` env var is pointed at the current instance; otherwise use raw
-`curl` (see "Instance location").
+above — see "API-format files" below) to `/prompt`, **wrapped in a
+top-level `prompt` key** — `{"prompt": <the graph>, "client_id":
+"<any-uuid>"}`, not the raw graph by itself, or the endpoint rejects it —
+poll `/history/<prompt_id>` until non-empty, then `GET /view` the output
+filename it reports. `comfy-mcp`'s `run_workflow`/`job` tools do exactly
+this if its `COMFYUI_URL` env var is pointed at the current instance;
+otherwise use raw `curl` (see "Instance location").
 
 ## Instance location
 
-A running ComfyUI instance, currently: `D:\Comfy-Desktop\ComfyUI-Installs\
-ComfyUI\ComfyUI`, **port 8188** (auto-assigned — if `curl
+A running ComfyUI instance, currently at
+`D:\Comfy-Desktop\ComfyUI-Installs\ComfyUI\ComfyUI`, **port 8188**
+(auto-assigned — if `curl
 http://127.0.0.1:8188/system_stats` doesn't respond, check
 `C:\Users\<user>\AppData\Roaming\Comfy Desktop\port-locks\` for the current
 port, or open the Comfy Desktop app and launch the "ComfyUI" instance card).
