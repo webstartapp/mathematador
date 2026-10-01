@@ -103,10 +103,33 @@ teal-and-gold torero outfit, and his companion **Toro Numérico**, a friendly
 rounded cream-colored bull with blonde horns and glowing numbers on its
 body. Real reference assets already in the repo:
 
-- `mathematador-app/assets/images/intro-screen.png`, `splash.png`,
-  `adaptive-icon.png`, `icon.png` — originally externally-generated
-  (Gemini/Veo), already correct, already wired in `app.json`. Don't
-  regenerate these without a real reason.
+- `mathematador-app/assets/images/intro-screen.png`, `splash.png` —
+  originally externally-generated (Gemini/Veo), already correct, already
+  wired in `app.json`. Don't regenerate these without a real reason.
+  `splash.png` itself is now unreferenced (the splash image in `app.json`
+  moved to `logo.png`), left in place rather than deleted.
+- `mathematador-app/assets/images/icon.png`, `favicon.png`,
+  `adaptive-icon.png` — **as of 2026-10-01, no longer the original
+  externally-generated versions.** Those showed an older, flatter
+  illustration-style boy/bull that had drifted from the approved 3D
+  character pose sheet below, so they were recomposed deterministically
+  (plain PIL script, no generative model involved) from
+  `character-boy-success.png` + `character-bull-standing.png`: a
+  warm-orange/gold-ring/navy-circle badge (matching the wood/gold palette
+  used across the app's UI) with the two current character crops
+  foreground-composited and clipped to the circle, plus simple PIL-drawn
+  math glyphs (`+ - × ÷`, digits) filling the empty space above them —
+  deliberately not a diffusion prompt, since multi-glyph text rendering is
+  the same unreliable-text failure mode documented under "Retired: logo
+  generation" below. `adaptive-icon.png` is the same `icon.png` artwork
+  scaled to ~72% and centered, keeping its content inside Android's
+  adaptive-icon safe-zone circle (~66% of canvas) instead of the previous
+  version, which was actually the full splash/hero scene with a title
+  banner baked in near the top edge and got clipped by the OS mask on real
+  devices. `favicon.png` is a tight 64x64 crop of the current bull's face.
+  Regenerate these again (same recipe) whenever the character pose sheet
+  itself changes, so the app icon doesn't drift from the in-game
+  characters a second time.
 - `mathematador-app/assets/video/intro.mp4` — **as of 2026-09-30, this is no
   longer the original external asset.** It's now generated via Gemini's own
   web app (not this ComfyUI instance at all — see
