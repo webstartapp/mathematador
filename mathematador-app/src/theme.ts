@@ -282,9 +282,14 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  // minHeight (not height/flex) so that content taller than the visible
+  // area (e.g. CenteredDesk with a logo) grows the container instead of
+  // staying pinned to 100% and getting centered half-above/half-below it -
+  // the latter pushed the top of tall content up underneath the screen's
+  // header (confirmed live: a 592px-tall CenteredDesk measured at y=-1.5
+  // inside a 416.6px-tall centered container, overlapping GameHeader).
   layoutContainer: {
-    flex: 1,
-    height: "100%",
+    minHeight: "100%",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
@@ -554,6 +559,16 @@ export const styles = StyleSheet.create({
     // both stay visible at the screen edges, instead of the card touching
     // edge-to-edge now that it's no longer accidentally shifted off-screen.
     paddingHorizontal: spacing.sm,
+  },
+  centeredDeskLogoWrapper: {
+    width: "80%",
+    height: 90,
+    alignSelf: "center",
+    marginBottom: spacing.sm,
+  },
+  centeredDeskLogo: {
+    width: "100%",
+    height: "100%",
   },
   centeredDeskTitle: {
     fontSize: typography.size.hero,

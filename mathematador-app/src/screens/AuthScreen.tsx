@@ -10,6 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 
 import imageBG from "@/assets/images/intro-screen.png";
+import logoImage from "@/assets/images/logo.png";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
@@ -289,6 +290,7 @@ const AuthScreen = (): JSX.Element => {
   return (
     <Layout>
       <CenteredDesk
+        logo={logoImage}
         title="Join the Coliseo!"
         descriptions={
           step === "email"

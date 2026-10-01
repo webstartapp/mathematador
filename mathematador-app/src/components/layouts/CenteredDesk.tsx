@@ -1,5 +1,11 @@
 import { FC, ReactNode } from "react";
-import { TextStyle, View, ViewStyle } from "react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
 
 import ThemedText from "@/components/texts/ThemedText";
 import { styles as themeStyles } from "@/theme";
@@ -36,7 +42,11 @@ const CenteredDesk: FC<{
   descriptions?: string[];
   children?: ReactNode;
   styles?: CenteredDeskStyleOverrides;
-}> = ({ title, subtitles, descriptions, children, styles }) => {
+  // Optional main-logo image, rendered above the title. Shared across
+  // every CenteredDesk caller rather than each screen inlining its own
+  // <Image> so the wordmark reads consistently wherever it appears.
+  logo?: ImageSourcePropType;
+}> = ({ title, subtitles, descriptions, children, styles, logo }) => {
   return (
     <View style={[themeStyles.centeredDeskWrapper, styles?.wrapper]}>
       <View
@@ -46,6 +56,16 @@ const CenteredDesk: FC<{
           styles?.container,
         ]}
       >
+        {logo && (
+          <View style={themeStyles.centeredDeskLogoWrapper}>
+            <Image
+              source={logo}
+              style={themeStyles.centeredDeskLogo}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+          </View>
+        )}
         {title && (
           <ThemedText
             variant="title"
