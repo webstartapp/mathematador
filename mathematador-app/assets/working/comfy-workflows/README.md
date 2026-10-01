@@ -103,11 +103,33 @@ teal-and-gold torero outfit, and his companion **Toro Numérico**, a friendly
 rounded cream-colored bull with blonde horns and glowing numbers on its
 body. Real reference assets already in the repo:
 
-- `mathematador-app/assets/images/intro-screen.png`, `splash.png` —
-  originally externally-generated (Gemini/Veo), already correct, already
-  wired in `app.json`. Don't regenerate these without a real reason.
-  `splash.png` itself is now unreferenced (the splash image in `app.json`
-  moved to `logo.png`), left in place rather than deleted.
+- `mathematador-app/assets/images/intro-screen.png`, `shop-screen.png`,
+  `splash.png` — **as of 2026-10-01, no longer the original
+  externally-generated versions.** All three showed the same older,
+  flatter boy/bull design as the old app-icon assets (see below) and had
+  drifted from the approved pose sheet. Fixed without any new generation
+  for `intro-screen.png`/`splash.png`: both are just a real frame of the
+  current `intro.mp4` (already correct design, already portrait, already
+  lit/grounded correctly since it's an actual rendered frame, not a
+  composite) extracted with `cv2.VideoCapture` + `cv2.imwrite` — zero risk
+  of the fusion/garbled-text failure modes below since no new generation
+  happens at all. `shop-screen.png` needed a scene that doesn't exist in
+  any video, so it's a genuine **comfy** job: the reliable character-free
+  `screen-shop.json` recipe (already proven, see "Current recipes" below)
+  generated the empty market-stall backdrop, then the current
+  `character-boy-success.png` + `character-bull-standing.png` crops were
+  PIL-composited on top with a soft ground-contact shadow — the same
+  two-step split (ComfyUI for the reliable character-free background,
+  deterministic PIL for the character placement) used for the app icon,
+  chosen specifically to avoid the "Retired: character scenes" failure
+  modes below rather than attempting a single combined generation.
+  `intro-screen.png` is actively wired in (`AuthScreen`/`ConsentScreen`/
+  `HomeScreen`'s shared background via `useAnimatedBackground`);
+  `shop-screen.png` and `splash.png` are both currently unreferenced by any
+  screen or `app.json` (the former looks intended for `TiendaScreen`, which
+  doesn't set a background today; the latter's `app.json` slot moved to
+  `logo.png`) but were refreshed anyway rather than left showing outdated
+  characters.
 - `mathematador-app/assets/images/icon.png`, `favicon.png`,
   `adaptive-icon.png` — **as of 2026-10-01, no longer the original
   externally-generated versions.** Those showed an older, flatter
