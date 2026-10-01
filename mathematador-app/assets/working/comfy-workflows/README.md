@@ -123,6 +123,11 @@ body. Real reference assets already in the repo:
   are what seeded the new `intro.mp4` above, and what's wired into
   `ChallengeResultScreen`/`TiendaScreen` (`src/components/toro/
   CharacterReaction.tsx`).
+- `mathematador-app/assets/images/logo.png` — the "Mathematador & El
+  Coliseo de los Números" wordmark, transparent background, 650x262. **Not
+  ComfyUI output** — extracted (`rembg`) from a hand-provided reference
+  image of the finished design. ComfyUI cannot reproduce this asset; see
+  "Retired: logo generation" below before attempting to.
 
 `docs/toro_numerico_concept.png` is an unrelated, earlier neon/geometric-
 wireframe concept sketch — **not** this reference. Don't seed generations
@@ -358,6 +363,24 @@ this outpainting technique as a visual graph — still live in ComfyUI's
 Workflows sidebar. Its `LoadImage` points at a filename that no longer
 exists in the input folder; re-upload whichever crop you want and repoint
 that node before running it again.
+
+## Retired: logo generation
+
+A test attempt (2026-10-01) at generating the "Mathematador & El Coliseo de
+los Números" logo wordmark from a text prompt (JuggernautXL, explicit
+`"MATHEMATADOR"` and `"EL COLISEO DE LOS NUMEROS"` spelled out in the
+prompt, negative-prompted against "misspelled, gibberish text, illegible,
+extra letters, missing letters") produced completely garbled text —
+`"Colleeso"` and `"Fecnbieran Lde"` instead of the requested words. This is
+the same fundamental weak point already documented for the bull's
+number-covered fur (see "Current recipes" → the icon section's rembg note,
+and `mathematador-characters.json`'s on-canvas history): diffusion models
+are unreliable at rendering specific, legible, multi-word text, and no
+amount of prompt tuning fixed the equivalent problem there either. Don't
+re-attempt this locally for the same reason — one test was enough to
+confirm the pattern repeats. `logo.png` is extracted from a real reference
+image of the finished design instead (`rembg`, no generation involved) —
+see "The actual style reference" above.
 
 ## Retired: local open-arena background (use Gemini instead — see `../characters/README.md`)
 
