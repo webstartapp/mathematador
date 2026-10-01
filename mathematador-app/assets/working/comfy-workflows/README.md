@@ -103,33 +103,40 @@ teal-and-gold torero outfit, and his companion **Toro Numérico**, a friendly
 rounded cream-colored bull with blonde horns and glowing numbers on its
 body. Real reference assets already in the repo:
 
-- `mathematador-app/assets/images/intro-screen.png`, `shop-screen.png`,
-  `splash.png` — **as of 2026-10-01, no longer the original
-  externally-generated versions.** All three showed the same older,
-  flatter boy/bull design as the old app-icon assets (see below) and had
-  drifted from the approved pose sheet. Fixed without any new generation
-  for `intro-screen.png`/`splash.png`: both are just a real frame of the
-  current `intro.mp4` (already correct design, already portrait, already
-  lit/grounded correctly since it's an actual rendered frame, not a
-  composite) extracted with `cv2.VideoCapture` + `cv2.imwrite` — zero risk
-  of the fusion/garbled-text failure modes below since no new generation
-  happens at all. `shop-screen.png` needed a scene that doesn't exist in
-  any video, so it's a genuine **comfy** job: the reliable character-free
-  `screen-shop.json` recipe (already proven, see "Current recipes" below)
-  generated the empty market-stall backdrop, then the current
-  `character-boy-success.png` + `character-bull-standing.png` crops were
-  PIL-composited on top with a soft ground-contact shadow — the same
-  two-step split (ComfyUI for the reliable character-free background,
-  deterministic PIL for the character placement) used for the app icon,
-  chosen specifically to avoid the "Retired: character scenes" failure
-  modes below rather than attempting a single combined generation.
-  `intro-screen.png` is actively wired in (`AuthScreen`/`ConsentScreen`/
-  `HomeScreen`'s shared background via `useAnimatedBackground`);
-  `shop-screen.png` and `splash.png` are both currently unreferenced by any
-  screen or `app.json` (the former looks intended for `TiendaScreen`, which
-  doesn't set a background today; the latter's `app.json` slot moved to
-  `logo.png`) but were refreshed anyway rather than left showing outdated
-  characters.
+- `mathematador-app/assets/images/screen-bg-*.png` (six: `home`, `public`,
+  `game`, `result`, `settings`, `shop`) — character-free scenery only, per
+  the "Screen backgrounds" recipe below. **As of 2026-10-01, all six are
+  actually wired into a screen** via `useAnimatedBackground`: `home` →
+  `AuthScreen`/`ConsentScreen`/`HomeScreen` (shared onboarding background),
+  `public` → `app/info/[slug].tsx`, `shop` → `TiendaScreen`, `game` →
+  `ChallengeGameScreen`, `result` → `ChallengeResultScreen`, `settings` →
+  `SettingsScreen`. Previously only `screen-bg-settings.png`/
+  `screen-bg-shop.png` existed as hand-generated files with nothing in
+  `src` actually importing any of the six — `intro-screen.png` (a separate,
+  now-deleted file) stood in for `screen-bg-home.png` on four screens
+  instead, and `screen-bg-home.png` itself sat unused despite being pixel-
+  identical (same recipe, same fixed seed) to what `intro-screen.png` was
+  regenerated to earlier in the same session. Rather than keep two copies
+  of the same image under two names, `intro-screen.png` and the
+  character-composited `shop-screen.png` (a short-lived file from the same
+  cleanup — ComfyUI backdrop + PIL character composite, see the app-icon
+  entry below for that technique) were both deleted and every screen now
+  points directly at its matching canonical `screen-bg-*.png`.
+  **Characters are never baked into these backgrounds** — they're added
+  separately as plain React Native `<Image>` layers (see
+  `CharacterReaction.tsx` for the established pattern) so a screen's
+  scenery and its character art can be regenerated/updated independently.
+- `mathematador-app/assets/images/splash.png` — keeps its boy+bull scene
+  (this one *is* allowed to feature the characters directly, unlike the
+  six screen-bg files above) but, as of 2026-10-01, is a real frame of the
+  current `intro.mp4` (already correct character design, already portrait,
+  naturally lit/grounded since it's an actual rendered frame, not a
+  composite) extracted with `cv2.VideoCapture` + `cv2.imwrite`, with
+  `logo.png` composited on top in the open sky area (plain PIL alpha
+  composite plus a soft drop shadow for legibility — no text generation
+  involved, so none of the garbled-text risk below). Still unreferenced by
+  any screen or `app.json` (the splash slot there points at `logo.png`
+  alone) but kept current rather than left showing outdated characters.
 - `mathematador-app/assets/images/icon.png`, `favicon.png`,
   `adaptive-icon.png` — **as of 2026-10-01, no longer the original
   externally-generated versions.** Those showed an older, flatter

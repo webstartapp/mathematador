@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 
-import imageBG from "@/assets/images/intro-screen.png";
 import logoImage from "@/assets/images/logo.png";
+import imageBG from "@/assets/images/screen-bg-home.png";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";

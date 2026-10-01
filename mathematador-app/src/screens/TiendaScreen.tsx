@@ -14,10 +14,12 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
+import imageBG from "@/assets/images/screen-bg-shop.png";
 import Card from "@/components/common/Card";
 import Layout from "@/components/common/Layout";
 import ScreenHeader from "@/components/common/ScreenHeader";
 import CharacterReaction from "@/components/toro/CharacterReaction";
+import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import {
   buyCosmetic,
   equipCosmetic,
@@ -287,6 +289,7 @@ type TiendaScreenNavigationProp = StackNavigationProp<
 const REACTION_DISPLAY_MS = 1800;
 
 const TiendaScreen = (): JSX.Element => {
+  useAnimatedBackground(imageBG);
   const dispatch = useDispatch();
   const navigation = useNavigation<TiendaScreenNavigationProp>();
   const user: UserState = useSelector((state: RootState) => state.user);
