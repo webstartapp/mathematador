@@ -97,16 +97,28 @@ a warm, sunlit Spanish arena at golden hour ("Plaza de Aritmética"),
 Pixar-quality 3D character design — a young Mathematador boy in a
 teal-and-gold torero outfit, and his companion **Toro Numérico**, a friendly
 rounded cream-colored bull with blonde horns and glowing numbers on its
-body. Real reference assets already in the repo, all generated externally
-(Gemini/Veo) at a fidelity this local setup can only approximate:
+body. Real reference assets already in the repo:
 
-- `mathematador-app/assets/video/intro.mp4` — landscape, 1280x720, 10s/240
-  frames. Was the source of character-pose reference crops when the retired
-  character-scene technique was in use (`ffprobe`/`cv2` to pull frames at a
-  given index).
 - `mathematador-app/assets/images/intro-screen.png`, `splash.png`,
-  `adaptive-icon.png`, `icon.png` — all already correct, already wired in
-  `app.json`. Don't regenerate these without a real reason.
+  `adaptive-icon.png`, `icon.png` — originally externally-generated
+  (Gemini/Veo), already correct, already wired in `app.json`. Don't
+  regenerate these without a real reason.
+- `mathematador-app/assets/video/intro.mp4` — **as of 2026-09-30, this is no
+  longer the original external asset.** It's now generated via Gemini's own
+  web app (not this ComfyUI instance at all — see
+  `../characters/README.md`), seeded with this repo's own approved
+  character PNGs. Portrait, 720x1280, 10s/240 frames. The original landscape
+  1280x720 external version is gone (overwritten, recoverable from git
+  history at commit `6d784b7` or earlier if ever needed); it was the source
+  of character-pose reference crops when the retired character-scene
+  technique below was in use.
+- `mathematador-app/assets/images/character-boy-*.png`,
+  `character-bull-*.png` — the approved character pose sheet (standing,
+  walking, cool, success, boy-only failure), generated via **this** ComfyUI
+  instance — see "Character pose sheet" under Current recipes below. These
+  are what seeded the new `intro.mp4` above, and what's wired into
+  `ChallengeResultScreen`/`TiendaScreen` (`src/components/toro/
+  CharacterReaction.tsx`).
 
 `docs/toro_numerico_concept.png` is an unrelated, earlier neon/geometric-
 wireframe concept sketch — **not** this reference. Don't seed generations
@@ -185,6 +197,40 @@ or resembles clothing/a creature ("cape" alone, "coin" without "stack") —
 keep the negative prompt's character/mascot/face terms in place, and if a
 generation drifts into a character anyway, make the subject phrase more
 explicitly an inanimate object.
+
+**Character pose sheet** (`mathematador-characters.json` visual graph, 56
+nodes/9 branches) — the boy and Toro Numérico as separate full-body
+reference PNGs on a plain background (standing, walking, cool/arms-crossed,
+success/thumbs-up, and a boy-only failure/sad pose), 832x1216, no image
+conditioning, JuggernautXL direct txt2img. Seeds: boy `7001`, bull `7006`,
+both `control_after_generate: fixed`. The on-canvas `MarkdownNote` in that
+workflow has the full status/history; the critical rule, worth repeating
+here because it's easy to reach for out of habit:
+
+**When adding a pose/expression variant to an already-approved character,
+prepend the pose phrase to the UNCHANGED, VERBATIM approved base
+description — never shorten, reorder, or rewrite it.** SDXL's CLIP encoder
+has a ~75-token attention window; rewriting/compacting the prompt to "make
+room" for a new pose clause causes real design drift, confirmed three
+separate times in one session: the bipedal cartoon bull reverted to a plain
+four-legged animal, a second attempt gave it a bodybuilder physique, and a
+boy attempt added an unintended hat and changed his hair color — all from
+otherwise-reasonable-looking prompt edits that happened to shorten or
+reorder the base text. The fix every time was literally
+`"single character full body reference, {new pose phrase}, {exact approved
+text unchanged}"`, with any new anatomy/style correction added to the
+**negative** prompt only, never as a new positive descriptor.
+
+**The bull has no reliable sad/failure pose.** Its approved base description
+contains the literal phrase "warm smile" as a core trait, which fights any
+sad-expression prompt even when "warm smile" is removed from that one
+generation's positive text and heavily negative-weighted
+(`(smiling:1.6), (happy:1.6)...`) with cfg pushed to 8.5 — six attempts, all
+still smiling. Don't re-attempt this with more prompt tuning; it would need
+real pose/expression guidance (e.g. ControlNet with a reference expression)
+to have a chance. The current failure-pose asset
+(`character-bull-standing.png`, reused as a neutral fallback) is the correct
+long-term choice, not a placeholder to revisit.
 
 **Icon post-process — strip the background/shadow with `rembg`, not the
 prompt.** Icons need a transparent background for actual UI use; rather than
@@ -308,6 +354,63 @@ this outpainting technique as a visual graph — still live in ComfyUI's
 Workflows sidebar. Its `LoadImage` points at a filename that no longer
 exists in the input folder; re-upload whichever crop you want and repoint
 that node before running it again.
+
+## Retired: local open-arena background (use Gemini instead — see `../characters/README.md`)
+
+A ground-level, fully-open bullring shot (sand floor with nothing blocking
+the foreground, tiered stands with crowd visible on every side — needed as
+a clean third reference image for Gemini's video generation, see
+`../characters/README.md`) was attempted **thirteen times** on this
+ComfyUI instance across four different approaches, none fully successful.
+Don't re-attempt this locally; it's documented here only so the failure
+modes aren't rediscovered from scratch:
+
+- **Eight single-string prompt rewrites** (JuggernautXL) each fixed one
+  problem and introduced a different one: the standard screen-background
+  template's archway motif kept blocking the foreground even when
+  explicitly negative-prompted; reframing as a "circular amphitheater"
+  fixed that but produced a bizarre decorative circular raking pattern on
+  the sand floor; asking for less confetti (fixed seed, edited prompt)
+  produced an unrelated bird's-eye desert image instead (changing prompt
+  *length* with a fixed seed shifts the whole composition, not just the
+  edited clause — reuse this lesson anywhere a "small tweak" is tried
+  against a fixed seed); a fresh seed fixed that but confetti became
+  *worse*; removing confetti entirely from the prompt (not just toning it
+  down) finally gave a clean floor, but with the decorative circle pattern
+  still present; explicitly describing a plain floor removed the pattern
+  but introduced a random tiny figure standing in a stone ring; one more
+  attempt removed the figure but brought the circle pattern back, worse.
+- **Two alternate checkpoints**: `forgesagaLandscape_v10` (a
+  landscape-photography-trained model) didn't understand "bullfighting
+  amphitheater" as a concept at all and rendered an unrelated sandstone
+  canyon; `icatcherCartoon_v10` got the composition and a clean floor right
+  but in a flat 2D/comic style incompatible with the established 3D-render
+  look.
+- **`ConditioningConcat`/`ConditioningCombine`** (splitting the prompt into
+  an architecture clause and a floor clause, each through its own
+  `CLIPTextEncode`, to stop "circular" from the amphitheater description
+  bleeding onto the floor): concatenating the two conditioning tensors
+  pushed the effective sequence length past what the model was trained on
+  and produced an unstable, hyper-literal extreme close-up of a ground
+  ring; combining (blending) them diluted both concepts into an unrelated
+  generic desert dune, losing the amphitheater entirely. Neither improved
+  on plain single-string prompts for this use case.
+- **Masked inpainting** (`VAEEncodeForInpaint`, regenerating only the floor
+  region of an otherwise-good result with a plain-sand prompt, mask
+  covering the bottom ~60% of frame): at `denoise: 0.65` the masked region
+  decoded as flat solid gray (the model produced essentially nothing for
+  that region); raising to `denoise: 1.0` fixed that and gave a genuinely
+  clean, naturally-textured floor with the rest of the image correctly
+  preserved outside the mask — the one locally-produced result worth
+  keeping as a fallback (`screen_bg_open_arena_v14_inpaint`, not currently
+  used anywhere since Gemini's result was strictly better, but the
+  technique itself worked and is reusable for similar "fix one region,
+  keep the rest" problems).
+
+What actually worked: describing the same scene in plain language to
+Gemini's own image generation (no reference image needed for this one,
+pure text-to-image) got it right on the first real attempt — see
+`../characters/README.md` for the exact prompt and workflow.
 
 ## To modify
 
