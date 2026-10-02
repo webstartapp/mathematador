@@ -26,7 +26,7 @@
   "4": {
     "class_type": "LoadImage",
     "inputs": {
-      "image": "intro_portrait_seed2.png"
+      "image": "reference-crop-intro-portrait.png"
     }
   },
   "5": {

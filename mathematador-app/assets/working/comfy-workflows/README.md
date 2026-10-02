@@ -316,9 +316,10 @@ doesn't produce alpha transparency at all), generate against the grounded/
 shadowed composition above, then:
 
 ```python
-from rembg import remove
+from rembg import remove, new_session
 from PIL import Image
-out = remove(Image.open("icon.png"))  # -> RGBA, transparent outside the subject
+session = new_session("bria-rmbg")  # rembg's default (u2net) is a different model with its own separate download/cache path - the gotchas below are specific to bria-rmbg
+out = remove(Image.open("icon.png"), session=session)  # -> RGBA, transparent outside the subject
 out.save("icon-transparent.png")
 ```
 
