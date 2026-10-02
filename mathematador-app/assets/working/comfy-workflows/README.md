@@ -155,12 +155,19 @@ body. Real reference assets already in the repo:
   adaptive-icon safe-zone circle (~66% of canvas) instead of the previous
   version, which was actually the full splash/hero scene with a title
   banner baked in near the top edge and got clipped by the OS mask on real
-  devices. `favicon.png` is the same `icon.png` artwork downscaled straight
-  to 64x64 (no re-crop) — briefly tried as a tighter bull-face-only crop
-  instead, for legibility at browser-tab size, but changed back to match
-  `icon.png`/`adaptive-icon.png` for brand consistency after a logo.png
-  wordmark was considered and ruled out (its text is illegible at favicon
-  size and its wide banner shape doesn't crop to a square cleanly).
+  devices. `favicon.png` is `icon.png` cropped tight to the badge's own
+  gold-ring circle (not the full square with its orange corner margin)
+  before downscaling to 64x64 — a straight downscale of the full square
+  read as a muddy brown rectangle with barely-visible blue at browser-tab
+  size, since the circle only fills ~86% of that canvas; cropping to the
+  ring's own outer diameter first lets the circle reach the frame's edges
+  (minus the small corner slivers a circle-in-a-square always leaves) so
+  the characters stay legible at 64px. Briefly tried as a tighter bull-
+  face-only crop too, for even more legibility, and separately considered
+  logo.png's wordmark - both ruled out in favor of matching
+  `icon.png`/`adaptive-icon.png`'s actual artwork for brand consistency
+  (the logo's text is illegible at favicon size regardless, and its wide
+  banner shape doesn't crop to a square cleanly).
   Regenerate these again (same recipe) whenever the character pose sheet
   itself changes, so the app icon doesn't drift from the in-game
   characters a second time.
