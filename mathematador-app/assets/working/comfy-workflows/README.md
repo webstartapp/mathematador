@@ -156,15 +156,19 @@ body. Real reference assets already in the repo:
   version, which was actually the full splash/hero scene with a title
   banner baked in near the top edge and got clipped by the OS mask on real
   devices. `favicon.png` is `icon.png` cropped tight to the badge's own
-  gold-ring circle (not the full square with its orange corner margin)
-  before downscaling to 64x64 — a straight downscale of the full square
-  read as a muddy brown rectangle with barely-visible blue at browser-tab
-  size, since the circle only fills ~86% of that canvas; cropping to the
-  ring's own outer diameter first lets the circle reach the frame's edges
-  (minus the small corner slivers a circle-in-a-square always leaves) so
-  the characters stay legible at 64px. Briefly tried as a tighter bull-
-  face-only crop too, for even more legibility, and separately considered
-  logo.png's wordmark - both ruled out in favor of matching
+  gold-ring circle (not the full square with its orange corner margin),
+  with everything outside that circle made genuinely transparent (a
+  supersampled `ImageDraw.ellipse` alpha mask, anti-aliased before
+  downscaling so the edge stays smooth at 64x64) rather than just cropped
+  to a square — a straight downscale of the full opaque square read as a
+  muddy brown rectangle with barely-visible blue at browser-tab size,
+  since the circle only fills ~86% of that canvas, and even the tight
+  square crop around the ring still left visible orange corner triangles
+  (a circle doesn't tile a square). Making those corners transparent
+  instead of just cropping to them is what actually gets rid of the square
+  entirely. Briefly tried as a tighter bull-face-only crop too, for even
+  more legibility, and separately considered logo.png's wordmark - both
+  ruled out in favor of matching
   `icon.png`/`adaptive-icon.png`'s actual artwork for brand consistency
   (the logo's text is illegible at favicon size regardless, and its wide
   banner shape doesn't crop to a square cleanly).
