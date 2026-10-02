@@ -998,11 +998,18 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  // Wood palette (not translucent white) - the same colors.wood tokens
+  // CenteredDesk's woodPanel uses, so this reads as a consistent piece of
+  // UI chrome regardless of what's playing behind it in the video, instead
+  // of all but disappearing against the video's brighter frames the way a
+  // low-opacity white pill did.
   introSkipButton: {
     position: "absolute",
     bottom: spacing.huge,
     right: spacing.xxl,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: colors.wood.base,
+    borderWidth: 2,
+    borderColor: colors.wood.light,
     borderRadius: radii.xl,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
@@ -1011,6 +1018,7 @@ export const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: typography.weight.bold,
     fontSize: typography.size.md,
+    ...cardTextShadow,
   },
 
   // ---- components/toro/ComboMeter.tsx ----
