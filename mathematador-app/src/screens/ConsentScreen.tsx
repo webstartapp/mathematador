@@ -5,7 +5,8 @@ import { JSX, useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
-import imageBG from "@/assets/images/intro-screen.png";
+import logoImage from "@/assets/images/logo.png";
+import imageBG from "@/assets/images/screen-bg-home.png";
 import PolicyLinks from "@/components/auth/PolicyLinks";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
@@ -109,6 +110,7 @@ const ConsentScreen = (): JSX.Element | null => {
   return (
     <Layout>
       <CenteredDesk
+        logo={logoImage}
         title="Before You Continue"
         descriptions={[
           "Mathematador uses your data to personalize ads and keep the game free, and processes it in line with GDPR. You must accept both to play.",

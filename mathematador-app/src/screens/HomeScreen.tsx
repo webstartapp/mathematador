@@ -3,7 +3,8 @@ import { useNavigation } from "expo-router/react-navigation";
 import { JSX, useEffect } from "react";
 import { useSelector } from "react-redux";
 
-import imageBG from "@/assets/images/intro-screen.png";
+import logoImage from "@/assets/images/logo.png";
+import imageBG from "@/assets/images/screen-bg-home.png";
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
@@ -39,6 +40,7 @@ const HomeScreen = (): JSX.Element => {
   return (
     <Layout>
       <CenteredDesk
+        logo={logoImage}
         title={`Welcome, ${user.name}`}
         subtitles={[`Level ${user.level}`, `XP: ${user.xp}`]}
       >

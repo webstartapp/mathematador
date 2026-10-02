@@ -1,0 +1,59 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "JuggernautXL_v9.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 768,
+      "height": 1344,
+      "batch_size": 1
+    }
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "Pixar style 3D animation still, a charming Tienda de Torero market stall inside a warm sunlit Spanish arena, colorful capes and suits of lights displayed on wooden racks, gold coins and trinkets on a counter, warm string lights, inviting shopfront mood, gold and teal color accents, no characters, empty stall, vertical portrait composition, warm saturated colors, cinematic lighting, highly detailed, sharp focus",
+      "clip": ["1", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "neon, cyberpunk, futuristic, wireframe, dark background, flat 2D, cel shading, thick black outline, watermark, text overlay, logo, blurry, low quality, deformed, character, person, face, crowd, weapon, violence, scary",
+      "clip": ["1", 1]
+    }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["2", 0],
+      "seed": 806,
+      "steps": 35,
+      "cfg": 7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "6": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["5", 0],
+      "vae": ["1", 2]
+    }
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "screen_shop",
+      "images": ["6", 0]
+    }
+  }
+}

@@ -4,11 +4,14 @@ import { JSX } from "react";
 import { Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
+import imageBG from "@/assets/images/screen-bg-settings.png";
 import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
+import ScreenHeader from "@/components/common/ScreenHeader";
 import SettingToggleRow from "@/components/common/SettingToggleRow";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { useUpdateUserSetting } from "@/hooks/useSyncUserSettings";
+import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { setMusicEnabled, setSoundEnabled } from "@/redux/slices/userSlice";
 import { RootState } from "@/redux/store";
 import { styles } from "@/theme";
@@ -20,6 +23,7 @@ type SettingsScreenNavigationProp = StackNavigationProp<
 >;
 
 const SettingsScreen = (): JSX.Element => {
+  useAnimatedBackground(imageBG);
   const navigation = useNavigation<SettingsScreenNavigationProp>();
   const dispatch = useDispatch();
   const updateUserSetting = useUpdateUserSetting();
@@ -39,10 +43,8 @@ const SettingsScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <CenteredDesk
-        title="Settings"
-        styles={{ container: styles.settingsCard }}
-      >
+      <ScreenHeader title="Settings" onBack={() => navigation.goBack()} />
+      <CenteredDesk styles={{ container: styles.screenCardMd }}>
         <Text style={styles.settingsSectionLabel}>Device</Text>
         <SettingToggleRow
           label="Sound Effects"
@@ -83,7 +85,6 @@ const SettingsScreen = (): JSX.Element => {
           style={styles.settingsHistoryButton}
           textStyle={styles.settingsHistoryButtonText}
         />
-        <Button title="Back to Home" onPress={() => navigation.goBack()} />
       </CenteredDesk>
     </Layout>
   );

@@ -1,7 +1,7 @@
 import { FC, JSX } from "react";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 
-import ThemedText from "@/components/texts/ThemedText";
+import ListRow from "@/components/common/ListRow";
 import {
   formatDeviceId,
   formatSettingChangedAt,
@@ -21,22 +21,21 @@ const SettingHistoryRow: FC<SettingHistoryRowProps> = ({
   currentDeviceId,
 }): JSX.Element => {
   return (
-    <View style={styles.settingHistoryRow}>
-      <View style={styles.settingHistoryTextContainer}>
-        <ThemedText variant="subtitle" style={styles.settingHistoryLabel}>
-          {SETTING_KEY_LABELS[entry.settingKey]}
-        </ThemedText>
-        <Text style={styles.settingHistoryDate}>
-          {formatSettingChangedAt(entry.changedAt)}
+    <ListRow
+      label={SETTING_KEY_LABELS[entry.settingKey]}
+      accessory={
+        <Text style={styles.settingHistoryValue}>
+          {formatSettingValue(entry.settingValue)}
         </Text>
-        <Text style={styles.settingHistoryDevice}>
-          {formatDeviceId(entry.deviceId, currentDeviceId)}
-        </Text>
-      </View>
-      <Text style={styles.settingHistoryValue}>
-        {formatSettingValue(entry.settingValue)}
+      }
+    >
+      <Text style={styles.settingHistoryDate}>
+        {formatSettingChangedAt(entry.changedAt)}
       </Text>
-    </View>
+      <Text style={styles.settingHistoryDevice}>
+        {formatDeviceId(entry.deviceId, currentDeviceId)}
+      </Text>
+    </ListRow>
   );
 };
 

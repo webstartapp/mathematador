@@ -15,6 +15,7 @@ import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { useDispatch } from "react-redux";
 
+import imageBG from "@/assets/images/screen-bg-game.png";
 import Layout from "@/components/common/Layout";
 import { getToroHintText } from "@/components/minigames/helpers/getToroHint";
 import ComboMeter from "@/components/toro/ComboMeter";
@@ -26,6 +27,7 @@ import ComboPopup from "@/components/toro/ComboPopup";
 import ComboRewardBurst from "@/components/toro/ComboRewardBurst";
 import { useOleSound } from "@/components/toro/useOleSound";
 import { minigames } from "@/configs/minigames";
+import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import { completeChalange, syncProgress } from "@/redux/slices/userSlice";
 import { challengeUpdateResult } from "@/src/_generated/api";
 import { OperationId } from "@/src/_generated/model";
@@ -254,6 +256,7 @@ const ToroPanel = ({
 );
 
 const ChallengeGameScreen = (): JSX.Element => {
+  useAnimatedBackground(imageBG);
   const route = useRoute<ChallengeScreenRouteProp>();
   const navigation = useNavigation<ChallengeScreenNavigationProps>();
   const challenge = route.params;

@@ -3,7 +3,7 @@ import { JSX } from "react";
 import { ImageBackground, ScrollView } from "react-native";
 import Markdown from "react-native-markdown-display";
 
-import imageBG from "@/assets/images/intro-screen.png";
+import imageBG from "@/assets/images/screen-bg-public.png";
 import Button from "@/components/common/Button";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import ThemedText from "@/components/texts/ThemedText";

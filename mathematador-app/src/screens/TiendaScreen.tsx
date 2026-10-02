@@ -4,6 +4,7 @@ import { StackNavigationProp } from "expo-router/build/react-navigation/stack";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, JSX, useState } from "react";
 import {
+  AccessibilityInfo,
   View,
   Text,
   ScrollView,
@@ -13,8 +14,12 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 
+import imageBG from "@/assets/images/screen-bg-shop.png";
+import Card from "@/components/common/Card";
 import Layout from "@/components/common/Layout";
-import ThemedText from "@/components/texts/ThemedText";
+import ScreenHeader from "@/components/common/ScreenHeader";
+import CharacterReaction from "@/components/toro/CharacterReaction";
+import { useAnimatedBackground } from "@/providers/animations/AnimatedImage";
 import {
   buyCosmetic,
   equipCosmetic,
@@ -170,10 +175,8 @@ const CosmeticCard = ({
   };
 
   return (
-    <View
+    <Card
       style={[
-        styles.overlayCardSubtle,
-        styles.cardDropShadow,
         styles.tiendaCard,
         isEquipped && styles.tiendaCardEquipped,
         isLocked && styles.tiendaCardLocked,
@@ -223,7 +226,7 @@ const CosmeticCard = ({
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </Card>
   );
 };
 
@@ -283,7 +286,10 @@ type TiendaScreenNavigationProp = StackNavigationProp<
   "Tienda"
 >;
 
+const REACTION_DISPLAY_MS = 1800;
+
 const TiendaScreen = (): JSX.Element => {
+  useAnimatedBackground(imageBG);
   const dispatch = useDispatch();
   const navigation = useNavigation<TiendaScreenNavigationProp>();
   const user: UserState = useSelector((state: RootState) => state.user);
@@ -293,6 +299,8 @@ const TiendaScreen = (): JSX.Element => {
     useState<CosmeticItem[]>(FALLBACK_COSMETICS);
   const [loading, setLoading] = useState(false);
   const [actionLoadingId, setLoadingId] = useState<string | null>(null);
+  const [showPurchaseReaction, setShowPurchaseReaction] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState("");
 
   // Fetch cosmetics on load
   const loadCosmetics = async (): Promise<void> => {
@@ -342,15 +350,26 @@ const TiendaScreen = (): JSX.Element => {
       const purchaseResponse = await cosmeticsBuy({ cosmeticId: item.id });
       if (purchaseResponse && purchaseResponse.data) {
         dispatch(syncProgress(purchaseResponse.data));
-        Alert.alert("Success", `${item.name} purchased!`);
+        showPurchaseCelebration(`${item.name} purchased!`);
       }
     } catch {
-      // Fallback offline purchase
+      // Fallback offline purchase - only saved to local Redux state, not
+      // synced to the account, so this must read differently from a
+      // server-confirmed purchase rather than looking identical to one.
       dispatch(buyCosmetic({ cosmeticId: item.id, price: item.price }));
-      Alert.alert("Success", `${item.name} purchased offline!`);
+      showPurchaseCelebration(
+        `${item.name} purchased offline — will sync once you're back online.`,
+      );
     } finally {
       setLoadingId(null);
     }
+  };
+
+  const showPurchaseCelebration = (message: string): void => {
+    setPurchaseMessage(message);
+    setShowPurchaseReaction(true);
+    AccessibilityInfo.announceForAccessibility(message);
+    setTimeout(() => setShowPurchaseReaction(false), REACTION_DISPLAY_MS);
   };
 
   const handleEquipToggle = async (
@@ -386,21 +405,16 @@ const TiendaScreen = (): JSX.Element => {
 
   return (
     <Layout>
-      <View style={styles.screenHeader}>
-        <TouchableOpacity
-          style={styles.headerBackButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.white} />
-        </TouchableOpacity>
-        <ThemedText variant="title" style={styles.tiendaTitle}>
-          Tienda de Torero
-        </ThemedText>
-        <View style={styles.tiendaCoinsWrapper}>
-          <Text style={styles.tiendaCoinsEmoji}>🪙</Text>
-          <Text style={styles.tiendaCoinsCount}>{user.coins}</Text>
-        </View>
-      </View>
+      <ScreenHeader
+        title="Tienda de Torero"
+        onBack={() => navigation.goBack()}
+        right={
+          <View style={styles.tiendaCoinsWrapper}>
+            <Text style={styles.tiendaCoinsEmoji}>🪙</Text>
+            <Text style={styles.tiendaCoinsCount}>{user.coins}</Text>
+          </View>
+        }
+      />
 
       {/* Categories Tabs */}
       <View style={[styles.overlayCardSubtle, styles.tiendaTabBar]}>
@@ -435,6 +449,19 @@ const TiendaScreen = (): JSX.Element => {
           onBuy: handleBuy,
         })}
       </ScrollView>
+
+      {showPurchaseReaction && (
+        <View style={styles.tiendaReactionOverlay} pointerEvents="none">
+          <CharacterReaction variant="success" />
+          <Text
+            style={styles.tiendaReactionCaption}
+            accessibilityLiveRegion="polite"
+            accessibilityRole="text"
+          >
+            {purchaseMessage}
+          </Text>
+        </View>
+      )}
     </Layout>
   );
 };

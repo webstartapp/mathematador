@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "mathematador-app", "run", "start"],
       "port": 4075
+    },
+    {
+      "name": "mathematador-server-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "server", "run", "dev"],
+      "port": 4076
     }
   ]
 }

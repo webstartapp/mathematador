@@ -3,7 +3,7 @@
 // things leave this file: `styles`, the one flat stylesheet (every key a
 // direct top-level entry, no per-screen/per-component nesting - two
 // screens that both want a "card" get distinctly-named flat keys,
-// settingsCard vs authCard, rather than two same-named keys buried in two
+// screenCardMd vs authCard, rather than two same-named keys buried in two
 // different nested objects), and `colors`, the raw color token table -
 // kept separate because it's consumed directly as prop values (an
 // Ionicons `color` prop, an ActivityIndicator `color` prop), not as a
@@ -190,7 +190,7 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  // Tienda's and Gauntlet's top header bar - identical in both (unlike
+  // Shared by every screen using components/common/ScreenHeader.tsx (unlike
   // ChallengeGameScreen's topBar, which has no back button and a
   // different, timer-focused layout, so isn't merged in here).
   screenHeader: {
@@ -201,12 +201,47 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: spacing.sm,
     width: "100%",
+    // Position anchor for screenHeaderTitleWrap below - the title is
+    // centered on this row's own full width, not on the space left over
+    // between the back button and `right` (those two rarely match widths
+    // - Tienda's coin pill is wider than the back button - so centering
+    // the title in the leftover flex space would visibly shift it off
+    // center instead).
+    position: "relative",
   },
-  // The round back button in that same header - identical in both.
+  // The round back button in that same header.
   headerBackButton: {
     padding: spacing.sm,
     backgroundColor: colors.overlay.medium,
     borderRadius: radii.xl,
+  },
+  // Absolutely positioned across the header's own full width (see
+  // screenHeader's position:"relative") and centered independently of
+  // the back button/right slot - see screenHeader's comment. pointerEvents
+  // "none" (set on the wrapping View in ScreenHeader.tsx) lets touches
+  // outside the title's own text still reach the back button/right slot
+  // beneath this layer.
+  screenHeaderTitleWrap: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 56,
+  },
+  screenHeaderTitle: {
+    fontSize: typography.size.xxl,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
+    textAlign: "center",
+  },
+  // Same footprint as headerBackButton (icon 24 + padding.sm on both
+  // sides = 40) - rendered in the header's right slot when a screen has
+  // no right-side content, so the title stays centered either way.
+  screenHeaderRightSpacer: {
+    width: 40,
   },
 
   // ---- app/+not-found.tsx ----
@@ -247,9 +282,14 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  // minHeight (not height/flex) so that content taller than the visible
+  // area (e.g. CenteredDesk with a logo) grows the container instead of
+  // staying pinned to 100% and getting centered half-above/half-below it -
+  // the latter pushed the top of tall content up underneath the screen's
+  // header (confirmed live: a 592px-tall CenteredDesk measured at y=-1.5
+  // inside a 416.6px-tall centered container, overlapping GameHeader).
   layoutContainer: {
-    flex: 1,
-    height: "100%",
+    minHeight: "100%",
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
@@ -520,6 +560,16 @@ export const styles = StyleSheet.create({
     // edge-to-edge now that it's no longer accidentally shifted off-screen.
     paddingHorizontal: spacing.sm,
   },
+  centeredDeskLogoWrapper: {
+    width: "80%",
+    height: 90,
+    alignSelf: "center",
+    marginBottom: spacing.sm,
+  },
+  centeredDeskLogo: {
+    width: "100%",
+    height: "100%",
+  },
   centeredDeskTitle: {
     fontSize: typography.size.hero,
     marginBottom: spacing.sm,
@@ -634,8 +684,11 @@ export const styles = StyleSheet.create({
     color: colors.white,
   },
 
-  // ---- components/common/SettingToggleRow.tsx ----
-  settingToggleRow: {
+  // ---- components/common/ListRow.tsx (shared by SettingToggleRow and
+  // SettingHistoryRow - both wanted an identical outer row/text-container/
+  // label shell, differing only in their own secondary lines and their
+  // right-side accessory: a Switch for one, a value Text for the other) ----
+  listRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -644,14 +697,16 @@ export const styles = StyleSheet.create({
     borderBottomColor: colors.wood.border,
     paddingVertical: spacing.md,
   },
-  settingToggleTextContainer: {
+  listRowTextContainer: {
     flex: 1,
     marginRight: spacing.md,
   },
-  settingToggleLabel: {
+  listRowLabel: {
     textAlign: "left",
     ...cardTextShadow,
   },
+
+  // ---- components/common/SettingToggleRow.tsx ----
   settingToggleDescription: {
     color: colors.white,
     marginTop: spacing.xs,
@@ -659,23 +714,6 @@ export const styles = StyleSheet.create({
   },
 
   // ---- components/common/SettingHistoryRow.tsx ----
-  settingHistoryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.wood.border,
-    paddingVertical: spacing.md,
-  },
-  settingHistoryTextContainer: {
-    flex: 1,
-    marginRight: spacing.md,
-  },
-  settingHistoryLabel: {
-    textAlign: "left",
-    ...cardTextShadow,
-  },
   settingHistoryDate: {
     color: colors.white,
     fontSize: typography.size.sm,
@@ -696,10 +734,8 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/SettingsScreen.tsx ----
-  settingsCard: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
+  // No own card-width key - identical to screenCardMd (the settings/
+  // history screens' shared card width), used directly instead.
   settingsSectionLabel: {
     color: colors.white,
     // Not typography.size.sm (12) - this is a distinct 13px value shared
@@ -724,10 +760,7 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/SettingsHistoryScreen.tsx ----
-  settingsHistoryCard: {
-    maxWidth: 480,
-    padding: spacing.xl,
-  },
+  // No own card-width key here either - same screenCardMd as Settings.
   // Layout.tsx's own outer ScrollView constrains its content container to
   // height: "100%" rather than letting it grow, so it can't scroll content
   // taller than the viewport on its own (TiendaScreen works around the same
@@ -904,12 +937,67 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/IntroScreen.tsx ----
+  // position:absolute pinned to all four edges (not just flex:1) - same
+  // fix as layoutFixed above: a bare flex:1 root measured its height
+  // against a transient viewport size on web, so the skip button's
+  // `bottom`-anchored position ended up below the real, settled viewport
+  // edge (confirmed live: window.innerHeight changed between two checks
+  // on the same load, and the skip button's rendered rect sat right at
+  // that stale boundary, never visible on screen despite being in the DOM
+  // with opacity:1).
   introContainer: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: "#000",
   },
   // No separate "video" key - it's identical to styles.fullBleed above,
   // referenced directly at the call site instead of duplicated.
+  // position:absolute + all four insets (not flex:1) - this wrapper sits
+  // as a sibling AFTER the full-bleed VideoView in introContainer's
+  // column flow. flex:1 would make it compete with the video for a SHARE
+  // of the available space (Yoga splits it between flexible siblings);
+  // position:absolute removes it from that flow entirely and sizes it
+  // against its parent's full box instead, regardless of the video's own
+  // flex sizing - without this, the logo/skip-button children anchor
+  // their own `bottom`/`top` offsets against a wrapper that Yoga sized to
+  // near-zero height and placed below the already-100%-tall video,
+  // pushing both completely off-screen on native (confirmed only a web
+  // CSS quirk - position:absolute children there escape to the nearest
+  // positioned ancestor regardless of their immediate parent's size -
+  // masked this on web while leaving it broken on native layouts).
+  // pointerEvents="box-none" (set at the call site) lets touches pass
+  // through the transparent areas of this overlay to whatever's under it.
+  introOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  // width/height both as percentages (via left/right insets + aspectRatio,
+  // rather than a fixed pixel height) so the logo scales with the screen
+  // the same way the video's own cover-fit content does - a fixed height
+  // here would make the logo shrink relative to the boy/bull on any
+  // screen whose width-at-60% didn't already match that height's aspect
+  // ratio (confirmed live: a narrower/taller viewport than the one this
+  // was tuned on rendered a visibly smaller, oddly-cropped logo).
+  // 650x262 is logo.png's real pixel size - matching that ratio here is
+  // what keeps resizeMode="contain" from ever having to shrink below the
+  // box's own width to preserve the image's aspect ratio.
+  introLogoWrapper: {
+    position: "absolute",
+    top: "4%",
+    left: "12%",
+    right: "12%",
+    aspectRatio: 650 / 262,
+  },
+  introLogoImage: {
+    width: "100%",
+    height: "100%",
+  },
   introSkipButton: {
     position: "absolute",
     bottom: spacing.huge,
@@ -1026,14 +1114,6 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/GauntletScreen.tsx ----
-  gauntletTitle: {
-    fontSize: typography.size.xl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: spacing.sm,
-  },
   gauntletGlassPanel: {
     padding: spacing.lg,
     marginBottom: spacing.xl,
@@ -1141,14 +1221,6 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/TiendaScreen.tsx ----
-  tiendaTitle: {
-    fontSize: typography.size.xxl,
-    fontWeight: typography.weight.bold,
-    color: colors.white,
-    flex: 1,
-    textAlign: "center",
-    marginHorizontal: spacing.sm,
-  },
   tiendaCoinsWrapper: {
     flexDirection: "row",
     alignItems: "center",
@@ -1310,6 +1382,37 @@ export const styles = StyleSheet.create({
     color: colors.nearBlack,
     fontWeight: typography.weight.bold,
     fontSize: typography.size.base,
+  },
+
+  // ---- components/toro/CharacterReaction.tsx ----
+  characterReactionRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    gap: spacing.md,
+  },
+  characterReactionImage: {
+    width: 110,
+    height: 160,
+  },
+  tiendaReactionOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+  },
+  tiendaReactionCaption: {
+    marginTop: spacing.md,
+    paddingHorizontal: spacing.xl,
+    color: colors.white,
+    fontWeight: typography.weight.bold,
+    fontSize: typography.size.base,
+    textAlign: "center",
+    ...cardTextShadow,
   },
 
   // ---- screens/ChallengeGameScreen.tsx ----

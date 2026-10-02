@@ -1,0 +1,206 @@
+{
+  "id": "7d2dcb44-ef14-42b1-8dac-23ce142c9e96",
+  "revision": 0,
+  "last_node_id": 10,
+  "last_link_id": 13,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CheckpointLoaderSimple",
+      "pos": [-50, 0],
+      "size": [320, 100],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "MODEL", "type": "MODEL", "links": [1]},
+        {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
+        {"name": "VAE", "type": "VAE", "links": [4, 5]}
+      ],
+      "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+      "widgets_values": ["JuggernautXL_v9.safetensors"]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [-50, 150],
+      "size": [320, 320],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [6]},
+        {"name": "MASK", "type": "MASK", "links": null}
+      ],
+      "title": "Character crop (unpadded, e.g. 768 wide)",
+      "properties": {"Node name for S&R": "LoadImage"},
+      "widgets_values": ["home_unpadded.png", "image"]
+    },
+    {
+      "id": 3,
+      "type": "ImagePadForOutpaint",
+      "pos": [320, 150],
+      "size": [320, 170],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {"name": "image", "type": "IMAGE", "link": 6}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [7]},
+        {"name": "MASK", "type": "MASK", "links": [8]}
+      ],
+      "title": "Extend canvas to target portrait size",
+      "properties": {"Node name for S&R": "ImagePadForOutpaint"},
+      "widgets_values": [0, 285, 0, 234, 80]
+    },
+    {
+      "id": 4,
+      "type": "VAEEncodeForInpaint",
+      "pos": [680, 150],
+      "size": [260, 120],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {"name": "pixels", "type": "IMAGE", "link": 7},
+        {"name": "vae", "type": "VAE", "link": 4},
+        {"name": "mask", "type": "MASK", "link": 8}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [11]}
+      ],
+      "properties": {"Node name for S&R": "VAEEncodeForInpaint"},
+      "widgets_values": [6]
+    },
+    {
+      "id": 5,
+      "type": "CLIPTextEncode",
+      "pos": [-50, 520],
+      "size": [400, 200],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 2}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [9]}
+      ],
+      "title": "Positive - describe what belongs in the NEW (extended) area only",
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["Pixar style 3D animation still. Above the arena roofline: open blue sky at golden hour, small distant flags, no new structure, no archway. Below the arena floor seen in the middle: continuing sandy arena floor with scattered confetti, matching perspective, no walls, no roof, no architecture. warm saturated colors, cinematic lighting, highly detailed, sharp focus"]
+    },
+    {
+      "id": 6,
+      "type": "CLIPTextEncode",
+      "pos": [-50, 760],
+      "size": [400, 160],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {"name": "clip", "type": "CLIP", "link": 3}
+      ],
+      "outputs": [
+        {"name": "CONDITIONING", "type": "CONDITIONING", "links": [10]}
+      ],
+      "title": "Negative",
+      "properties": {"Node name for S&R": "CLIPTextEncode"},
+      "widgets_values": ["character, person, boy, bull, animal, face, archway, arch, tunnel, foreground pillar, dark stone frame, watermark, text overlay, logo, blurry, low quality, seam, hard edge, flat color, solid color band"]
+    },
+    {
+      "id": 7,
+      "type": "KSampler",
+      "pos": [990, 150],
+      "size": [280, 300],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {"name": "model", "type": "MODEL", "link": 1},
+        {"name": "positive", "type": "CONDITIONING", "link": 9},
+        {"name": "negative", "type": "CONDITIONING", "link": 10},
+        {"name": "latent_image", "type": "LATENT", "link": 11}
+      ],
+      "outputs": [
+        {"name": "LATENT", "type": "LATENT", "links": [12]}
+      ],
+      "properties": {"Node name for S&R": "KSampler"},
+      "widgets_values": [1001, "fixed", 35, 7, "dpmpp_2m", "karras", 1]
+    },
+    {
+      "id": 8,
+      "type": "VAEDecode",
+      "pos": [1320, 150],
+      "size": [210, 60],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {"name": "samples", "type": "LATENT", "link": 12},
+        {"name": "vae", "type": "VAE", "link": 5}
+      ],
+      "outputs": [
+        {"name": "IMAGE", "type": "IMAGE", "links": [13]}
+      ],
+      "properties": {"Node name for S&R": "VAEDecode"},
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "SaveImage",
+      "pos": [1580, 150],
+      "size": [320, 300],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {"name": "images", "type": "IMAGE", "link": 13}
+      ],
+      "outputs": [],
+      "properties": {"Node name for S&R": "SaveImage"},
+      "widgets_values": ["mathematador_screen"]
+    },
+    {
+      "id": 10,
+      "type": "MarkdownNote",
+      "pos": [-50, 950],
+      "size": [700, 420],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "How to use / reuse this",
+      "properties": {},
+      "widgets_values": [
+        "### Mathematador screen-art generator\n\nGenerates a full portrait (default 768x1344) background: a fixed hand-drawn crop of the boy + Toro Numerico in the middle, with the arena scenery extended above/below by the model so there's no flat color gap.\n\n**To generate a new screen:**\n1. Prepare your character crop separately (outside this graph) — a real frame from `intro.mp4` cropped to ~768px wide, containing the pose you want, **no padding added**. Static side-by-side poses fuse the boy and bull into one creature on this checkpoint — always use a dynamic pose (running/jumping/gesturing).\n2. Put that crop in ComfyUI's `input/` folder, select it in the **LoadImage** node.\n3. Set **ImagePadForOutpaint**'s `top`/`bottom` (and `left`/`right` if needed) so the final canvas is your target size (currently 768 wide, top+height+bottom should total 1344 for portrait). `feathering` 80 is the minimum that avoids a visible seam — don't go lower.\n4. Edit the **positive prompt** to describe ONLY the new extended area, split into an \"above\" clause and a \"below\" clause — a single blended description bleeds between the two regions (e.g. roof tiles appearing at the bottom).\n5. Leave **denoise at 1.0** — the mask (not denoise) is what protects the character region; this is correct, not a bug.\n6. If Toro Numérico's glowing numbers need to survive in your source crop, they were being erased by any full-image img2img above denoise ~0.4 in earlier attempts (not used in this graph, which never touches the character region at all) — not a concern here since the character area is fully protected, but keep it in mind if you build a different graph for posing the characters themselves before this one.\n\nSee `mathematador-app/assets/working/comfy-workflows/README.md` in the repo for the full history of what was tried and why."
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    }
+  ],
+  "links": [
+    [1, 1, 0, 7, 0, "MODEL"],
+    [2, 1, 1, 5, 0, "CLIP"],
+    [3, 1, 1, 6, 0, "CLIP"],
+    [4, 1, 2, 4, 1, "VAE"],
+    [5, 1, 2, 8, 1, "VAE"],
+    [6, 2, 0, 3, 0, "IMAGE"],
+    [7, 3, 0, 4, 0, "IMAGE"],
+    [8, 3, 1, 4, 2, "MASK"],
+    [9, 5, 0, 7, 1, "CONDITIONING"],
+    [10, 6, 0, 7, 2, "CONDITIONING"],
+    [11, 4, 0, 7, 3, "LATENT"],
+    [12, 7, 0, 8, 0, "LATENT"],
+    [13, 8, 0, 9, 0, "IMAGE"]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {"ds": {"scale": 0.75, "offset": [80, 40]}},
+  "version": 0.4
+}
