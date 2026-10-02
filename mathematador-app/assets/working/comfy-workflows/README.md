@@ -439,14 +439,12 @@ los Números" logo wordmark from a text prompt (JuggernautXL, explicit
 `"MATHEMATADOR"` and `"EL COLISEO DE LOS NUMEROS"` spelled out in the
 prompt, negative-prompted against "misspelled, gibberish text, illegible,
 extra letters, missing letters") produced completely garbled text —
-`"Colleeso"` and `"Fecnbieran Lde"` instead of the requested words. This is
-the same fundamental weak point already documented for the bull's
-number-covered fur (see "Current recipes" → the icon section's rembg note,
-and `mathematador-characters.json`'s on-canvas history): diffusion models
-are unreliable at rendering specific, legible, multi-word text, and no
-amount of prompt tuning fixed the equivalent problem there either. Don't
-re-attempt this locally for the same reason — one test was enough to
-confirm the pattern repeats. `logo.png` is extracted from a real reference
+`"Colleeso"` and `"Fecnbieran Lde"` instead of the requested words. This
+checkpoint is unreliable at rendering specific, legible, multi-word text —
+a well-documented general weak point of diffusion models, not something
+specific to this prompt's wording. Don't re-attempt this locally for the
+same reason — one test was enough to confirm the pattern. `logo.png` is
+extracted from a real reference
 image of the finished design instead (`rembg`, no generation involved) —
 see "The actual style reference" above.
 
@@ -455,7 +453,7 @@ see "The actual style reference" above.
 A ground-level, fully-open bullring shot (sand floor with nothing blocking
 the foreground, tiered stands with crowd visible on every side — needed as
 a clean third reference image for Gemini's video generation, see
-`../characters/README.md`) was attempted **thirteen times** on this
+`../characters/README.md`) was attempted **fourteen times** on this
 ComfyUI instance across four different approaches, none fully successful.
 Don't re-attempt this locally; it's documented here only so the failure
 modes aren't rediscovered from scratch:

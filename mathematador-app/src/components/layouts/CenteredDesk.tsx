@@ -63,6 +63,7 @@ const CenteredDesk: FC<{
               style={themeStyles.centeredDeskLogo}
               resizeMode="contain"
               fadeDuration={0}
+              accessibilityLabel="Mathematador: El Coliseo de los Números"
             />
           </View>
         )}

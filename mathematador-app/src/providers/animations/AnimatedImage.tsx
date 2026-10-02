@@ -1,6 +1,10 @@
+import { useFocusEffect } from "expo-router";
 import {
   createContext,
+  Dispatch,
   FC,
+  SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -80,7 +84,7 @@ export const AnimatedImage: FC<AnimatedImageProps> = ({ image }) => {
 
 export interface AnimatedImageContextType {
   bgImage?: ImageSourcePropType;
-  setBgImage: (image: ImageSourcePropType) => void;
+  setBgImage: Dispatch<SetStateAction<ImageSourcePropType | undefined>>;
 }
 
 const AnimatedImageContext = createContext<AnimatedImageContextType>({
@@ -96,21 +100,39 @@ export const useAnimatedBackground = (
       "useAnimatedBackground must be used within a AnimatedImageContext",
     );
   }
-  useEffect(() => {
-    // Deferred a tick, not called directly: this hook's caller (a screen)
-    // sits inside app/index.tsx's own NavigationContainer, nested below
-    // AnimatedBackgroundProvider - updating that ancestor's state right as
-    // the screen's own effect fires can race React Navigation's internal
-    // mount scheduling for that nested tree, which is what was producing
-    // "Can't perform a React state update on a component that hasn't
-    // mounted yet" (confirmed live on Android startup). A macrotask delay
-    // puts this update after whatever mount bookkeeping React Navigation
-    // is still doing for the screen that just rendered.
-    const timeoutId = setTimeout(() => {
-      context.setBgImage(image);
-    }, 0);
-    return () => clearTimeout(timeoutId);
-  }, [image, context]);
+  // useFocusEffect (not a plain useEffect) - multiple screens in the same
+  // stack can stay mounted at once (e.g. the screen underneath a pushed
+  // one), so a plain effect re-running for any reason (even on an
+  // unfocused screen, e.g. from a context identity change) could overwrite
+  // the actually-visible screen's background with a stale one. Gating on
+  // focus means only the screen currently on top ever sets it.
+  useFocusEffect(
+    useCallback(() => {
+      // Deferred a tick, not called directly: this hook's caller (a screen)
+      // sits inside app/index.tsx's own NavigationContainer, nested below
+      // AnimatedBackgroundProvider - updating that ancestor's state right as
+      // the screen's own effect fires can race React Navigation's internal
+      // mount scheduling for that nested tree, which is what was producing
+      // "Can't perform a React state update on a component that hasn't
+      // mounted yet" (confirmed live on Android startup). A macrotask delay
+      // puts this update after whatever mount bookkeeping React Navigation
+      // is still doing for the screen that just rendered.
+      const timeoutId = setTimeout(() => {
+        context.setBgImage(image);
+      }, 0);
+      return () => {
+        clearTimeout(timeoutId);
+        // Only clear it if it's still this screen's own image - if the
+        // screen gaining focus already set its own image, leave that one
+        // alone instead of racing it. This is what stops a screen with no
+        // background of its own (e.g. ChalengeSelect) from showing
+        // whatever the previous screen left behind.
+        context.setBgImage((current) =>
+          current === image ? undefined : current,
+        );
+      };
+    }, [image, context]),
+  );
   return context;
 };
 

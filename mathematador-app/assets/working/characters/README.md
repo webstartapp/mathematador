@@ -18,7 +18,7 @@ Two things this repo's local ComfyUI instance could not reliably produce,
 documented in detail in `../comfy-workflows/README.md`:
 
 1. **A clean open-arena background** (sand floor, tiered stands, no
-   blocking archway) — thirteen local attempts across four different
+   blocking archway) — fourteen local attempts across four different
    techniques, each with a different unresolved artifact (see "Retired:
    local open-arena background" in that file).
 2. **A video of the boy and bull interacting** — AnimateDiff on this
@@ -51,20 +51,17 @@ trying this again:
   than cancel.
 - **Per-account video quota**: video generation is rate-limited per Google
   account (the UI reports "You've reached your video generation limit...
-  your limit resets on \<date\>"). If you hit it, either wait for the
-  reset or switch to a different logged-in Google account
-  (`gemini.google.com/u/1/app`, `/u/2/app`, etc., if more than one is
-  signed in) — a fresh account has its own separate quota.
-- **Occasional content-policy false positive**: one attempt at the final
-  video prompt (below) was flatly refused — "I can't generate the video
-  you requested right now due to interests of third-party content
-  providers" — with no further detail, on the first account tried. The
-  **exact same prompt and reference images**, retried on a different
-  Google account, succeeded cleanly. This looks like per-account/session
-  moderation variance rather than a deterministic block on the content
-  itself (a torero boy + companion bull is thematically close to existing
-  franchises, which may be what triggers it sometimes) — worth retrying
-  on a different account before concluding the concept itself is blocked.
+  your limit resets on \<date\>"). If you hit it, wait for the reset
+  before trying again.
+- **Occasional content-policy refusal**: one attempt at the final video
+  prompt (below) was flatly refused — "I can't generate the video you
+  requested right now due to interests of third-party content providers"
+  — with no further detail. A retry of the exact same prompt and
+  reference images later succeeded, which suggests some refusals are
+  transient moderation variance rather than a deterministic block, but
+  the right response is to wait and retry the same request (or revise the
+  prompt if it keeps getting refused), not to route around the refusal by
+  switching accounts.
 
 ## Attaching reference images
 
@@ -190,5 +187,5 @@ the "CRITICAL" paragraph in Prompt 2 is what fixed that same problem once
 already (a prior attempt without it produced a passable video but with a
 transient extra-limb glitch on the bull) — keep it, strengthen it further
 if it recurs. If generation is refused for "third-party content
-providers", retry on a different Google account before concluding the
-concept is blocked.
+providers", wait and retry the same request before concluding the
+concept is blocked — see "Occasional content-policy refusal" above.
