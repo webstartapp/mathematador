@@ -5,8 +5,16 @@ import { RouteProp, useRoute } from "expo-router/react-navigation";
 import * as SplashScreen from "expo-splash-screen";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { JSX, useEffect, useRef, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Image,
+  Platform,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
+import logoImage from "@/assets/images/logo.png";
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSessionVerification } from "@/hooks/useSessionVerification";
@@ -34,6 +42,7 @@ const IntroScreen = (): JSX.Element => {
   const [showSkip, setShowSkip] = useState(false);
   const [videoWantsNext, setVideoWantsNext] = useState(false);
   const splashHiddenRef = useRef(false);
+  const overlayOpacity = useRef(new Animated.Value(0)).current;
   const verificationOutcome = useSessionVerification();
 
   const player = useVideoPlayer(introVideoAsset, (playerInstance) => {
@@ -85,10 +94,16 @@ const IntroScreen = (): JSX.Element => {
       hideSplash();
     }
     startMenuMusic();
-    const skipTimeoutId = setTimeout(
-      () => setShowSkip(true),
-      SKIP_BUTTON_DELAY_MS,
-    );
+    const skipTimeoutId = setTimeout(() => {
+      setShowSkip(true);
+      Animated.timing(overlayOpacity, {
+        toValue: 1,
+        duration: 800,
+        // react-native-web has no native animation driver - see
+        // AnimatedImage.tsx's identical gating for the same warning.
+        useNativeDriver: Platform.OS !== "web",
+      }).start();
+    }, SKIP_BUTTON_DELAY_MS);
     const splashSafetyTimeoutId = setTimeout(
       hideSplash,
       SPLASH_SAFETY_TIMEOUT_MS,
@@ -97,7 +112,7 @@ const IntroScreen = (): JSX.Element => {
       clearTimeout(skipTimeoutId);
       clearTimeout(splashSafetyTimeoutId);
     };
-  }, [player, startMenuMusic]);
+  }, [player, startMenuMusic, overlayOpacity]);
 
   return (
     <View style={styles.introContainer}>
@@ -108,9 +123,26 @@ const IntroScreen = (): JSX.Element => {
         nativeControls={false}
       />
       {showSkip && (
-        <TouchableOpacity style={styles.introSkipButton} onPress={requestNext}>
-          <Text style={styles.introSkipText}>Skip</Text>
-        </TouchableOpacity>
+        <>
+          <Animated.View
+            style={[styles.introLogoWrapper, { opacity: overlayOpacity }]}
+            pointerEvents="none"
+          >
+            <Image
+              source={logoImage}
+              style={styles.introLogoImage}
+              resizeMode="contain"
+            />
+          </Animated.View>
+          <Animated.View style={{ opacity: overlayOpacity }}>
+            <TouchableOpacity
+              style={styles.introSkipButton}
+              onPress={requestNext}
+            >
+              <Text style={styles.introSkipText}>Skip</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </>
       )}
     </View>
   );

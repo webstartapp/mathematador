@@ -937,12 +937,36 @@ export const styles = StyleSheet.create({
   },
 
   // ---- screens/IntroScreen.tsx ----
+  // position:absolute pinned to all four edges (not just flex:1) - same
+  // fix as layoutFixed above: a bare flex:1 root measured its height
+  // against a transient viewport size on web, so the skip button's
+  // `bottom`-anchored position ended up below the real, settled viewport
+  // edge (confirmed live: window.innerHeight changed between two checks
+  // on the same load, and the skip button's rendered rect sat right at
+  // that stale boundary, never visible on screen despite being in the DOM
+  // with opacity:1).
   introContainer: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: "#000",
   },
   // No separate "video" key - it's identical to styles.fullBleed above,
   // referenced directly at the call site instead of duplicated.
+  introLogoWrapper: {
+    position: "absolute",
+    top: spacing.xxl,
+    left: 0,
+    right: 0,
+    height: 90,
+    alignItems: "center",
+  },
+  introLogoImage: {
+    width: "60%",
+    height: "100%",
+  },
   introSkipButton: {
     position: "absolute",
     bottom: spacing.huge,
