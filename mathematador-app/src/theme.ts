@@ -955,16 +955,25 @@ export const styles = StyleSheet.create({
   },
   // No separate "video" key - it's identical to styles.fullBleed above,
   // referenced directly at the call site instead of duplicated.
+  // width/height both as percentages (via left/right insets + aspectRatio,
+  // rather than a fixed pixel height) so the logo scales with the screen
+  // the same way the video's own cover-fit content does - a fixed height
+  // here would make the logo shrink relative to the boy/bull on any
+  // screen whose width-at-60% didn't already match that height's aspect
+  // ratio (confirmed live: a narrower/taller viewport than the one this
+  // was tuned on rendered a visibly smaller, oddly-cropped logo).
+  // 650x262 is logo.png's real pixel size - matching that ratio here is
+  // what keeps resizeMode="contain" from ever having to shrink below the
+  // box's own width to preserve the image's aspect ratio.
   introLogoWrapper: {
     position: "absolute",
-    top: spacing.xxl,
-    left: 0,
-    right: 0,
-    height: 90,
-    alignItems: "center",
+    top: "4%",
+    left: "12%",
+    right: "12%",
+    aspectRatio: 650 / 262,
   },
   introLogoImage: {
-    width: "60%",
+    width: "100%",
     height: "100%",
   },
   introSkipButton: {
