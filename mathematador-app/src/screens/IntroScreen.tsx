@@ -123,26 +123,24 @@ const IntroScreen = (): JSX.Element => {
         nativeControls={false}
       />
       {showSkip && (
-        <>
-          <Animated.View
-            style={[styles.introLogoWrapper, { opacity: overlayOpacity }]}
-            pointerEvents="none"
-          >
+        <Animated.View
+          style={[styles.introOverlay, { opacity: overlayOpacity }]}
+          pointerEvents="box-none"
+        >
+          <View style={styles.introLogoWrapper} pointerEvents="none">
             <Image
               source={logoImage}
               style={styles.introLogoImage}
               resizeMode="contain"
             />
-          </Animated.View>
-          <Animated.View style={{ opacity: overlayOpacity }}>
-            <TouchableOpacity
-              style={styles.introSkipButton}
-              onPress={requestNext}
-            >
-              <Text style={styles.introSkipText}>Skip</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </>
+          </View>
+          <TouchableOpacity
+            style={styles.introSkipButton}
+            onPress={requestNext}
+          >
+            <Text style={styles.introSkipText}>Skip</Text>
+          </TouchableOpacity>
+        </Animated.View>
       )}
     </View>
   );

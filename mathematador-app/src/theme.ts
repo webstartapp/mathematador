@@ -955,6 +955,28 @@ export const styles = StyleSheet.create({
   },
   // No separate "video" key - it's identical to styles.fullBleed above,
   // referenced directly at the call site instead of duplicated.
+  // position:absolute + all four insets (not flex:1) - this wrapper sits
+  // as a sibling AFTER the full-bleed VideoView in introContainer's
+  // column flow. flex:1 would make it compete with the video for a SHARE
+  // of the available space (Yoga splits it between flexible siblings);
+  // position:absolute removes it from that flow entirely and sizes it
+  // against its parent's full box instead, regardless of the video's own
+  // flex sizing - without this, the logo/skip-button children anchor
+  // their own `bottom`/`top` offsets against a wrapper that Yoga sized to
+  // near-zero height and placed below the already-100%-tall video,
+  // pushing both completely off-screen on native (confirmed only a web
+  // CSS quirk - position:absolute children there escape to the nearest
+  // positioned ancestor regardless of their immediate parent's size -
+  // masked this on web while leaving it broken on native layouts).
+  // pointerEvents="box-none" (set at the call site) lets touches pass
+  // through the transparent areas of this overlay to whatever's under it.
+  introOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
   // width/height both as percentages (via left/right insets + aspectRatio,
   // rather than a fixed pixel height) so the logo scales with the screen
   // the same way the video's own cover-fit content does - a fixed height
