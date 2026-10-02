@@ -155,7 +155,12 @@ body. Real reference assets already in the repo:
   adaptive-icon safe-zone circle (~66% of canvas) instead of the previous
   version, which was actually the full splash/hero scene with a title
   banner baked in near the top edge and got clipped by the OS mask on real
-  devices. `favicon.png` is a tight 64x64 crop of the current bull's face.
+  devices. `favicon.png` is the same `icon.png` artwork downscaled straight
+  to 64x64 (no re-crop) — briefly tried as a tighter bull-face-only crop
+  instead, for legibility at browser-tab size, but changed back to match
+  `icon.png`/`adaptive-icon.png` for brand consistency after a logo.png
+  wordmark was considered and ruled out (its text is illegible at favicon
+  size and its wide banner shape doesn't crop to a square cleanly).
   Regenerate these again (same recipe) whenever the character pose sheet
   itself changes, so the app icon doesn't drift from the in-game
   characters a second time.
