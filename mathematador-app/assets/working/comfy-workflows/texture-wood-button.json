@@ -10,14 +10,14 @@
   "3": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "seamless tileable wood plank texture, warm honey-gold varnished wood grain, Pixar style stylized 3D render, flat close-up texture shot viewed straight-on, uniform even lighting across the whole frame, no shadow, no vignette, no darkened corners, warm saturated colors, sharp focus throughout, high detail wood grain, no text, no watermark, no logo",
+      "text": "seamless tileable cartoon wood plank texture, warm medium chestnut brown polished wood (like a varnished wooden game-board, not painted barn red), Pixar style stylized 3D render, glossy toy-like lacquered material with a soft highlight streak down each plank, thick bold black outline along plank edges, simple clean stylized wood grain lines (not photorealistic), flat close-up texture shot viewed straight-on, uniform even lighting across the whole frame, no shadow, no vignette, no darkened corners, warm saturated colors, sharp focus throughout, no text, no watermark, no logo",
       "clip": ["1", 1]
     }
   },
   "4": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "watermark, text, logo, blurry, low quality, 3D object, product render, character, person, face, animal, vignette, dark corners, uneven lighting, photorealistic metal, neon, cyberpunk, futuristic, flat 2D cel shading, thick black outline",
+      "text": "watermark, text, logo, blurry, low quality, 3D object, product render, character, person, face, animal, vignette, dark corners, uneven lighting, photorealistic metal, neon, cyberpunk, futuristic, photorealistic wood, realistic timber grain, light pine, pale wood, blonde wood, hardwood flooring, muted desaturated colors, flat matte paint, painted barn red, barn door, dark red, maroon, burgundy",
       "clip": ["1", 1]
     }
   },
@@ -25,7 +25,7 @@
     "class_type": "KSampler",
     "inputs": {
       "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0], "latent_image": ["2", 0],
-      "seed": 801, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
+      "seed": 802, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
     }
   },
   "6": {
