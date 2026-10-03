@@ -1001,10 +1001,19 @@ export const styles = StyleSheet.create({
   // A flat wood.base fill read as too low-contrast/flat to actually draw
   // the eye ("does not attract" - confirmed live) - a real wood-grain
   // texture (ComfyUI, see texture-wood-button.json) plus a drop shadow
-  // gives it the carved-sign look a flat color couldn't. overflow:hidden
-  // is what clips the texture image to the rounded corners - the texture
-  // itself (introSkipButtonTexture below) fills this completely, so no
-  // backgroundColor is needed here as a fallback.
+  // gives it the carved-sign look a flat color couldn't.
+  // No overflow:hidden here (and no backgroundColor fallback - the
+  // texture below fills the shape completely) - clipping lives on
+  // introSkipButtonTexture instead, not here alongside boxShadow. The
+  // combination of overflow:hidden + boxShadow on the same view has real
+  // platform-specific bugs: iOS's overflow:hidden maps to masksToBounds,
+  // which clips the view's own shadow (longstanding RN issue, still live
+  // in the exact boxShadow+overflow:hidden combination used here), and
+  // outset `boxShadow` on Android only renders on API 28+ per RN's own
+  // docs - this app sets no minSdkVersion, so Expo's default (24) applies
+  // and the shadow would silently vanish on API 24-27 regardless of the
+  // iOS issue. Keeping this view unclipped lets its shadow render
+  // normally on both platforms.
   introSkipButton: {
     position: "absolute",
     bottom: spacing.huge,
@@ -1012,12 +1021,15 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.wood.border,
     borderRadius: radii.xl,
-    overflow: "hidden",
     boxShadow: [
       { offsetX: 1, offsetY: 3, blurRadius: 4, color: "rgba(0, 0, 0, 0.45)" },
     ],
   },
+  // Clips the texture image to the button's rounded corners - moved here
+  // (off introSkipButton) so it doesn't fight that view's own boxShadow.
   introSkipButtonTexture: {
+    borderRadius: radii.xl,
+    overflow: "hidden",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
   },
