@@ -10,10 +10,12 @@ import ChalengeSelectScreen from "@/screens/ChalengeSelectScreen";
 import ChallengeScreen from "@/screens/ChallengeGameScreen";
 import ChallengeResultScreen from "@/screens/ChallengeResultScreen";
 import ConsentScreen from "@/screens/ConsentScreen";
+import DocumentsScreen from "@/screens/DocumentsScreen";
 import GauntletScreen from "@/screens/GauntletScreen";
 import HomeScreen from "@/screens/HomeScreen";
 import IntroScreen from "@/screens/IntroScreen";
 import OperationSelectionScreen from "@/screens/OperationSelectionScreen";
+import ProfileScreen from "@/screens/ProfileScreen";
 import SettingsHistoryScreen from "@/screens/SettingsHistoryScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
 import TiendaScreen from "@/screens/TiendaScreen";
@@ -54,12 +56,14 @@ const GameStack = (): JSX.Element => (
         headerShown: false,
       }}
     />
+    {/* No GameHeader (XP/level bar) - the icon-driven main menu is
+        deliberately header-less, unlike every screen reached from it
+        (see issue #82). */}
     <Stack.Screen
       name="Home"
       component={HomeScreen}
       options={{
-        headerShown: true,
-        header: (props: StackHeaderProps) => <GameHeader props={props} />,
+        headerShown: false,
       }}
     />
     <Stack.Screen
@@ -126,6 +130,20 @@ const GameStack = (): JSX.Element => (
     <Stack.Screen
       name="SettingsHistory"
       component={SettingsHistoryScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="Profile"
+      component={ProfileScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="Documents"
+      component={DocumentsScreen}
       options={{
         headerShown: false,
       }}
