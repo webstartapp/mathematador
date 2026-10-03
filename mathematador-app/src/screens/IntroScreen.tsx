@@ -8,6 +8,7 @@ import { JSX, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  ImageBackground,
   Platform,
   Text,
   TouchableOpacity,
@@ -15,6 +16,7 @@ import {
 } from "react-native";
 
 import logoImage from "@/assets/images/logo.png";
+import woodButtonTexture from "@/assets/images/wood-button-texture.png";
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSessionVerification } from "@/hooks/useSessionVerification";
@@ -28,7 +30,22 @@ type IntroScreenNavigationProp = StackNavigationProp<
 >;
 type IntroScreenRouteProp = RouteProp<RootStackParamList, "Intro">;
 
+// Carries introSkipButton's own position:absolute styling directly (merged
+// with its animated opacity) instead of wrapping it in a separate
+// Animated.View - an extra wrapper with no size of its own would become
+// the containing block for that position:absolute style, which broke the
+// button on native layouts once already (see introOverlay's own comment
+// in theme.ts for the full story).
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
+
 const SKIP_BUTTON_DELAY_MS = 2000;
+const SKIP_BUTTON_FADE_MS = 800;
+// Earlier and slower than the skip button - the logo is the brand moment,
+// the skip button is secondary chrome, so they're deliberately not tied to
+// the same timing/Animated.Value.
+const LOGO_FADE_DELAY_MS = 1000;
+const LOGO_FADE_DURATION_MS = 1800;
 // Upper bound on how long the native splash (a static image - expo-splash-
 // screen has no video/animation support) stays up waiting for the video to
 // buffer, so a slow connection never leaves the user stuck looking at it.
@@ -42,7 +59,8 @@ const IntroScreen = (): JSX.Element => {
   const [showSkip, setShowSkip] = useState(false);
   const [videoWantsNext, setVideoWantsNext] = useState(false);
   const splashHiddenRef = useRef(false);
-  const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const skipOpacity = useRef(new Animated.Value(0)).current;
   const verificationOutcome = useSessionVerification();
 
   const player = useVideoPlayer(introVideoAsset, (playerInstance) => {
@@ -94,14 +112,22 @@ const IntroScreen = (): JSX.Element => {
       hideSplash();
     }
     startMenuMusic();
+    // react-native-web has no native animation driver - see
+    // AnimatedImage.tsx's identical gating for the same warning.
+    const useNativeDriver = Platform.OS !== "web";
+    const logoTimeoutId = setTimeout(() => {
+      Animated.timing(logoOpacity, {
+        toValue: 1,
+        duration: LOGO_FADE_DURATION_MS,
+        useNativeDriver,
+      }).start();
+    }, LOGO_FADE_DELAY_MS);
     const skipTimeoutId = setTimeout(() => {
       setShowSkip(true);
-      Animated.timing(overlayOpacity, {
+      Animated.timing(skipOpacity, {
         toValue: 1,
-        duration: 800,
-        // react-native-web has no native animation driver - see
-        // AnimatedImage.tsx's identical gating for the same warning.
-        useNativeDriver: Platform.OS !== "web",
+        duration: SKIP_BUTTON_FADE_MS,
+        useNativeDriver,
       }).start();
     }, SKIP_BUTTON_DELAY_MS);
     const splashSafetyTimeoutId = setTimeout(
@@ -109,10 +135,11 @@ const IntroScreen = (): JSX.Element => {
       SPLASH_SAFETY_TIMEOUT_MS,
     );
     return () => {
+      clearTimeout(logoTimeoutId);
       clearTimeout(skipTimeoutId);
       clearTimeout(splashSafetyTimeoutId);
     };
-  }, [player, startMenuMusic, overlayOpacity]);
+  }, [player, startMenuMusic, logoOpacity, skipOpacity]);
 
   return (
     <View style={styles.introContainer}>
@@ -122,26 +149,32 @@ const IntroScreen = (): JSX.Element => {
         contentFit="cover"
         nativeControls={false}
       />
-      {showSkip && (
+      <View style={styles.introOverlay} pointerEvents="box-none">
         <Animated.View
-          style={[styles.introOverlay, { opacity: overlayOpacity }]}
-          pointerEvents="box-none"
+          style={[styles.introLogoWrapper, { opacity: logoOpacity }]}
+          pointerEvents="none"
         >
-          <View style={styles.introLogoWrapper} pointerEvents="none">
-            <Image
-              source={logoImage}
-              style={styles.introLogoImage}
-              resizeMode="contain"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.introSkipButton}
+          <Image
+            source={logoImage}
+            style={styles.introLogoImage}
+            resizeMode="contain"
+          />
+        </Animated.View>
+        {showSkip && (
+          <AnimatedTouchableOpacity
+            style={[styles.introSkipButton, { opacity: skipOpacity }]}
             onPress={requestNext}
           >
-            <Text style={styles.introSkipText}>Skip</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+            <ImageBackground
+              source={woodButtonTexture}
+              style={styles.introSkipButtonTexture}
+              resizeMode="cover"
+            >
+              <Text style={styles.introSkipText}>Skip</Text>
+            </ImageBackground>
+          </AnimatedTouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
