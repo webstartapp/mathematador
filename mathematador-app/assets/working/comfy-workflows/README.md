@@ -17,8 +17,9 @@ any of those images later without re-deriving the setup from scratch.
      distinct compositions, `screen-settings.json`/`screen-shop.json`): a
      character-free, sharp, open-air arena shot, 768x1344. Edit only the
      last clause of the positive prompt (the mood), per the on-canvas note.
-   - **`mathematador-iconset`** — the three Home-screen nav icons (Settings,
-     Shop, Docs): a grounded product-render, 1024x1024. Edit only the first
+   - **`mathematador-iconset`** — the five Home-screen main-menu icons
+     (Settings, Shop, Docs, Game, Profile - the last two added in #82): a
+     grounded product-render, 1024x1024. Edit only the first
      clause of the positive prompt (the subject), per the on-canvas note.
      Needs the `rembg` background-removal post-process below before the
      output is usable as an icon.
@@ -268,7 +269,15 @@ Negative prompt (fixed, all three):
 Current subjects: Settings "one mechanical gear cog with thick trapezoidal
 teeth"; Shop "a neat stack of three round gold coins, resting flat"; Docs
 "one closed leather-bound book standing upright with a gold buckle clasp
-and gold page edges". This checkpoint has a strong bias toward drawing a
+and gold page edges"; Game "one golden star-shaped trophy medal hanging
+from a short ribbon" (issue #82 - the main menu's "Play" icon); Profile
+"one teal-and-gold torero's montera hat (traditional bullfighter hat)
+with gold embroidery trim" (issue #82 - came out as a wide-brimmed
+sombrero rather than the boy's actual close-fitting montera, since the
+model doesn't know the word "montera" - accepted anyway since it's still
+on-brand and reads clearly as "a hat"; revisit the subject phrase with a
+plainer description if a closer match is ever needed). This checkpoint
+has a strong bias toward drawing a
 character/mascot instead of an object when the subject phrase is ambiguous
 or resembles clothing/a creature ("cape" alone, "coin" without "stack") —
 keep the negative prompt's character/mascot/face terms in place, and if a

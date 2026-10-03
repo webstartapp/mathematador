@@ -10,6 +10,7 @@ export type RootStackParamList = {
   SelectOperation?: {};
   Statistics?: {};
   Profile?: {};
+  Documents?: {};
   ChalengeSelect: { operationId: string };
   Tienda?: {};
   Gauntlet?: {};

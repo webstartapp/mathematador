@@ -402,6 +402,57 @@ export const styles = StyleSheet.create({
     overflow: "hidden",
   },
 
+  // ---- screens/HomeScreen.tsx ----
+  // Icon-driven main menu (issue #82) - deliberately no CenteredDesk/card,
+  // just a greeting and a loose icon grid directly over the background art
+  // (the whole point of this redesign - a wood card was blocking it).
+  homeGreeting: {
+    fontSize: typography.size.hero,
+    textAlign: "center",
+    color: colors.white,
+    marginTop: spacing.huge,
+    marginBottom: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+    ...cardTextShadow,
+  },
+  homeIconGrid: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignContent: "flex-start",
+    gap: spacing.xxl,
+    paddingHorizontal: spacing.xl,
+  },
+  homeIconButton: {
+    width: "35%",
+    alignItems: "center",
+  },
+  // aspectRatio lives on this wrapper, not the Image itself - applied
+  // directly to an Image with only width:"100%" (no explicit height) it
+  // didn't constrain anything, so the image rendered at its native
+  // 1024px height regardless of width, which then forced homeIconButton
+  // to grow well past its intended 35% too (confirmed live: both the
+  // image and its button parent measured ~358px/1024px instead of the
+  // intended ~124px square). Same pattern as introLogoWrapper, which
+  // already does this correctly.
+  homeIconImageWrapper: {
+    width: "100%",
+    aspectRatio: 1,
+  },
+  homeIconImage: {
+    width: "100%",
+    height: "100%",
+  },
+  homeIconLabel: {
+    marginTop: spacing.xs,
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.bold,
+    color: colors.white,
+    textAlign: "center",
+    ...cardTextShadow,
+  },
+
   // ---- screens/OperationSelectionScreen.tsx ----
   opSelectContainer: {
     flex: 1,

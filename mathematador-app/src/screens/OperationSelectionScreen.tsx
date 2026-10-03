@@ -5,11 +5,12 @@ import { JSX } from "react";
 import { View, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
+import Button from "@/components/common/Button";
 import Layout from "@/components/common/Layout";
 import CenteredDesk from "@/components/layouts/CenteredDesk";
 import { Operation, operations } from "@/configs/operations";
 import { RootState } from "@/redux/store";
-import { styles } from "@/theme";
+import { colors, styles } from "@/theme";
 import { RootStackParamList } from "@/types/Navigation";
 
 type OperationSelectionScreenNavigationProp = StackNavigationProp<
@@ -73,7 +74,16 @@ const OperationSelectionScreen = (): JSX.Element => {
               padding: 20,
             },
           }}
-        />
+        >
+          {/* Main menu (#82) is now header-less, so Coliseo moved here -
+              the first header-equipped "game menu" screen reached from it -
+              instead of being its own top-level main-menu icon. */}
+          <Button
+            title="Coliseo (Gauntlet & Daily)"
+            onPress={() => navigation.navigate("Gauntlet")}
+            style={{ backgroundColor: colors.magenta }}
+          />
+        </CenteredDesk>
         <View style={styles.opSelectGrid} id="im-grid">
           {operations.map((operation) => (
             <OperationprogressItem
