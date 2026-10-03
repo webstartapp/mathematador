@@ -284,6 +284,67 @@ keep the negative prompt's character/mascot/face terms in place, and if a
 generation drifts into a character anyway, make the subject phrase more
 explicitly an inanimate object.
 
+**UI textures** (`texture-wood-button.json`) — a flat `colors.wood.base`
+fill for the intro screen's skip button (#81) read as too low-contrast to
+actually draw the eye on review ("does not attract"); this recipe
+generates a real wood-grain texture to use as a button background image
+instead of a flat color. 1024x1024, no image conditioning, same
+JuggernautXL checkpoint, "uniform even lighting ... no vignette, no
+darkened corners" kept in every prompt variant below for the same reason:
+this is meant to tile/stretch across a small UI element, not sit as a
+standalone product shot, and without those clauses the checkpoint's
+default product-photography instincts add a vignette that shows up as an
+inconsistent dark patch depending on how the image gets cropped/scaled
+per button size.
+
+The color needed a second pass after the first review: asked to look more
+like the brand's actual wood tone ("as the 'El Coliseo de los Números'
+banner has" - a rich dark chestnut/mahogany, not the pale honey-pine the
+first attempt produced). Two follow-up prompt variants (both still with a
+"flat close-up texture shot" framing) swung too far the other way -
+either a flat painted-barn-red, or back toward a lighter, photoreal-
+looking grain - and a third attempt using the *icon* template instead
+(`single mobile game app icon, a small rectangular wooden sign plank...`,
+the same framing that reliably produces the glossy toy-like look for the
+Settings/Shop/Docs/Game/Profile icons) got the glossy stylization right
+but came back at a three-quarter angle despite asking for "straight-on" -
+unusable as a flat tileable crop.
+
+What actually closed the gap: sampling the banner's own pixels directly
+(`Image.getpixel`) instead of guessing color words - two sample points
+averaged to RGB (113, 57, 28). The best texture attempt (medium chestnut
+grain, flat framing) was close in *hue* but ~1.6x too bright (mean RGB
+(172, 99, 49)) - a single uniform brightness-scale multiplier
+(`target_mean.mean() / current_mean.mean()`, applied to all three
+channels together so hue doesn't shift) plus a +15% saturation bump
+(`ImageEnhance.Color`) landed it at (111, 59, 23), matching the sample
+almost exactly. Cheaper and more reliable than another generation
+attempt once the issue was "right hue, wrong brightness" rather than
+"wrong hue" - worth reaching for this before re-rolling the prompt again
+whenever a result is close but not quite right on brightness/saturation
+alone.
+
+Final positive prompt (the one actually used, before the brightness
+correction above): "seamless tileable cartoon wood plank texture, warm
+medium chestnut brown polished wood (like a varnished wooden game-board,
+not painted barn red), Pixar style stylized 3D render, glossy toy-like
+lacquered material with a soft highlight streak down each plank, thick
+bold black outline along plank edges, simple clean stylized wood grain
+lines (not photorealistic), flat close-up texture shot viewed straight-
+on, uniform even lighting across the whole frame, no shadow, no
+vignette, no darkened corners, warm saturated colors, sharp focus
+throughout, no text, no watermark, no logo". Negative: "watermark, text,
+logo, blurry, low quality, 3D object, product render, character, person,
+face, animal, vignette, dark corners, uneven lighting, photorealistic
+metal, neon, cyberpunk, futuristic, photorealistic wood, realistic
+timber grain, light pine, pale wood, blonde wood, hardwood flooring,
+muted desaturated colors, flat matte paint, painted barn red, barn door,
+dark red, maroon, burgundy". Output resized to 400x400 and brightness/
+saturation-corrected as above (`wood-button-texture.png`) - plenty for a
+button-sized `ImageBackground`, no need to keep the full 1024x1024. No
+`rembg` step - unlike the icons, this fills the whole shape rather than
+needing to be cut out, so it stays a plain opaque image.
+
 **Character pose sheet** (`mathematador-characters.json` visual graph, 56
 nodes/9 branches) — the boy and Toro Numérico as separate full-body
 reference PNGs on a plain background (standing, walking, cool/arms-crossed,

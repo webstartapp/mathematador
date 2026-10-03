@@ -1,0 +1,39 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {"ckpt_name": "JuggernautXL_v9.safetensors"}
+  },
+  "2": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {"width": 1024, "height": 1024, "batch_size": 1}
+  },
+  "3": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "seamless tileable cartoon wood plank texture, warm medium chestnut brown polished wood (like a varnished wooden game-board, not painted barn red), Pixar style stylized 3D render, glossy toy-like lacquered material with a soft highlight streak down each plank, thick bold black outline along plank edges, simple clean stylized wood grain lines (not photorealistic), flat close-up texture shot viewed straight-on, uniform even lighting across the whole frame, no shadow, no vignette, no darkened corners, warm saturated colors, sharp focus throughout, no text, no watermark, no logo",
+      "clip": ["1", 1]
+    }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "watermark, text, logo, blurry, low quality, 3D object, product render, character, person, face, animal, vignette, dark corners, uneven lighting, photorealistic metal, neon, cyberpunk, futuristic, photorealistic wood, realistic timber grain, light pine, pale wood, blonde wood, hardwood flooring, muted desaturated colors, flat matte paint, painted barn red, barn door, dark red, maroon, burgundy",
+      "clip": ["1", 1]
+    }
+  },
+  "5": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0], "positive": ["3", 0], "negative": ["4", 0], "latent_image": ["2", 0],
+      "seed": 802, "steps": 35, "cfg": 7, "sampler_name": "dpmpp_2m", "scheduler": "karras", "denoise": 1
+    }
+  },
+  "6": {
+    "class_type": "VAEDecode",
+    "inputs": {"samples": ["5", 0], "vae": ["1", 2]}
+  },
+  "7": {
+    "class_type": "SaveImage",
+    "inputs": {"filename_prefix": "texture_wood_button_v1", "images": ["6", 0]}
+  }
+}
