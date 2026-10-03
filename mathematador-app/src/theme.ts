@@ -998,19 +998,26 @@ export const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  // Wood palette (not translucent white) - the same colors.wood tokens
-  // CenteredDesk's woodPanel uses, so this reads as a consistent piece of
-  // UI chrome regardless of what's playing behind it in the video, instead
-  // of all but disappearing against the video's brighter frames the way a
-  // low-opacity white pill did.
+  // A flat wood.base fill read as too low-contrast/flat to actually draw
+  // the eye ("does not attract" - confirmed live) - a real wood-grain
+  // texture (ComfyUI, see texture-wood-button.json) plus a drop shadow
+  // gives it the carved-sign look a flat color couldn't. overflow:hidden
+  // is what clips the texture image to the rounded corners - the texture
+  // itself (introSkipButtonTexture below) fills this completely, so no
+  // backgroundColor is needed here as a fallback.
   introSkipButton: {
     position: "absolute",
     bottom: spacing.huge,
     right: spacing.xxl,
-    backgroundColor: colors.wood.base,
     borderWidth: 2,
-    borderColor: colors.wood.light,
+    borderColor: colors.wood.border,
     borderRadius: radii.xl,
+    overflow: "hidden",
+    boxShadow: [
+      { offsetX: 1, offsetY: 3, blurRadius: 4, color: "rgba(0, 0, 0, 0.45)" },
+    ],
+  },
+  introSkipButtonTexture: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
   },

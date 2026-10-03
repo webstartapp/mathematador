@@ -8,6 +8,7 @@ import { JSX, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Image,
+  ImageBackground,
   Platform,
   Text,
   TouchableOpacity,
@@ -15,6 +16,7 @@ import {
 } from "react-native";
 
 import logoImage from "@/assets/images/logo.png";
+import woodButtonTexture from "@/assets/images/wood-button-texture.png";
 import introVideoAsset from "@/assets/video/intro.mp4";
 import { useMenuMusic } from "@/hooks/useMenuMusic";
 import { useSessionVerification } from "@/hooks/useSessionVerification";
@@ -163,7 +165,13 @@ const IntroScreen = (): JSX.Element => {
             style={[styles.introSkipButton, { opacity: skipOpacity }]}
             onPress={requestNext}
           >
-            <Text style={styles.introSkipText}>Skip</Text>
+            <ImageBackground
+              source={woodButtonTexture}
+              style={styles.introSkipButtonTexture}
+              resizeMode="cover"
+            >
+              <Text style={styles.introSkipText}>Skip</Text>
+            </ImageBackground>
           </AnimatedTouchableOpacity>
         )}
       </View>

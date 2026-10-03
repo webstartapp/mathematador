@@ -275,6 +275,31 @@ keep the negative prompt's character/mascot/face terms in place, and if a
 generation drifts into a character anyway, make the subject phrase more
 explicitly an inanimate object.
 
+**UI textures** (`texture-wood-button.json`) — a flat `colors.wood.base`
+fill for the intro screen's skip button (#81) read as too low-contrast to
+actually draw the eye on review ("does not attract"); this recipe
+generates a real wood-grain texture to use as a button background image
+instead of a flat color. 1024x1024, no image conditioning, same
+JuggernautXL checkpoint. Positive prompt: "seamless tileable wood plank
+texture, warm honey-gold varnished wood grain, Pixar style stylized 3D
+render, flat close-up texture shot viewed straight-on, uniform even
+lighting across the whole frame, no shadow, no vignette, no darkened
+corners, warm saturated colors, sharp focus throughout, high detail wood
+grain, no text, no watermark, no logo" — the "uniform even lighting ...
+no vignette, no darkened corners" clauses matter specifically because
+this is meant to tile/stretch across a small UI element, not sit as a
+standalone product shot; without them the checkpoint's default product-
+photography instincts add a vignette that would show up as an
+inconsistent dark patch depending on how the image gets cropped/scaled
+per button size. Negative prompt: "watermark, text, logo, blurry, low
+quality, 3D object, product render, character, person, face, animal,
+vignette, dark corners, uneven lighting, photorealistic metal, neon,
+cyberpunk, futuristic, flat 2D cel shading, thick black outline". Output
+resized to 400x400 (`wood-button-texture.png`) - plenty for a button-sized
+`ImageBackground`, no need to keep the full 1024x1024. No `rembg` step -
+unlike the icons, this fills the whole shape rather than needing to be
+cut out, so it stays a plain opaque image.
+
 **Character pose sheet** (`mathematador-characters.json` visual graph, 56
 nodes/9 branches) — the boy and Toro Numérico as separate full-body
 reference PNGs on a plain background (standing, walking, cool/arms-crossed,
